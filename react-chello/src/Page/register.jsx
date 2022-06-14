@@ -4,12 +4,12 @@ import RegisterForm from "../Component/RegisterForm";
 
 
 function Register() {return (
-  <React.Fragment>
+  <>
       <Navbar></Navbar>
-      <div class="relative border border-sky-500 w-50 h-screen">
+      <div className="relative border border-sky-500 w-50 h-screen">
       <RegisterForm></RegisterForm>
       </div>
-  </React.Fragment>
+  </>
   );
 }
 

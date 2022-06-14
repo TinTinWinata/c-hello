@@ -1,6 +1,10 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from '@firebase/firestore'
+import { getFirestore } from 'firebase/firestore'
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
+
+// Configure Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCNxPuE96DP1bzREUXJGccDq5PN44vs70E",
   authDomain: "chello-15d8d.firebaseapp.com",
@@ -10,5 +14,24 @@ const firebaseConfig = {
   appId: "1:478745237584:web:69bf1fe76a5b30c49f9955"
 };
 
-const app = initializeApp(firebaseConfig)
+// Initialized Firebase
+firebase.initializeApp(firebaseConfig)
+
+// Configure Firebase UI
+const uiConfig = {
+  signInFlow: 'popup',
+  signInSuccessUrl: '/signedIn',
+  signInOptions: [
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+  ],
+};
+
+// Set Firebase Persistence
+const persistence = firebase.auth.Auth.Persistence.LOCAL
+firebase.auth().setPersistence(persistence);
+
+
+// Exporting Firebase Conf
+export default uiConfig
+export const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app)

@@ -1,67 +1,60 @@
 import './LoginForm.css'
-import {useState, useEffect} from "react";
-import { db } from "../Config/firebase-config";
-import {collection, getDocs} from 'firebase/firestore'
+import {useState} from "react";
 
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+
+const auth = getAuth();
 
 function LoginForm() {
 
-  const [userList, setUsers] = useState([])
-  const userCollectionRef = collection(db, "user")
-
-  useEffect(()=>{
-    const getUser = async() => {
-        const data = await getDocs(userCollectionRef)
-        setUsers(data.docs.map((doc) => ({...doc.data(), id: doc.id})))
-      }
-    getUser()
-  }, [])
-
+  const [errorMessage, setError] = useState("")
   
 function login(e)
 {
   e.preventDefault()
-  userList.map((user) => {  
     
     let email = e.target.email.value
     let password = e.target.password.value
-
-    if(email == user.email && password == user.password)
-    {
-      window.location.replace("./")
-      console.log("succed login")
-      return
-    }
+  
+    signInWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    const user = userCredential.user;
+    window.location.replace('/')
   })
-  console.log("credential failed")
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    setError(errorMessage)
+  });
+  
 }
 
   return (
-<div class="w-full max-w-xs" id="registerForm">
-  <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={login}>
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+<div className="w-full max-w-xs" id="registerForm">
+  <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={login}>
+    <div className="mb-4">
+      <label className="block text-gray-700 text-sm font-bold mb-2">
         Email
       </label>
-      <input name="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="example@gmail.com"/>
+      <input name="email" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="example@gmail.com"/>
     </div>
-    <div class="mb-6">
-      <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+    <div className="mb-6">
+      <label className="block text-gray-700 text-sm font-bold mb-2">
         Password
       </label>
-      <input name="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="******************"/>
-      <p class="text-red-500 text-xs italic"></p>
+      <input name="password" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="******************"/>
+      <p className="text-red-500 text-xs italic">{errorMessage}</p>
     </div>
-    <div class="flex items-center justify-between">
-      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+    <div className="flex items-center justify-between">
+      <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
         Sign In
       </button>
-      <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="#">
+      <a className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="#">
         Forgot Password?
       </a>
     </div>
   </form>
-  <p class="text-center text-gray-500 text-xs">
+  <p className="text-center text-gray-500 text-xs">
     &copy;2020 Acme Corp. All rights reserved.
   </p>
 </div>
