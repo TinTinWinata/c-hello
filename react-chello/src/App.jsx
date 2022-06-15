@@ -19,7 +19,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login/>}/>
-        <Route path="/workspace/:id" render={(props) => <Workspace {...props} />} />
+        <Route path="/workspace/:id" element={<Workspace/>}/>
       </Routes>
     </BrowserRouter>
   );
