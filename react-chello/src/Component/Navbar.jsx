@@ -1,11 +1,30 @@
-
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useEffect, useState } from "react";
 
 function Navbar() {
+
+  
+  const [user, setUser] = useState('CHello')
+  const auth = getAuth()
+
+  
+  
+
+  useEffect(()=>{
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user)
+      } else {
+      }
+    });
+  }, [])
+  
+
   return (
-    <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-800">
+    <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 w-screen rounded dark:bg-gray-800">
   <div className="container flex flex-wrap justify-between items-center mx-auto">
   <a href="https://google.com" className="flex items-center">
-      <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">CHello</span>
+      <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">{user.displayName}</span>
   </a>
   <div className="flex md:order-2">
     <button type="button" data-collapse-toggle="mobile-menu-3" aria-controls="mobile-menu-3" aria-expanded="false" className="md:hidden text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 mr-1" >

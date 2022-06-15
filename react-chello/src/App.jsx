@@ -9,6 +9,7 @@ import Home from './Page/home';
 import Register from './Page/register';
 import Login from './Page/login';
 import Workspace from './Page/workspace';
+import Board from './Page/board';
 
 
 
@@ -20,6 +21,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login/>}/>
         <Route path="/workspace/:id" element={<Workspace/>}/>
+        <Route path="/board/:id" element={<Board/>}/>
       </Routes>
     </BrowserRouter>
   );

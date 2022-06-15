@@ -3,6 +3,7 @@ import WorkspaceComponent from "./WorkspaceComponent";
 import './Sidebar.css'
 import React, { useEffect, useState } from "react";
 import WorkspacePopUp from "./WorkspacePopUp";
+import { logOut } from "../Script/Auth";
 
 
 
@@ -10,19 +11,22 @@ function Sidebar() {
 
   const [popUpCreateWP, setPopUpCreateWP] = useState(false)
 
-
   function createWorkspace()
   {
       setPopUpCreateWP(true)
   }
 
-  
+  function handleLogout()
+  {
+    logOut()
+  }
+
 
   return (
     <React.Fragment>
       <WorkspacePopUp trigger={popUpCreateWP} setTrigger={setPopUpCreateWP}></WorkspacePopUp>
     <aside className="w-64" aria-label="Sidebar">
-    <div className="pl-10 h-screen overflow-y-auto py-4 px-3 bg-gray-50 rounded">
+    <div className="relative pl-10 h-screen overflow-y-auto py-4 px-3 bg-gray-50 rounded">
       <ul className="space-y-2 mt-10">
       <SidebarComponent text="Boards" link="/board" svg=""></SidebarComponent>
       <SidebarComponent text="Templates" link="/template"></SidebarComponent>
@@ -36,6 +40,9 @@ function Sidebar() {
           </div>
         </li>
         <WorkspaceComponent></WorkspaceComponent>
+        <button onClick={handleLogout} className="w-28 font-s btn-logout bg-transparent  text-red-700 font-semibold py-2 px-4 border border-red-500 rounded">
+          Log Out
+        </button>
       </ul>
    </div>
 </aside>

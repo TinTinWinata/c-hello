@@ -1,6 +1,6 @@
-import { BoardCard } from "./BoardCard";
 import { CreateBoardCard } from "./CreateBoardCard";
 import './BoardCardGroup.css'
+import RealtimeBoard from "./RealtimeBoard";
 
 export function BoardCardGroup()
 {
@@ -8,8 +8,7 @@ export function BoardCardGroup()
 
   return(<>
       <div className="container">
-      <BoardCard>
-      </BoardCard>
+      <RealtimeBoard></RealtimeBoard>
       <CreateBoardCard name="Create Card">
       </CreateBoardCard>
       </div>

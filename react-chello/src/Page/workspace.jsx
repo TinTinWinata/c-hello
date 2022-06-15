@@ -2,7 +2,6 @@ import Navbar from "../Component/Navbar";
 import Sidebar from "../Component/Sidebar";
 import { useParams } from 'react-router-dom';
 import { getWebId } from "../Script/Util";
-import { BoardCard } from "../Component/BoardCard";
 import { BoardCardGroup } from "../Component/BoardCardGroup";
 
 // const param = useParams()
