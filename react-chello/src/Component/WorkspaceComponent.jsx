@@ -14,13 +14,13 @@ function WorkspaceComponent(props)   {
   const workspaceRef = collection(db, "workspace")
 
   async function get(id){
-    const q = query(workspaceRef, where("userId", "==", id));
+    const q = query(workspaceRef, where("userId", "==", id))
     const data = await getDocs(q)
     setWorkSpace(data.docs.map((doc) => ({...doc.data(), id: doc.id})))
   } 
 
   useEffect(()=>{
-    
+
     const getWorkspace = async() => {
       onAuthStateChanged(auth, (user) => {
         if (user) {

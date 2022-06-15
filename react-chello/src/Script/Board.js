@@ -1,14 +1,22 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { collection,getDocs,addDoc,updateDoc,deleteDoc,doc,} from "firebase/firestore"
 import { db } from '../Config/firebase-config'
+import { getWebId } from "./Util";
 
 const auth = getAuth();
 
 const ref = collection(db, "board")
-export async function insertBoard(newName, newDetail, newLanguange, newCountry)
+export async function insertBoard(newName, newTag, newVisibility)
 {
   try {
-    await addDoc(ref, {name:newName, detail:newDetail, languange:newLanguange, country:newCountry, userId: auth.currentUser.uid})
+    let docsData = {
+      name:newName, 
+      tag: newTag,
+      visbility: newVisibility,
+      adminId: [auth.currentUser.uid],
+      workspaceId: getWebId()
+    }
+    await addDoc(ref, docsData)
     console.log('succed add to docs')
   } catch (error) {
     alert('error adding : ' , error)

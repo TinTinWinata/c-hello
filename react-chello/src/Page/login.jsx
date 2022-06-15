@@ -3,10 +3,6 @@ import Navbar from "../Component/Navbar";
 
 
 function Login() {
-
-
-
-
   return (
   <>
       <Navbar></Navbar>

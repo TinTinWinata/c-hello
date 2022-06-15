@@ -2,6 +2,8 @@ import React, { useState } from "react"
 import { insertWorkspace } from "../Script/Workspace"
 import './WorkspacePopUp.css'
 import './CreateBoardPopUp.css'
+import { insertBoard } from "../Script/Board"
+import { getWebId } from "../Script/Util"
 
 
 function CreateBoardPopUp(props){
@@ -11,15 +13,18 @@ function handleSubmit(e)
 {
   e.preventDefault()
   const name = e.target.name.value
-  const detail = e.target.detail.value
-  const languange = e.target.languange.value
-  const country = e.target.country.value
+  const tag = e.target.tag.value
+  const visibility = e.target.visibility.value
+  const workspaceId = getWebId()
 
-  if(name == "" || detail == "" || languange == "")
+  if(name == "" || tag == "" || visibility == "" || workspaceId == "")
   {
     setErrorMessage("please input all fields!")   
-  }else{
-    insertWorkspace(name, detail, languange, country)
+  }else if(workspaceId == 'workspace'){
+    setErrorMessage('please select at least one workspace')
+  }
+  else{
+    insertBoard(name, tag, visibility)
     exitPopup()
   }
   
@@ -52,17 +57,17 @@ function exitPopup()
       <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"htmlFor="grid-password">
         Board Tag
       </label>  
-      <input name="detail" className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-password" placeholder=""/>
+      <input name="tag" className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-password" placeholder=""/>
       <p className="text-gray-600 text-xs italic">Make it as long and as crazy as you'd like</p>
     </div>
   </div>
   <div className="flex flex-wrap -mx-3 mb-2">
     <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
       <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"htmlFor="grid-state">
-        Country
+        Visibility
       </label>
       <div className="relative">
-        <select name="country" className="block appearance-none w-max bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-state">
+        <select name="visibility" className="block appearance-none w-max bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-state">
           <option>Private</option>
           <option>Workspace</option>
           <option>Public</option>
