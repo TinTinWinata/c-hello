@@ -29,3 +29,9 @@ export async function updateCard(card)
   await updateDoc(ref, card)
 }
 
+export async function deleteCard(card)
+{
+  const ref = doc(db, "card", card.id)
+  await deleteDoc(ref, card)
+}
+
