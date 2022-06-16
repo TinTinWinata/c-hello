@@ -1,30 +1,17 @@
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { useEffect, useState } from "react";
+import { useUserAuth } from "../Library/UserAuthContext";
+import Profile from "./Profile";
 
 function Navbar() {
 
   
-  const [user, setUser] = useState('CHello')
-  const auth = getAuth()
-
-  
-  
-
-  useEffect(()=>{
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user)
-      } else {
-      }
-    });
-  }, [])
-  
+  const  {user} = useUserAuth()
+  const userName = user ? user.displayName : ''
 
   return (
     <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 w-screen rounded dark:bg-gray-800">
   <div className="container flex flex-wrap justify-between items-center mx-auto">
   <a href="https://google.com" className="flex items-center">
-      <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">{user.displayName}</span>
+      <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">{userName}</span>
   </a>
   <div className="flex md:order-2">
     <button type="button" data-collapse-toggle="mobile-menu-3" aria-controls="mobile-menu-3" aria-expanded="false" className="md:hidden text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 mr-1" >
@@ -36,9 +23,7 @@ function Navbar() {
       </div>
       <input type="text" id="search-navbar" className="block p-2 pl-10 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 sm:text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search..."/>
     </div>
-    <a href="/login">
-    <button className="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded ml-3">Login</button>
-    </a>
+    <Profile user={user}></Profile>
     <button data-collapse-toggle="mobile-menu-3" type="button" className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mobile-menu-3" aria-expanded="false">
     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"></path></svg>
     <svg className="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>

@@ -1,10 +1,20 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import CreateBoardPopUp from "./CreateBoardPopUp"
 
 
-export function CreateBoardCard(props)
+export function CreateBoardCard()
 {
   const [popUpTrigger, setPopUpTrigger] = useState(false)
+
+  useEffect(() => {
+    let handler = (e) => {
+      setPopUpTrigger(false)
+    };
+    document.addEventListener("mousedown", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  });
 
   function click()
   {

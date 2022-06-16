@@ -2,36 +2,50 @@ import './LoginForm.css'
 import {useState} from "react";
 
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useUserAuth } from '../Library/UserAuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const auth = getAuth();
 
 function LoginForm() {
 
   const [errorMessage, setError] = useState("")
-  
-function login(e)
-{
-  e.preventDefault()
-    
+  const navigate = useNavigate()
+  const { login } = useUserAuth()
+
+  async function loginHandle(e)
+  {
+    e.preventDefault()  
+      
     let email = e.target.email.value
     let password = e.target.password.value
-  
-    signInWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    const user = userCredential.user;
-    window.location.replace('/')
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    setError(errorMessage)
-  });
-  
-}
+    
+    try{
+      console.log('login')
+      await login(email, password)
+      navigate('/home')
+    }catch(e)
+    {
+      setError(e.message)  
+    }
+    
+
+    //   signInWithEmailAndPassword(auth, email, password)
+    // .then((userCredential) => {
+    //   const user = userCredential.user;
+    //   window.location.replace('/')
+    // })
+    // .catch((error) => {
+    //   const errorCode = error.code;
+    //   const errorMessage = error.message;
+    //   setError(errorMessage)
+    // });
+    
+  }
 
   return (
 <div className="w-full max-w-xs" id="registerForm">
-  <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={login}>
+  <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={loginHandle}>
     <div className="mb-4">
       <label className="block text-gray-700 text-sm font-bold mb-2">
         Email

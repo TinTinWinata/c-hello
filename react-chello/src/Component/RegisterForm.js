@@ -5,34 +5,31 @@ import { useEffect, useState } from 'react'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/auth';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-const auth = getAuth();
+import { useUserAuth } from '../Library/UserAuthContext'
+import { useNavigate } from 'react-router-dom'
 
 function RegisterForm() {
-
-  const usersCollectionRef = collection(db, "user")
+  
   const [errorMessage, setErrorMessage] = useState('')
+  const { signUp } = useUserAuth() 
 
-async function register(e)
-{
-  e.preventDefault()
+  const navigate = useNavigate()
 
-  let newEmail = e.target.email.value
-  let newPassword = e.target.password.value
+  const register = async (e) => 
+  {
+    e.preventDefault()
+    let newEmail = e.target.email.value
+    let newPassword = e.target.password.value
 
-    createUserWithEmailAndPassword(auth, newEmail, newPassword)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      window.location.replace('/login')
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      setErrorMessage(errorMessage)
-    });
-  
-  
-}
+
+    try {
+      await signUp(newEmail, newPassword)
+      navigate("/")
+    } catch (error) {
+      setErrorMessage(error.message)
+    }
+
+  }
 
 
   return (
