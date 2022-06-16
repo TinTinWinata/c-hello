@@ -5,12 +5,13 @@ import { getWebId } from "./Util";
 
 const auth = getAuth();
 
-export async function insertList(newName)
+export async function insertList(newName, boardId)
 {
   try {
     let docsData = {
       name:newName, 
-      adminId: [auth.currentUser.uid]
+      adminId: [auth.currentUser.uid],
+      boardId: boardId
     }
     await addDoc(listCollectionRef, docsData)
     console.log('succed add to docs')

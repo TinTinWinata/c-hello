@@ -6,6 +6,7 @@ import {
   onAuthStateChanged
 } from 'firebase/auth'
 import { auth } from "../Config/firebase-config";
+import { useLocation } from "react-router-dom";
 
 const userAuthContext = createContext()
 
@@ -13,7 +14,7 @@ export function UserAuthContextProvider({children}){
 
   const [user, setUser] = useState("")
 
-
+  const location = useLocation()
 
   function signUp(email, password)
   {
@@ -36,7 +37,7 @@ export function UserAuthContextProvider({children}){
     return () => {
       unsubscribe()
     }
-  },[])
+  },[location])
   
   return (
     <userAuthContext.Provider value={{user, signUp, login, logout}}>

@@ -3,17 +3,19 @@ import { doc, onSnapshot, query, where } from 'firebase/firestore'
 import { boardCollectionRef } from '../Library/firebase.collections'
 import { Link, useLocation } from 'react-router-dom'
 import { getWebId } from '../Script/Util'
+import { useUserAuth } from '../Library/UserAuthContext'
 
 
 export default function RealtimeBoard() {
 
   const location = useLocation()
   const [board, setBoard] = useState([])
+  const {user} = useUserAuth()
+   
 
   useEffect(() => {
-
     const id = getWebId()
-    const q = query(boardCollectionRef, where('workspaceId', '==', id))
+    const q = query(boardCollectionRef, where('workspaceId', '==', id),where("adminId", "array-contains", user.uid))
     const unsubscribe = onSnapshot(q, snapshot => {
       setBoard(snapshot.docs.map(docs => ({ ...docs.data(), id: docs.id })))
     })

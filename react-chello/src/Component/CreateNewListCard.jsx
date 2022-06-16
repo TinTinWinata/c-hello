@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { insertList } from '../Script/List'
+import { getWebId } from '../Script/Util'
 
 
 
@@ -14,7 +15,10 @@ function handleClick(e)
   if(name == null)
     return
   else
-    insertList(name)
+  {
+    const id = getWebId()
+    insertList(name, id)
+  }
 }
 
   return (

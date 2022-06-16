@@ -5,10 +5,8 @@ import Navbar from "../Component/Navbar";
 function Login() {
   return (
   <>
-      <Navbar></Navbar>
-      <div className="relative border border-sky-500 w-50 h-screen">
+      <div className="relative w-screen h-screen bg-gray-100"></div>
       <LoginForm></LoginForm>
-      </div>
   </>
   );
 }

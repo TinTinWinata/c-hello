@@ -12,6 +12,7 @@ function Sidebar() {
 
   const [popUpCreateWP, setPopUpCreateWP] = useState(false)
 
+
   function createWorkspace()
   {
       setPopUpCreateWP(true)
