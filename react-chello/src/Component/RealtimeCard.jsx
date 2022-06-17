@@ -86,6 +86,11 @@ export default function RealtimeCard(props) {
         <textarea ref={descriptionInput} onChange={handleOnChange} aria-label="Description"  className="ml-2 mt-1 bg-gray-300 rounded w-2/3 h-24 text-sm font-normal appearance-none bg-transparent border-none text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="text"  defaultValue={cardClicked.description} />       
         
         <p className="text-lg appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="text"  aria-label="Full name">Check List</p> 
+        <input type="text" id="email" class="font-normal ml-2 w-1/4 text-xs bg-gray-50 border border-gray-300 text-gray-600 rounded-lg focus:ring-gray-500 focus:border-gray-500 block p-1.5 dark:bg-gray-300 dark:border-gray-300 dark:placeholder-gray-400 dark:text-black dark:focus:ring-white-500 dark:focus:border-gray-500" placeholder="New Checklist..."/>
+        <svg class="h-8 w-8 text-red-500"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+
         {/* <p className="text-lg appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="text"  aria-label="Full name">Due Date</p>  */}
         <div className="flex">
           <button onClick={handleDelete} className="w-1/6 mt-5 appearance-none bg-transparent border-mt-2 mb-5 bg-red-500 hover:bg-red-700 text-white text-sm font-bold py-2 px-4  rounded">

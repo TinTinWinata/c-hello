@@ -12,6 +12,7 @@ import Workspace from './Page/workspace';
 import Board from './Page/board';
 import { UserAuthContextProvider } from './Library/UserAuthContext';
 import ProtectedRoute from './Library/ProtectedRoute';
+import Profile from './Page/profile';
 
 
 
@@ -29,6 +30,7 @@ function App() {
         <Route path="/login" element={<Login/>}/>
         <Route path="/workspace/:id" element={<Workspace/>}/>
         <Route path="/board/:id" element={<Board/>}/>
+        <Route path="/profile" element={<Profile/>}/>
       </Routes>
     </UserAuthContextProvider>
     </BrowserRouter>
