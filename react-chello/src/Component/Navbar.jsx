@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useUserAuth } from "../Library/UserAuthContext";
-import Profile from "./Profile";
+import Profile from "./ProfilePitcure";
 
 function Navbar() {
 

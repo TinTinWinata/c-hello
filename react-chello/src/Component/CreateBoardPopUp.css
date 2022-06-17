@@ -3,6 +3,5 @@
 }
 
 .form-container{
-  position:relative;
-  top: -100px; 
+  position:fixed;
 }

@@ -1,5 +1,5 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { collection,getDocs,addDoc,updateDoc,deleteDoc,doc, where,} from "firebase/firestore"
+import { collection,getDocs,addDoc,updateDoc,deleteDoc,doc, where, arrayUnion,} from "firebase/firestore"
 import { db } from "../Config/firebase-config";
 import { cardCollectionRef, listCollectionRef } from "../Library/firebase.collections";
 import { getWebId } from "./Util";
@@ -28,6 +28,7 @@ export async function updateCard(card)
   const ref = doc(db, "card", card.id)
   await updateDoc(ref, card)
 }
+
 
 export async function deleteCard(card)
 {
