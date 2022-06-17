@@ -71,6 +71,11 @@ export function RenderCard(props) {
     updateCard(cardClicked);
   };
 
+  const a = new Date();
+  a.setDate(cardClicked.date.seconds);
+  console.log(cardClicked.date.seconds);
+  console.log(a);
+
   return (
     <>
       <div className="z-10 black-background left-0 top-0 fixed bg-black opacity-70"></div>
