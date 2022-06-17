@@ -9,13 +9,16 @@ import { insertChecklist } from "../Script/Checklist";
 import CheckListCard from "./CheckListCard";
 
 export function RenderCard(props) {
-  const [checklist, setChecklist] = useState([]);
-  const [startDate, setStartDate] = useState(new Date());
   var cardClicked = props.cardClicked;
   var titleInput = createRef();
   var descriptionInput = createRef();
   var newChecklist = createRef();
   const location = useLocation();
+
+  const [checklist, setChecklist] = useState([]);
+  const [startDate, setStartDate] = useState(
+    cardClicked.date ? cardClicked.date.toDate() : newDate()
+  );
 
   useEffect(() => {
     const q = query(
@@ -31,7 +34,7 @@ export function RenderCard(props) {
     return () => {
       unsubscribe();
     };
-  }, [location]);
+  }, [location, cardClicked]);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -67,7 +70,9 @@ export function RenderCard(props) {
   };
 
   const handleDateOnChange = (date) => {
-    cardClicked.date = date;
+    setStartDate(date);
+    console.log(date);
+    cardClicked.date = startDate;
     updateCard(cardClicked);
   };
 
@@ -161,7 +166,7 @@ export function RenderCard(props) {
             Due Date
           </p>
           <DatePicker
-            className="ml-2 text-sm font-normal"
+            className="ml-2 text-sm font-normal cursor-pointer"
             selected={startDate}
             onChange={handleDateOnChange}
           />
