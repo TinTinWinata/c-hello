@@ -28,7 +28,7 @@ function Sidebar() {
               svg=""
             ></SidebarComponent>
             <SidebarComponent
-              text="Templates"
+              text="Calendar"
               link="/template"
             ></SidebarComponent>
             <SidebarComponent text="Home" link="/"></SidebarComponent>
