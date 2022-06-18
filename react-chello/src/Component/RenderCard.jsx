@@ -1,4 +1,4 @@
-import { onSnapshot, query, where } from "firebase/firestore";
+import { GeoPoint, onSnapshot, query, where } from "firebase/firestore";
 import { createRef, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -8,33 +8,92 @@ import { deleteCard, updateCard } from "../Script/Card";
 import { insertChecklist } from "../Script/Checklist";
 import CheckListCard from "./CheckListCard";
 import moment from "moment";
+import "./RenderCard.css";
+import CardMap from "../Layout/Map";
+import InputComment from "./InputComment";
+import { useUserAuth } from "../Library/UserAuthContext";
+import GridList from "./CommentGridList";
 
 export function RenderCard(props) {
-  var cardClicked = props.cardClicked;
+  const { user } = useUserAuth();
+
+  var { cardClicked } = props;
   var titleInput = createRef();
   var descriptionInput = createRef();
   var newChecklist = createRef();
+  var datePicker = createRef();
+  var commentInput = createRef();
+
   const location = useLocation();
 
   const [checklist, setChecklist] = useState([]);
+  const [date, setDate] = useState();
 
-  const [startDate, setStartDate] = useState(new Date());
+  function handleOnSubmitComment() {
+    const comment = commentInput.current.value;
+    if (!comment) return;
+    // Return
 
-  useEffect(() => {
-    const q = query(
-      checklistCollectionRef,
-      where("cardId", "==", cardClicked.id)
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setChecklist(
-        snapshot.docs.map((docs) => ({ ...docs.data(), id: docs.id }))
-      );
-    });
-    return () => {
-      unsubscribe();
+    // Submit
+    const commentObj = {
+      displayName: user.displayName,
+      email: user.email,
+      userId: user.uid,
+      value: comment,
+      date: new Date(),
     };
-  }, [location, cardClicked]);
+    if (!cardClicked.commentList) {
+      cardClicked.commentList = [commentObj];
+    } else {
+      cardClicked.commentList = [...cardClicked.commentList, commentObj];
+    }
+
+    commentInput.current.value = "";
+    updateCard(cardClicked);
+  }
+
+  function handleMapClick(e) {
+    const latitude = e.latLng;
+    cardClicked.latitude = new GeoPoint(latitude.lat(), latitude.lng());
+    updateCard(cardClicked);
+  }
+
+  function getLatitude() {
+    if (!cardClicked.latitude) {
+      return "";
+    }
+    var latitude = cardClicked.latitude.latitude;
+    var longitude = cardClicked.latitude.longitude;
+    latitude = latitude.toFixed(2);
+    longitude = longitude.toFixed(2);
+    const tempString = "(" + latitude + " , " + longitude + ")";
+    return tempString;
+  }
+
+  useEffect(
+    () => {
+      if (cardClicked.date) {
+        setDate(moment(cardClicked.date.toDate()).format("MMM Do YYYY"));
+      }
+
+      const q = query(
+        checklistCollectionRef,
+        where("cardId", "==", cardClicked.id)
+      );
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        setChecklist(
+          snapshot.docs.map((docs) => ({ ...docs.data(), id: docs.id }))
+        );
+      });
+      return () => {
+        unsubscribe();
+        setDate();
+      };
+    },
+    [location],
+    [cardClicked]
+  );
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -58,11 +117,6 @@ export function RenderCard(props) {
     props.setTrigger(false);
   }
 
-  function getDate() {
-    const convertedDate = cardClicked.date.toDate().toString();
-    setTest(convertedDate);
-  }
-
   const handleAddChecklist = () => {
     const checklistName = newChecklist.current.value;
 
@@ -70,20 +124,21 @@ export function RenderCard(props) {
       value: false,
       name: checklistName,
     };
+
     newChecklist.current.value = "";
     insertChecklist(cardClicked.id, checklist);
   };
 
   const handleDateOnChange = (date) => {
-    setStartDate(date);
-    cardClicked.date = startDate;
+    cardClicked.date = date;
+    setDate(moment(date).format("MMM Do YYYY"));
     updateCard(cardClicked);
   };
 
   return (
     <>
       <div className="z-10 black-background left-0 top-0 fixed bg-black opacity-70"></div>
-      <div className="z-10 w-2/4 h-fit absolute bg-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <div className="overflow-y-auto z-10 w-2/4 h-5/6 absolute bg-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <svg
           onClick={handleOffClick}
           className="right-5 top-5 absolute h-8 w-8 text-gray-500 cursor-pointer"
@@ -127,7 +182,7 @@ export function RenderCard(props) {
             defaultValue={cardClicked.description}
           />
           <p
-            className="mt-2 text-lg appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+            className="mt-3 text-lg appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
             type="text"
             aria-label="Full name"
           >
@@ -162,28 +217,60 @@ export function RenderCard(props) {
               />
             </svg>
           </div>
-          <p
-            className="mt-2 text-lg appearance-none bg-transparent border-none w-full text-gray-700 px-2 leading-tight focus:outline-none"
-            type="text"
-            aria-label="Full name"
-          >
-            Due Date
-          </p>
-          {/* <p>{moment(cardClicked.date.seconds).format("DD-MM-YYYY")}</p> */}
-          <DatePicker
-            className="ml-2 text-sm font-normal cursor-pointer"
-            onChange={handleDateOnChange}
-            selected={startDate}
-          />
-          <p
-            className="mt-2 text-lg appearance-none bg-transparent border-none w-full text-gray-700 px-2 leading-tight focus:outline-none"
-            type="text"
-            aria-label="Full name"
-          >
-            Location
-          </p>
 
           <div className="flex">
+            <p
+              className="mt-3 w-32 text-lg appearance-none bg-transparent border-none  text-gray-700 px-2 leading-tight focus:outline-none"
+              type="text"
+              aria-label="Full name"
+            >
+              Due Date
+            </p>
+            <DatePicker
+              ref={datePicker}
+              className="pb-2 border-2 fit-content rounded-xl text-sm font-normal cursor-pointer date-picker "
+              onChange={handleDateOnChange}
+            />
+          </div>
+          <p className="z-10 ml-2 font-normal italic text-gray-700 text-sm w-1/4">
+            {date}
+          </p>
+          <div className="flex">
+            <p
+              className="ml-2 mt-2 text-lg appearance-none bg-transparent border-none w-fit text-gray-700 leading-tight focus:outline-none"
+              type="text"
+              aria-label="Full name"
+            >
+              Location
+            </p>
+            <p
+              className="ml-2 location text-sm appearance-none bg-transparent border-none w-fit text-gray-700 font-normal italic leading-tight focus:outline-none"
+              type="text"
+              aria-label="Full name"
+            >
+              {getLatitude()}
+            </p>
+          </div>
+          <div className="ml-2 mt-1">
+            <CardMap onClick={handleMapClick} />
+          </div>
+          <p
+            className="ml-2 mt-4 text-lg appearance-none bg-transparent border-none w-fit text-gray-700 leading-tight focus:outline-none"
+            type="text"
+            aria-label="Full name"
+          >
+            Comment
+          </p>
+          <div className="ml-2 mt-2 mb-5 ">
+            <GridList cardClicked={cardClicked}></GridList>
+          </div>
+          <div className="ml-2 mr-5 font-normal">
+            <InputComment
+              handle={handleOnSubmitComment}
+              commentInput={commentInput}
+            ></InputComment>
+          </div>
+          <div className="flex mt-10">
             <button
               onClick={handleDelete}
               className="w-1/6 mt-5 appearance-none bg-transparent border-mt-2 mb-5 bg-red-500 hover:bg-red-700 text-white text-sm font-bold py-2 px-4  rounded"
@@ -194,7 +281,7 @@ export function RenderCard(props) {
               htmlFor="file-upload"
               className="ml-3 w-1/6 mt-5 appearance-none bg-transparent border-mt-2 mb-5 bg-sky-500 hover:bg-sky-700 text-white text-sm font-bold py-2 px-4  rounded"
             >
-              <div className="ml-5 text">Attach</div>
+              <div className="text">Attach</div>
             </label>
             <input id="file-upload" type="file" className="hidden" />
           </div>

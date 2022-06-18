@@ -23,13 +23,15 @@ export default function WorkspaceMemberlist() {
     const id = getWebId();
     const q = query(workspaceCollectionRef, where(documentId(), "==", id));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      snapshot.docs[0].data().memberId.map((memberId) => {
-        const q2 = query(userCollectionRef, where("userId", "==", memberId));
-        onSnapshot(q2, (snapshot2) => {
-          const currentUser = snapshot2.docs[0].data();
-          addMember(currentUser);
+      if (snapshot.docs[0]) {
+        snapshot.docs[0].data().memberId.map((memberId) => {
+          const q2 = query(userCollectionRef, where("userId", "==", memberId));
+          onSnapshot(q2, (snapshot2) => {
+            const currentUser = snapshot2.docs[0].data();
+            addMember(currentUser);
+          });
         });
-      });
+      }
     });
     return () => {
       setMember([]);

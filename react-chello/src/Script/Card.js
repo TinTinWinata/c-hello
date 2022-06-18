@@ -23,10 +23,16 @@ export async function insertCard(newName, boardId, listId)
   
 }
 
-export async function updateCard(card)
+export  function updateCard(card)
 {
+  console.log('card id :', card.id)
   const ref = doc(db, "card", card.id)
-  await updateDoc(ref, card)
+   updateDoc(ref, card).then(()=>{
+      console.log('succes update doc')
+      console.log('new date : ', card.date)
+   }).catch((error)=>{
+      console.log('error updating to docs', error)
+   })
 }
 
 

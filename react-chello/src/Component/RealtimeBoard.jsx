@@ -12,11 +12,7 @@ export default function RealtimeBoard() {
 
   useEffect(() => {
     const id = getWebId();
-    const q = query(
-      boardCollectionRef,
-      where("workspaceId", "==", id),
-      where("adminId", "array-contains", user.uid)
-    );
+    const q = query(boardCollectionRef, where("workspaceId", "==", id));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       setBoard(snapshot.docs.map((docs) => ({ ...docs.data(), id: docs.id })));
     });

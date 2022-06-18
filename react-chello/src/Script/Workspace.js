@@ -1,11 +1,14 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { collection,getDocs,addDoc,updateDoc,deleteDoc,doc, arrayUnion,} from "firebase/firestore"
+import { collection,getDocs,addDoc,updateDoc,deleteDoc,doc, arrayUnion, documentId,} from "firebase/firestore"
 import { db } from '../Config/firebase-config'
 import { workspaceCollectionRef, workspaceILRef } from "../Library/firebase.collections";
 
 const auth = getAuth();
 
 const ref = collection(db, "workspace")
+
+  
+
 export async function insertWorkspace(newName, newDetail, newLanguange, newCountry)
 {
   try {
@@ -37,6 +40,15 @@ export async function addMember(workspaceId, newMemberId){
     console.log('error update : ' , error)
   }
 }
+
+export async function deleteWorkspace(workspaceId)
+{
+  const ref = doc(db, "workspace", workspaceId)
+  await deleteDoc(ref)
+
+  window.location.replace('/home')
+}
+
 
 export async function addWorkspaceIL(workspaceId)
 {

@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import DeleteWorkspace from "./DeleteWorkspace";
 import InviteWorkspaceMember from "./InviteWorkspaceMember";
 import UpdateWorkspaceForm from "./UpdateWorkspaceForm";
+
+function deleteWorkspace() {}
 
 export default function ManageWorkspaceForm(props) {
   const [tabIndex, setTabIndex] = useState(1);
@@ -10,6 +13,17 @@ export default function ManageWorkspaceForm(props) {
   }
   function handleUpdateIdx() {
     setTabIndex(1);
+  }
+  function handleDeleteIdx() {
+    setTabIndex(3);
+  }
+
+  function getClass(idx) {
+    if (idx != tabIndex) {
+      return "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm";
+    } else {
+      return "border-indigo-500 text-indigo-600 whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm";
+    }
   }
 
   return (
@@ -44,17 +58,14 @@ export default function ManageWorkspaceForm(props) {
             <div className="border-b border-gray-200">
               <div className="sm:flex sm:items-baseline">
                 <nav className="mt-4 ml-4 -mb-px flex space-x-8">
-                  <button
-                    onClick={handleUpdateIdx}
-                    className="border-indigo-500 text-indigo-600 whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm"
-                  >
+                  <button onClick={handleUpdateIdx} className={getClass(1)}>
                     Update Wokspace
                   </button>
-                  <button
-                    onClick={handleInviteIdx}
-                    className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm"
-                  >
+                  <button onClick={handleInviteIdx} className={getClass(2)}>
                     Invite Member
+                  </button>
+                  <button onClick={handleDeleteIdx} className={getClass(3)}>
+                    Delete Workspace
                   </button>
                 </nav>
               </div>
@@ -67,6 +78,7 @@ export default function ManageWorkspaceForm(props) {
               ) : (
                 ""
               )}
+              {tabIndex == 3 ? <DeleteWorkspace></DeleteWorkspace> : ""}
             </div>
           </div>
         </div>

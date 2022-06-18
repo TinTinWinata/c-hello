@@ -1,5 +1,5 @@
 import React, { createRef, useEffect, useState } from "react";
-import { doc, onSnapshot, query, where } from "firebase/firestore";
+import { doc, documentId, onSnapshot, query, where } from "firebase/firestore";
 import {
   cardCollectionRef,
   listCollectionRef,
@@ -35,8 +35,13 @@ export default function RealtimeCard(props) {
   }, [location]);
 
   function handleOnClick(e, card) {
-    setTrigger(true);
-    setClickedCard(card);
+    const q = query(cardCollectionRef, where(documentId(), "==", card.id));
+    onSnapshot(q, (snapshot) => {
+      setClickedCard(snapshot.docs[0].data());
+      setTrigger(true);
+    });
+
+    // setClickedCard();
   }
 
   function handleOffClick() {
@@ -67,4 +72,3 @@ export default function RealtimeCard(props) {
     </>
   );
 }
-  
