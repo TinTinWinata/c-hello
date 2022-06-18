@@ -1,7 +1,7 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { collection,getDocs,addDoc,updateDoc,deleteDoc,doc,} from "firebase/firestore"
+import { collection,getDocs,addDoc,updateDoc,deleteDoc,doc, arrayUnion,} from "firebase/firestore"
 import { db } from '../Config/firebase-config'
-import { workspaceILRef } from "../Library/firebase.collections";
+import { workspaceCollectionRef, workspaceILRef } from "../Library/firebase.collections";
 
 const auth = getAuth();
 
@@ -9,11 +9,32 @@ const ref = collection(db, "workspace")
 export async function insertWorkspace(newName, newDetail, newLanguange, newCountry)
 {
   try {
-    await addDoc(ref, {name:newName, detail:newDetail, languange:newLanguange, country:newCountry, adminId: [auth.currentUser.uid]})
+    await addDoc(ref, {name:newName, 
+      detail:newDetail, 
+      languange:newLanguange,
+      country:newCountry,
+      adminId: [auth.currentUser.uid],
+      memberId:[],
+    })
     console.log('succed add to docs')
   } catch (error) {
     alert('error adding : ' , error)
     console.log('error adding : ' , error)
+  }
+}
+
+export async function addMember(workspaceId, newMemberId){
+  const ref = doc(db, "workspace", workspaceId)
+  // console.log(newMemberId)
+  try{
+    await updateDoc(ref, {
+      memberId: arrayUnion(newMemberId)
+    })
+    window.location.replace('/home')
+    console.log('succed add to docs')
+  }catch(error){
+    alert('error update : ' , error)
+    console.log('error update : ' , error)
   }
 }
 

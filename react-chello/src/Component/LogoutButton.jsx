@@ -1,27 +1,26 @@
-import React, { useState } from 'react'
-import { useUserAuth } from '../Library/UserAuthContext';
+import React, { useState } from "react";
+import { useUserAuth } from "../Library/UserAuthContext";
 
 export default function LogoutButton() {
-  
-  const {user, logout} = useUserAuth()
+  const { user, logout } = useUserAuth();
 
-  function handleLogout()
-  {
-    logout()
+  function handleLogout() {
+    logout();
+    window.location.replace("/login");
   }
 
-  function renderButton()
-  {
-    return(
-    <button onClick={handleLogout} className="w-28 font-s btn-logout bg-transparent  text-red-700 font-semibold py-2 px-4 border border-red-500 rounded">
+  function renderButton() {
+    return (
+      <button
+        onClick={handleLogout}
+        className="w-28 font-s btn-logout bg-transparent  text-red-700 font-semibold py-2 px-4 border border-red-500 rounded"
+      >
         Log Out
-    </button>
-    )
+      </button>
+    );
   }
 
-
-  if(user)
-  {
-    return renderButton()
+  if (user) {
+    return renderButton();
   }
 }

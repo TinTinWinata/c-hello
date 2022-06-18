@@ -7,11 +7,12 @@ import {
 } from "../Library/firebase.collections";
 import { useUserAuth } from "../Library/UserAuthContext";
 import { getWebId } from "../Script/Util";
-import { updateWorkspace } from "../Script/Workspace";
+import { addMember, updateWorkspace } from "../Script/Workspace";
 
 export default function JoinWorkspaceForm() {
   const { id } = useParams();
   const [workspace, setWorkspace] = useState({ name: "Workspace" });
+  const [workspaceId, setWorkspaceId] = useState();
   const location = useLocation();
   const { user } = useUserAuth();
 
@@ -21,8 +22,8 @@ export default function JoinWorkspaceForm() {
       var snap = snapshot.docs[0].data().workspaceId;
       const q2 = query(workspaceCollectionRef, where(documentId(), "==", snap));
       onSnapshot(q2, (snapshot2) => {
-        console.log(snapshot2.docs[0].data());
         setWorkspace(snapshot2.docs[0].data());
+        setWorkspaceId(snapshot2.docs[0].id);
       });
     });
     return () => {
@@ -31,10 +32,10 @@ export default function JoinWorkspaceForm() {
   }, [location]);
 
   function handleJoin() {
-    const currentWorkspace = workspace;
-    currentWorkspace.memberId.push(user.id);
-    console.log(currentWorkspace.memberId);
-    // updateWorkspace(currentWorkspace);
+    if (workspaceId) {
+      addMember(workspaceId, user.uid);
+    }
+    // window.location.replace("/home");
   }
 
   return (

@@ -8,7 +8,7 @@ export default function InviteWorkspaceMember() {
   function handleButton() {
     const id = getWebId();
     addWorkspaceIL(id).then((docRef) => {
-      setLink("localhost:3000/invite-link/" + docRef.id);
+      setLink("/invite-link/" + docRef.id);
     });
   }
 

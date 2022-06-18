@@ -4,13 +4,11 @@ import { useParams } from "react-router-dom";
 import { getWebId } from "../Script/Util";
 import { BoardCardGroup } from "../Component/BoardCardGroup";
 import ManageWorkspace from "../Component/ManageWorkspace";
+import WorkspaceMemberlist from "../Component/WorkspaceMemberlist";
 
 // const param = useParams()
 
 function Workspace(props) {
-
-
-  
   return (
     <>
       <Navbar></Navbar>
@@ -20,6 +18,7 @@ function Workspace(props) {
           <div className="font-bold text-2xl mb-5">Boards List</div>
           <BoardCardGroup></BoardCardGroup>
           <div className="font-bold text-2xl mb-5 mt-10">Member List</div>
+          <WorkspaceMemberlist></WorkspaceMemberlist>
         </div>
       </div>
       <ManageWorkspace />

@@ -7,6 +7,7 @@ import { checklistCollectionRef } from "../Library/firebase.collections";
 import { deleteCard, updateCard } from "../Script/Card";
 import { insertChecklist } from "../Script/Checklist";
 import CheckListCard from "./CheckListCard";
+import moment from "moment";
 
 export function RenderCard(props) {
   var cardClicked = props.cardClicked;
@@ -16,9 +17,8 @@ export function RenderCard(props) {
   const location = useLocation();
 
   const [checklist, setChecklist] = useState([]);
-  const [startDate, setStartDate] = useState(
-    cardClicked.date ? cardClicked.date.toDate() : newDate()
-  );
+
+  const [startDate, setStartDate] = useState(new Date());
 
   useEffect(() => {
     const q = query(
@@ -58,6 +58,11 @@ export function RenderCard(props) {
     props.setTrigger(false);
   }
 
+  function getDate() {
+    const convertedDate = cardClicked.date.toDate().toString();
+    setTest(convertedDate);
+  }
+
   const handleAddChecklist = () => {
     const checklistName = newChecklist.current.value;
 
@@ -71,15 +76,9 @@ export function RenderCard(props) {
 
   const handleDateOnChange = (date) => {
     setStartDate(date);
-    console.log(date);
     cardClicked.date = startDate;
     updateCard(cardClicked);
   };
-
-  const a = new Date();
-  a.setDate(cardClicked.date.seconds);
-  console.log(cardClicked.date.seconds);
-  console.log(a);
 
   return (
     <>
@@ -170,10 +169,11 @@ export function RenderCard(props) {
           >
             Due Date
           </p>
+          {/* <p>{moment(cardClicked.date.seconds).format("DD-MM-YYYY")}</p> */}
           <DatePicker
             className="ml-2 text-sm font-normal cursor-pointer"
-            selected={startDate}
             onChange={handleDateOnChange}
+            selected={startDate}
           />
           <p
             className="mt-2 text-lg appearance-none bg-transparent border-none w-full text-gray-700 px-2 leading-tight focus:outline-none"

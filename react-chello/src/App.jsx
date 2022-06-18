@@ -8,22 +8,23 @@ import Board from "./Page/board";
 import { UserAuthContextProvider } from "./Library/UserAuthContext";
 import ProtectedRoute from "./Library/ProtectedRoute";
 import Profile from "./Page/profile";
-import JoinWorkspace from "./Component/JoinWorkspace";
+import JoinWorkspaceForm from "./Component/JoinWorkspaceForm";
 
 function App() {
   return (
     <BrowserRouter>
       <UserAuthContextProvider>
         <Routes>
-          <Route
+          {/* <Route
             path="/home"
             element={
               <ProtectedRoute>
                 <Home></Home>
               </ProtectedRoute>
             }
-          />
-          <Route path="/invite-link/:id" element={<JoinWorkspace />} />
+          /> */}
+          <Route path="/home" element={<Home />} />
+          <Route path="/invite-link/:id" element={<JoinWorkspaceForm />} />
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />

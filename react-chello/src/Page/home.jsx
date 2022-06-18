@@ -1,12 +1,16 @@
+import JoinWorkspace from "../Component/JoinWorkspace";
 import Navbar from "../Component/Navbar";
 import Sidebar from "../Component/Sidebar";
 
-
-function Home() {return (
-  <>
+function Home() {
+  return (
+    <>
       <Navbar></Navbar>
-      <Sidebar></Sidebar>
-  </>
+      <div className="flex">
+        <Sidebar></Sidebar>
+        <JoinWorkspace></JoinWorkspace>
+      </div>
+    </>
   );
 }
 
