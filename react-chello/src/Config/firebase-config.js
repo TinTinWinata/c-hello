@@ -3,6 +3,7 @@ import { getFirestore } from 'firebase/firestore'
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
 
 
 // Configure Firebase
@@ -32,9 +33,12 @@ const uiConfig = {
 const persistence = firebase.auth.Auth.Persistence.LOCAL
 firebase.auth().setPersistence(persistence);
 
-
 // Exporting Firebase Conf
 export default uiConfig
 export const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app)
 export const auth = getAuth(app)
+
+// Firebase Storage
+export const storage = getStorage(app)
+

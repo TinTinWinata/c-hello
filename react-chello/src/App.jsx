@@ -24,6 +24,7 @@ function App() {
             }
           /> */}
           <Route path="/home" element={<Home />} />
+          <Route path="/signedIn" element={<Home />} />
           <Route path="/invite-link/:id" element={<JoinWorkspaceForm />} />
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />

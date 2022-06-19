@@ -31,7 +31,7 @@ export default function RealtimeBoard() {
             to={link}
             replace
             key={card.id}
-            className="mb-5 h-32 mr-5 w-64 rounded overflow-hidden shadow-lg cursor-pointer"
+            className="mb-5 h-32 mr-5 w-64 rounded-xl overflow-hidden shadow-lg cursor-pointer"
           >
             <div className="px-6 py-4">
               <div className="font-bold text-xl mb-2">{card.name}</div>

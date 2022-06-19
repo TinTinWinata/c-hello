@@ -11,6 +11,7 @@ import { appendChecklistCard, deleteCard, updateCard } from "../Script/Card";
 import userEvent from "@testing-library/user-event";
 import CheckListCard from "./CheckListCard";
 import { RenderCard } from "./RenderCard";
+import { Draggable } from "react-beautiful-dnd";
 
 export default function RealtimeCard(props) {
   const location = useLocation();
@@ -35,13 +36,12 @@ export default function RealtimeCard(props) {
   }, [location]);
 
   function handleOnClick(e, card) {
-    const q = query(cardCollectionRef, where(documentId(), "==", card.id));
-    onSnapshot(q, (snapshot) => {
-      setClickedCard(snapshot.docs[0].data());
+    console.log(card);
+    setClickedCard(card);
+    // console.log("card clicked : ", cardClicked);
+    if (cardClicked) {
       setTrigger(true);
-    });
-
-    // setClickedCard();
+    }
   }
 
   function handleOffClick() {
@@ -58,17 +58,76 @@ export default function RealtimeCard(props) {
       ) : (
         <></>
       )}
-      {card.map((card) => {
+      {card.map((card, index) => {
         return (
           <div
-            onClick={(event) => handleOnClick(event, card)}
             key={card.id}
-            className="mb-2 ml-5 w-4/5 hover:bg-gray-200 cursor-pointer rounded p-1 shadow"
+            className="cursor-pointer"
+            onClick={(event) => handleOnClick(event, card)}
           >
-            <p className="text-sm italic">{card.name}</p>
+            <Draggable draggableId={card.id} index={index}>
+              {(provided, snapshot) => {
+                return (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    style={{
+                      userSelect: "none",
+                      padding: "16",
+                      margin: "0 0 8px 0",
+                      minHeight: "50px",
+                      borderRadius: "15px",
+                      boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1)",
+                      backgroundColor: snapshot.isDragging
+                        ? "#ededed"
+                        : "#ededed",
+                      color: "black",
+                      ...provided.draggableProps.style,
+                    }}
+                  >
+                    <p className="pl-2 pt-2">{card.name}</p>
+                    <p className="pl-2 pb-2 text-xs text-gray-400">
+                      {card.description}
+                    </p>
+                  </div>
+                );
+              }}
+            </Draggable>
           </div>
+          // <div
+          //   onClick={(event) => handleOnClick(event, card)}
+          //   key={card.id}
+          //   className="mb-2 ml-5 w-4/5 hover:bg-gray-200 cursor-pointer rounded p-1 shadow"
+          // >
+          //   <p className="text-sm italic">{card.name}</p>
+          // </div>
         );
       })}
     </>
   );
+
+  // return (
+  //   <>
+  //     {trigger ? (
+  //       <RenderCard
+  //         setTrigger={setTrigger}
+  //         cardClicked={cardClicked}
+  //       ></RenderCard>
+  //     ) : (
+  //       <></>
+  //     )}
+  //     {card.map((card) => {
+  //       return (
+  //         <div
+  //           onClick={(event) => handleOnClick(event, card)}
+  //           key={card.id}
+  //           className="mb-2 ml-5 w-4/5 hover:bg-gray-200 cursor-pointer rounded p-1 shadow"
+  //         >
+  //           <p className="text-sm italic">{card.name}</p>
+  //         </div>
+  //       );
+  //     })}
+  //   </>
+  // );
 }

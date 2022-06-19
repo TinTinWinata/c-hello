@@ -1,9 +1,18 @@
-import { GeoPoint, onSnapshot, query, where } from "firebase/firestore";
+import {
+  documentId,
+  GeoPoint,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
 import { createRef, useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useLocation } from "react-router-dom";
-import { checklistCollectionRef } from "../Library/firebase.collections";
+import {
+  cardCollectionRef,
+  checklistCollectionRef,
+} from "../Library/firebase.collections";
 import { deleteCard, updateCard } from "../Script/Card";
 import { insertChecklist } from "../Script/Checklist";
 import CheckListCard from "./CheckListCard";
@@ -13,21 +22,56 @@ import CardMap from "../Layout/Map";
 import InputComment from "./InputComment";
 import { useUserAuth } from "../Library/UserAuthContext";
 import GridList from "./CommentGridList";
+import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import { storage } from "../Config/firebase-config";
 
 export function RenderCard(props) {
   const { user } = useUserAuth();
 
-  var { cardClicked } = props;
   var titleInput = createRef();
   var descriptionInput = createRef();
   var newChecklist = createRef();
   var datePicker = createRef();
   var commentInput = createRef();
-
   const location = useLocation();
 
   const [checklist, setChecklist] = useState([]);
   const [date, setDate] = useState();
+  const [cardClicked, setCardClicked] = useState(props.cardClicked);
+  const [status, setStatus] = useState("");
+  const [imageList, setImageList] = useState([]);
+  const [refresh, setRefresh] = useState(true);
+
+  function refreshPage() {
+    if (refresh) {
+      setRefresh(false);
+    } else {
+      setRefresh(true);
+    }
+  }
+
+  const uploadImage = (img) => {
+    if (img == null) {
+      return;
+    }
+
+    const link = cardClicked.id + "/" + img.name;
+    const imageRef = ref(storage, link);
+    uploadBytes(imageRef, img)
+      .then(() => {
+        setStatus("Success upload data!");
+        refreshPage();
+      })
+      .catch((e) => {
+        setStatus(e.message);
+      });
+  };
+
+  function handleAttachChange(e) {
+    setStatus("Uploading...");
+    const img = e.target.files[0];
+    uploadImage(img);
+  }
 
   function handleOnSubmitComment() {
     const comment = commentInput.current.value;
@@ -70,6 +114,37 @@ export function RenderCard(props) {
     return tempString;
   }
 
+  function getImg() {
+    const link = cardClicked.id + "/";
+    const imageRef = ref(storage, link);
+    listAll(imageRef).then((resp) => {
+      resp.items.forEach((item) => {
+        getDownloadURL(item).then((url) => {
+          setImageList((prev) => [...prev, url]);
+        });
+      });
+    });
+  }
+
+  useEffect(() => {
+    const q2 = query(
+      cardCollectionRef,
+      where(documentId(), "==", props.cardClicked.id)
+    );
+    const unsubscribeCard = onSnapshot(q2, (snapshot) => {
+      setCardClicked({ ...snapshot.docs[0].data(), id: snapshot.docs[0].id });
+    });
+
+    getImg();
+
+    return () => {
+      unsubscribeCard();
+      setImageList([]);
+    };
+
+    // Unmount get card data
+  }, [location, refresh]);
+
   useEffect(
     () => {
       if (cardClicked.date) {
@@ -78,7 +153,7 @@ export function RenderCard(props) {
 
       const q = query(
         checklistCollectionRef,
-        where("cardId", "==", cardClicked.id)
+        where("cardId", "==", props.cardClicked.id)
       );
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -162,7 +237,7 @@ export function RenderCard(props) {
             className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
             type="text"
             onKeyDown={handleKeyDown}
-            defaultValue={cardClicked.name}
+            defaultValue={cardClicked ? cardClicked.name : "New Card"}
             aria-label="Full name"
           />
           <div className="pt-4 mt-4 w-5/6 space-y-2 border-t border-gray-200 dark:border-gray-700"></div>
@@ -259,6 +334,22 @@ export function RenderCard(props) {
             type="text"
             aria-label="Full name"
           >
+            {imageList.length > 0 ? "Attachment" : ""}
+          </p>
+          <div className="flex w-full flex-row flex-wrap mb-5 mt-5">
+            {imageList.map((src) => {
+              return (
+                <>
+                  <img src={src} className="mt-2 ml-2 w-[100px] h-[100px]" />
+                </>
+              );
+            })}
+          </div>
+          <p
+            className="ml-2 mt-4 text-lg appearance-none bg-transparent border-none w-fit text-gray-700 leading-tight focus:outline-none"
+            type="text"
+            aria-label="Full name"
+          >
             Comment
           </p>
           <div className="ml-2 mt-2 mb-5 ">
@@ -273,18 +364,24 @@ export function RenderCard(props) {
           <div className="flex mt-10">
             <button
               onClick={handleDelete}
-              className="w-1/6 mt-5 appearance-none bg-transparent border-mt-2 mb-5 bg-red-500 hover:bg-red-700 text-white text-sm font-bold py-2 px-4  rounded"
+              className="w-1/6 mt-5 appearance-none bg-transparent border-mt-2  bg-red-500 hover:bg-red-700 text-white text-sm font-bold py-2 px-4  rounded"
             >
               Delete
             </button>
             <label
               htmlFor="file-upload"
-              className="ml-3 w-1/6 mt-5 appearance-none bg-transparent border-mt-2 mb-5 bg-sky-500 hover:bg-sky-700 text-white text-sm font-bold py-2 px-4  rounded"
+              className="ml-3 w-1/6 mt-5 appearance-none bg-transparent border-mt-2  bg-sky-500 hover:bg-sky-700 text-white text-sm font-bold py-2 px-4  rounded"
             >
               <div className="text">Attach</div>
             </label>
-            <input id="file-upload" type="file" className="hidden" />
+            <input
+              onChange={handleAttachChange}
+              id="file-upload"
+              type="file"
+              className="hidden"
+            />
           </div>
+          <p className="font-normal text-xs mb-5 text-green-700">{status}</p>
         </div>
       </div>
     </>

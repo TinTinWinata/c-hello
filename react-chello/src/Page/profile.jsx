@@ -1,6 +1,6 @@
-import React from 'react'
-import Navbar from '../Component/Navbar'
-import ProfileComponent from '../Component/ProfileComponent'
+import React from "react";
+import Navbar from "../Component/Navbar";
+import ProfileComponent from "../Component/ProfileComponent";
 
 export default function Profile() {
   return (
@@ -8,5 +8,5 @@ export default function Profile() {
       <Navbar></Navbar>
       <ProfileComponent></ProfileComponent>
     </>
-  )
+  );
 }

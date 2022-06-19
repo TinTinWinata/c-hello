@@ -19,7 +19,7 @@ function GridListComponent(props) {
 
   function getDate() {
     if (date == null || date.toDate == null) return "";
-    return moment(date.toDate()).format("MMM Do YYYY");
+    return moment(date.toDate()).format("MMM Do YYYY h:mm:ss");
   }
 
   return (
@@ -104,13 +104,18 @@ function GridListComponent(props) {
 
 export default function GridList(props) {
   const { cardClicked } = props;
-  const commentList = cardClicked.commentList;
+  const commentList = cardClicked ? cardClicked.commentList : undefined;
 
   return (
     <>
       {commentList
         ? commentList.map((comment) => {
-            return <GridListComponent comment={comment}></GridListComponent>;
+            return (
+              <GridListComponent
+                key={comment.id}
+                comment={comment}
+              ></GridListComponent>
+            );
           })
         : ""}
     </>

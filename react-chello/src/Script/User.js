@@ -1,24 +1,27 @@
 import { updateProfile } from "firebase/auth";
-import { addDoc } from "firebase/firestore";
-import { auth } from "../Config/firebase-config";
+import { addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { auth, db } from "../Config/firebase-config";
 import { userCollectionRef } from "../Library/firebase.collections";
 
 
 export function updateUser(user)
 {
-  updateProfile(auth.currentUser, user).then(() => {
-    console.log('User updated!')
-    // console.log(auth.currentUser.email)
-    // console.log(auth.currentUser.displayName)
-    // console.log(auth.currentUser.age)
-  }).catch((error) => {
-    console.log('Error Updating User: ' + error.message)
-  })
+  return  updateProfile(auth.currentUser, user)
 }
+
+export async function updateUserOnDatabase(userId, changes){
+  console.log('user : ', userId)
+  console.log('changes : ' , changes)
+  const ref = query(collection(db, "user"), where("userId", '==', userId))
+  const snapshot = await getDocs(ref)
+  const userDocsId = snapshot.docs[0].id
+  const updateRef = doc(db, "user", userDocsId)
+  return updateDoc(updateRef, changes)
+}
+
 
 export async function insertUser(user, newDisplayName)
 {
-  
   try {
     await addDoc(userCollectionRef, {
       userId:user.uid,

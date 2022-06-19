@@ -1,16 +1,21 @@
-import React from 'react'
-import { useUserAuth } from '../Library/UserAuthContext'
-import ProfileContent from './ProfileContent'
-import ProfileHeader from './ProfileHeader'
+import React from "react";
+import { useUserAuth } from "../Library/UserAuthContext";
+import ProfileContent from "./ProfileContent";
+import ProfileHeader from "./ProfileHeader";
 
 export default function ProfileComponent() {
-
-   const { user } = useUserAuth()
+  const { userDb, user, refreshPage, changePassword } = this.props;
+  useUserAuth();
 
   return (
     <>
-    <ProfileHeader user={user}/>
-    <ProfileContent user={user}/>
+      <ProfileHeader
+        user={user}
+        changePassword={changePassword}
+        refreshPage={refreshPage}
+        userDb={userDb}
+      />
+      <ProfileContent user={user} refreshPage={refreshPage} />
     </>
-  )
+  );
 }

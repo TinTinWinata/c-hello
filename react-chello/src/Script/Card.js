@@ -20,21 +20,22 @@ export async function insertCard(newName, boardId, listId)
     alert('error adding : ' , error)
     console.log('error adding : ' , error)
   }
-  
 }
+
+
 
 export  function updateCard(card)
 {
   console.log('card id :', card.id)
   const ref = doc(db, "card", card.id)
-   updateDoc(ref, card).then(()=>{
-      console.log('succes update doc')
-      console.log('new date : ', card.date)
-   }).catch((error)=>{
-      console.log('error updating to docs', error)
-   })
+  return updateDoc(ref, card)
 }
 
+export function updateCardWithId(cardId, changes)
+{
+  const ref = doc(db, "card", cardId)
+  return updateDoc(ref, changes)
+}
 
 export async function deleteCard(card)
 {
