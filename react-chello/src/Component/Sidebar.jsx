@@ -22,10 +22,6 @@ function Sidebar() {
       <aside className="w-52" aria-label="Sidebar">
         <div className="pl-10 fixed top-10 h-screen overflow-y-auto py-4 px-3 bg-gray-50 rounded">
           <ul className="space-y-2 mt-10">
-            <SidebarComponent
-              text="Calendar"
-              link="/template"
-            ></SidebarComponent>
             <SidebarComponent text="Home" link="/home"></SidebarComponent>
           </ul>
           <ul className="pt-4 mt-4 space-y-2 border-t border-gray-200 dark:border-gray-700">
@@ -50,7 +46,7 @@ function Sidebar() {
               </div>
             </li>
             <WorkspaceComponent></WorkspaceComponent>
-            <LogoutButton></LogoutButton>
+            {/* <LogoutButton></LogoutButton> */}
           </ul>
         </div>
       </aside>

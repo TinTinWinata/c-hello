@@ -1,13 +1,18 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getWebId } from "../Script/Util";
 import { deleteWorkspace } from "../Script/Workspace";
 
 export default function DeleteWorkspace() {
+  const navigate = useNavigate();
+
   function handleDelete() {
     const id = getWebId();
-    deleteWorkspace(id);
-    
+    deleteWorkspace(id)
+      .then(() => {
+        navigate("/home");
+      })
+      .catch((e) => {});
   }
 
   return (

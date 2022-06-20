@@ -14,7 +14,7 @@ function Workspace(props) {
       <Navbar></Navbar>
       <div className="flex">
         <Sidebar></Sidebar>
-        <div className="flex-col ml-10 mt-5">
+        <div className="flex-col ml-16 mt-7 ">
           <div className="font-bold text-2xl mb-5">Boards List</div>
           <BoardCardGroup></BoardCardGroup>
           <div className="font-bold text-2xl mb-5 mt-10">Member List</div>

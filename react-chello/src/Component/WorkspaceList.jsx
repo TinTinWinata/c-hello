@@ -84,7 +84,7 @@ export default function WorkspaceList() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {workspaceAdminList.map((ws) => (
-                    <tr key={ws.email}>
+                    <tr key={ws.id}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {ws.name}
                       </td>
@@ -108,7 +108,7 @@ export default function WorkspaceList() {
                     </tr>
                   ))}
                   {workspaceMemberList.map((ws) => (
-                    <tr key={ws.email}>
+                    <tr key={ws.id}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {ws.name}
                       </td>

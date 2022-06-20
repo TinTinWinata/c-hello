@@ -213,7 +213,7 @@ export function RenderCard(props) {
   return (
     <>
       <div className="z-10 black-background left-0 top-0 fixed bg-black opacity-70"></div>
-      <div className="overflow-y-auto z-10 w-2/4 h-5/6 absolute bg-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <div className="overflow-y-auto z-10 w-2/4 h-5/6 fixed bg-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <svg
           onClick={handleOffClick}
           className="right-5 top-5 absolute h-8 w-8 text-gray-500 cursor-pointer"

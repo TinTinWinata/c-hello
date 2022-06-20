@@ -22,7 +22,14 @@ export async function insertCard(newName, boardId, listId)
   }
 }
 
-
+export async function deleteCardWithBoardId(boardId)
+{
+  const q = query(cardCollectionRef, where("boardId", '==',boardId))
+  const cardList = await getDocs(q)
+  cardList.docs.map((card) => {
+    return deleteDoc(doc(db, "card",card.id))
+  })
+}
 
 export  function updateCard(card)
 {

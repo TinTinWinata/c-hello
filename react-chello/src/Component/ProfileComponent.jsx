@@ -4,8 +4,7 @@ import ProfileContent from "./ProfileContent";
 import ProfileHeader from "./ProfileHeader";
 
 export default function ProfileComponent() {
-  const { userDb, user, refreshPage, changePassword } = this.props;
-  useUserAuth();
+  const { userDb, user, refreshPage, changePassword } = useUserAuth();
 
   return (
     <>

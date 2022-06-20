@@ -13,7 +13,6 @@ import { getWebId } from "../Script/Util";
 export default function WorkspaceMemberlist() {
   const location = useLocation();
   const [member, setMember] = useState([]);
-  const { user } = useUserAuth();
 
   const addMember = (newMember) => {
     setMember((oldArray) => [...oldArray, newMember]);

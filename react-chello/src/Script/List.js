@@ -6,6 +6,15 @@ import { getWebId } from "./Util";
 
 const auth = getAuth();
 
+export async function deleteListWithBoardId(boardId)
+{
+  const q = query(listCollectionRef, where("boardId", '==',boardId))
+  const list = await getDocs(q)
+  list.docs.map((li) => {
+    return deleteDoc(doc(db, "list",li.id))
+  })
+}
+
 export async function insertList(newName, boardId)
 {
   try {

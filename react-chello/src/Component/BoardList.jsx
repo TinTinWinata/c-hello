@@ -3,6 +3,7 @@ import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { auth, db } from "../Config/firebase-config";
 import { boardCollectionRef } from "../Library/firebase.collections";
+import CardList from "./CardList";
 
 export default function WorkspaceList() {
   const [boardAdminList, setBoardAdminList] = useState([]);
@@ -137,6 +138,12 @@ export default function WorkspaceList() {
           </div>
         </div>
       </div>
+      {boardAdminList.map((board) => {
+        return <CardList key={board.id} board={board}></CardList>;
+      })}
+      {/* {boardMemberList.map((board) => {
+        return <CardList key={board.id} board={board}></CardList>;
+      })} */}
     </>
   );
 }

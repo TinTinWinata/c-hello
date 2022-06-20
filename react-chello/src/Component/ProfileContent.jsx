@@ -1,11 +1,13 @@
 import React, { createRef, useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
 import { useUserAuth } from "../Library/UserAuthContext";
+import { toastError, toastSuccess } from "../Script/Toast";
 import { updateUser, updateUserOnDatabase } from "../Script/User";
 
 export default function ProfileContent(props) {
   var user = props.user;
   var refreshPage = props.refreshPage;
-  const userDb = props.userDb;
+  const { userDb } = useUserAuth();
   const mottoInput = createRef();
   const nameInput = createRef();
   const emailInput = createRef();
@@ -16,10 +18,10 @@ export default function ProfileContent(props) {
     const age = mottoInput.current.value;
     updateUserOnDatabase(user.uid, { age: age })
       .then(() => {
-        console.log("success updating user");
+        toastSuccess("Success Updating Age");
       })
       .catch((e) => {
-        console.log("error updating user ", e.message);
+        toastError("Error Updating User ", e.message);
       });
   }
 
@@ -29,7 +31,13 @@ export default function ProfileContent(props) {
       .then(() => {
         refreshPage();
         const changes = { displayName: nameInput.current.value };
-        updateUserOnDatabase(user.uid, changes);
+        updateUserOnDatabase(user.uid, changes)
+          .then(() => {
+            toastSuccess("Success Updating Username");
+          })
+          .catch((e) => {
+            toastError("Error Updating Username ", e.message);
+          });
       })
       .catch((e) => {
         console.log("error updating user ", e.message);
@@ -40,10 +48,10 @@ export default function ProfileContent(props) {
     const education = educationInput.current.value;
     updateUserOnDatabase(user.uid, { education: education })
       .then(() => {
-        console.log("success updating user");
+        toastSuccess("Success Updating Education");
       })
       .catch((e) => {
-        console.log("error updating user ", e.message);
+        toastError("Error Updating Education ", e.message);
       });
   }
 
@@ -51,16 +59,17 @@ export default function ProfileContent(props) {
     const about = aboutInput.current.value;
     updateUserOnDatabase(user.uid, { about: about })
       .then(() => {
-        console.log("success updating user");
+        toastSuccess("Success Updating About");
       })
       .catch((e) => {
-        console.log("error updating user ", e.message);
+        toastError("Error Updating About ", e.message);
       });
   }
 
   return (
     // <!-- This example requires Tailwind CSS v2.0+ -->
     <>
+      <ToastContainer></ToastContainer>
       <div className="mt-20 border-t border-gray-200 w-4/6 mx-auto">
         <dl className="divide-y divide-gray-200">
           <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
@@ -122,7 +131,7 @@ export default function ProfileContent(props) {
               <input
                 ref={educationInput}
                 className="flex-grow"
-                defaultValue={userDb.education}
+                defaultValue={userDb ? userDb.education : ""}
               ></input>
               <span className="ml-4 flex-shrink-0">
                 <button
@@ -140,7 +149,7 @@ export default function ProfileContent(props) {
             <dd className="mt-1 flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
               <input
                 ref={aboutInput}
-                defaultValue={userDb.about}
+                defaultValue={userDb ? userDb.about : ""}
                 className="flex-grow"
               ></input>
               <span className="ml-4 flex-shrink-0">

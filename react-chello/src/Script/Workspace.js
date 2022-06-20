@@ -1,13 +1,19 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { collection,getDocs,addDoc,updateDoc,deleteDoc,doc, arrayUnion, documentId,} from "firebase/firestore"
+import { collection,getDocs,addDoc,updateDoc,deleteDoc,doc, arrayUnion, documentId, getDoc,} from "firebase/firestore"
 import { db } from '../Config/firebase-config'
 import { workspaceCollectionRef, workspaceILRef } from "../Library/firebase.collections";
+import { deleteBoard } from "./Board";
 
 const auth = getAuth();
 
 const ref = collection(db, "workspace")
 
-  
+export async function getWorkspaceById(id)
+{
+   const ref = doc(db, "workspace",id)
+   const temp = await getDoc(ref)
+   return temp.data()
+}
 
 export async function insertWorkspace(newName, newDetail, newLanguange, newCountry)
 {
@@ -41,12 +47,15 @@ export async function addMember(workspaceId, newMemberId){
   }
 }
 
-export async function deleteWorkspace(workspaceId)
+export function deleteWorkspace(workspaceId)
 {
   const ref = doc(db, "workspace", workspaceId)
-  await deleteDoc(ref)
-
-  window.location.replace('/home')
+  deleteBoard(workspaceId).then(()=>{
+    console.log('succed to delete board')
+  }).catch((error)=>{
+    console.log('failed to delete docs ', error.message)
+  })
+  return deleteDoc(ref)
 }
 
 
