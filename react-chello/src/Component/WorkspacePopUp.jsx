@@ -14,8 +14,8 @@ function WorkspacePopUp(props) {
 
     if (name == "" || detail == "" || languange == "") {
       setErrorMessage("please input all fields!");
-    } else if (name.length > 12) {
-      setErrorMessage("name length can't more than 12");
+    } else if (name.length > 20) {
+      setErrorMessage("name length can't more than 20");
     } else {
       insertWorkspace(name, detail, languange, country);
       exitPopup();

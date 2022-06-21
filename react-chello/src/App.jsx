@@ -8,11 +8,13 @@ import Board from "./Page/board";
 import { UserAuthContextProvider } from "./Library/UserAuthContext";
 import ProtectedRoute from "./Library/ProtectedRoute";
 import Profile from "./Page/profile";
+import { ToastContainer } from "react-toastify";
 import JoinWorkspaceForm from "./Component/JoinWorkspaceForm";
 
 function App() {
   return (
     <BrowserRouter>
+      <ToastContainer></ToastContainer>
       <UserAuthContextProvider>
         <Routes>
           {/* <Route

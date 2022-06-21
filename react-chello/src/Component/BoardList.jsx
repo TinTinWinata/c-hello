@@ -20,7 +20,7 @@ export default function WorkspaceList() {
 
     const q2 = query(
       boardCollectionRef,
-      where("memberId", "sarray-contains", id)
+      where("memberId", "array-contains", id)
     );
 
     onSnapshot(q2, (doc) => {
@@ -141,9 +141,9 @@ export default function WorkspaceList() {
       {boardAdminList.map((board) => {
         return <CardList key={board.id} board={board}></CardList>;
       })}
-      {/* {boardMemberList.map((board) => {
+      {boardMemberList.map((board) => {
         return <CardList key={board.id} board={board}></CardList>;
-      })} */}
+      })}
     </>
   );
 }

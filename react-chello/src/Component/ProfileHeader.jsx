@@ -5,7 +5,6 @@ import { storage } from "../Config/firebase-config";
 import { useUserAuth } from "../Library/UserAuthContext";
 import { updateUserOnDatabase } from "../Script/User";
 import ChangePassword from "./ChangePassword";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function ProfileHeader(props) {
@@ -70,7 +69,6 @@ export default function ProfileHeader(props) {
 
   return (
     <>
-      <ToastContainer />
       <ChangePassword
         handleChangePasswordConfirmation={handleChangePasswordConfirmation}
         open={open}
