@@ -1,5 +1,5 @@
 import React, { createRef, useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
+import SwitchToggle from "../Layout/Switch";
 import { useUserAuth } from "../Library/UserAuthContext";
 import { toastError, toastSuccess } from "../Script/Toast";
 import { updateUser, updateUserOnDatabase } from "../Script/User";
@@ -69,7 +69,6 @@ export default function ProfileContent(props) {
   return (
     // <!-- This example requires Tailwind CSS v2.0+ -->
     <>
-      <ToastContainer></ToastContainer>
       <div className="mt-20 border-t border-gray-200 w-4/6 mx-auto">
         <dl className="divide-y divide-gray-200">
           <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
@@ -160,6 +159,15 @@ export default function ProfileContent(props) {
                 >
                   Update
                 </button>
+              </span>
+            </dd>
+          </div>
+          <div className="py-4 sm:grid sm:py-5 sm:grid-cols-3 sm:gap-4">
+            <dt className="text-sm font-medium text-gray-500">Notification</dt>
+            <dd className="mt-1 flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <div className="flex-grow"></div>
+              <span className="ml-4 flex-shrink-0">
+                <SwitchToggle></SwitchToggle>
               </span>
             </dd>
           </div>

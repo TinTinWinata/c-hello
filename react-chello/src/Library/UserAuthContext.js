@@ -28,8 +28,11 @@ export function UserAuthContextProvider({ children }) {
 
   const location = useLocation();
 
-  function attachNotification() {
-    const q = query(notificationCollectionRef, where("userId", "==", user.uid));
+  function attachNotification(currentUser) {
+    const q = query(
+      notificationCollectionRef,
+      where("userId", "==", currentUser.uid)
+    );
 
     onSnapshot(q, (doc) => {
       setNotification(
@@ -76,7 +79,7 @@ export function UserAuthContextProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        attachNotification();
+        attachNotification(currentUser);
         const ref = query(
           collection(db, "user"),
           where("userId", "==", currentUser.uid)

@@ -1,4 +1,4 @@
-import React, { createRef, useState } from "react";
+import React, { createRef, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useUserAuth } from "../Library/UserAuthContext";
 import { insertNotification } from "../Script/Notification";
@@ -6,15 +6,20 @@ import { toastError, toastSuccess } from "../Script/Toast";
 import { getUserByEmail } from "../Script/User";
 import { getWebId } from "../Script/Util";
 import { addWorkspaceIL, getWorkspaceById } from "../Script/Workspace";
-import { ToastContainer } from "react-toastify";
 
 export default function InviteWorkspaceMember() {
   const [link, setLink] = useState("");
-
+  const [workspace, setWorkspace] = useState();
   const { user } = useUserAuth();
   const emailRef = createRef();
   const { id } = useParams();
-  const workspace = getWorkspaceById(id);
+
+  useEffect(() => {
+    const snap = getWorkspaceById(id);
+    snap.then((workspace) => {
+      setWorkspace(workspace);
+    });
+  }, []);
 
   function handleButton() {
     addWorkspaceIL(id).then((docRef) => {
@@ -42,6 +47,12 @@ export default function InviteWorkspaceMember() {
 
         const recipient = snapshot.docs[0].data();
         recipient.id = snapshot.docs[0].id;
+
+        if (!workspace) {
+          toastError("Your to fast!");
+          return;
+        }
+
         addWorkspaceIL(id).then((docRef) => {
           const link = "/invite-link/" + docRef.id;
           const notification = {
@@ -67,7 +78,6 @@ export default function InviteWorkspaceMember() {
 
   return (
     <>
-      <ToastContainer></ToastContainer>
       <div className="w-full mt-5 sm:flex sm:items-center">
         <div className="w-full sm:max-w-xs">
           <label htmlFor="email" className="sr-only">

@@ -19,7 +19,7 @@ export function updateUser(user) {
 export async function getUserByEmail(email) {
   console.log("email :", email);
   const ref = query(collection(db, "user"), where("email", "==", email));
-    return getDocs(ref);
+  return getDocs(ref);
 }
 export async function updateUserOnDatabase(userId, changes) {
   const ref = query(collection(db, "user"), where("userId", "==", userId));
@@ -27,6 +27,13 @@ export async function updateUserOnDatabase(userId, changes) {
   const userDocsId = snapshot.docs[0].id;
   const updateRef = doc(db, "user", userDocsId);
   return updateDoc(updateRef, changes);
+}
+
+export async function getUser(id) {
+  const q = query(collection(db, "user"), where("userId", "==", id));
+  return getDocs(q);
+  const data = qs.docs[0].data();
+  return data;
 }
 
 export async function insertUser(user, newDisplayName) {
@@ -38,6 +45,7 @@ export async function insertUser(user, newDisplayName) {
       about: "",
       education: "",
       email: user.email,
+      notification: true,
     });
   } catch (error) {}
 }
