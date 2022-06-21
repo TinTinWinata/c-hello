@@ -1,25 +1,24 @@
 import { getAuth } from "firebase/auth";
 import { documentId, onSnapshot, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import Avatar from "../Layout/Avatar";
 import {
   userCollectionRef,
   workspaceCollectionRef,
 } from "../Library/firebase.collections";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { getWebId } from "../Script/Util";
 
-export default function WorkspaceMemberlist() {
+export default function WorkspaceMemberlist({ role }) {
   const location = useLocation();
   const [member, setMember] = useState([]);
+  const { id } = useParams();
 
   const addMember = (newMember) => {
     setMember((oldArray) => [...oldArray, newMember]);
   };
 
   useEffect(() => {
-    const id = getWebId();
     const q = query(workspaceCollectionRef, where(documentId(), "==", id));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       if (snapshot.docs[0]) {

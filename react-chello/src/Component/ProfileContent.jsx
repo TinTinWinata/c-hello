@@ -77,7 +77,7 @@ export default function ProfileContent(props) {
               <input
                 ref={nameInput}
                 className="flex-grow"
-                defaultValue={user.displayName}
+                defaultValue={user ? user.displayName : ""}
               ></input>
               <span className="ml-4 flex-shrink-0">
                 <button

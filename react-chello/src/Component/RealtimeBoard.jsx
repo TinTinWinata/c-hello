@@ -5,7 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import { getWebId } from "../Script/Util";
 import { useUserAuth } from "../Library/UserAuthContext";
 
-export default function RealtimeBoard() {
+export default function RealtimeBoard({ role }) {
   const location = useLocation();
   const [board, setBoard] = useState([]);
   const { user } = useUserAuth();
@@ -14,7 +14,12 @@ export default function RealtimeBoard() {
     const id = getWebId();
     const q = query(boardCollectionRef, where("workspaceId", "==", id));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      setBoard(snapshot.docs.map((docs) => ({ ...docs.data(), id: docs.id })));
+      setBoard(
+        snapshot.docs.map((docs) => {
+          if (!role && docs.data().visibility == "Private") return;
+          return { ...docs.data(), id: docs.id };
+        })
+      );
     });
     return () => {
       unsubscribe();
@@ -24,8 +29,10 @@ export default function RealtimeBoard() {
   return (
     <>
       {board.map((card) => {
+        if (!card) return;
         const link = "/board/" + card.id;
         const tag = "#" + card.tag;
+
         return (
           <Link
             to={link}

@@ -1,6 +1,7 @@
 import BoardList from "../Component/BoardList";
 import JoinWorkspace from "../Component/JoinWorkspace";
 import Navbar from "../Component/Navbar";
+import PublicWorkspace from "../Component/PublicWorkspace";
 import Sidebar from "../Component/Sidebar";
 import WorkspaceList from "../Component/WorkspaceList";
 
@@ -11,6 +12,7 @@ function Home() {
       <div className="flex">
         <Sidebar></Sidebar>
         <div className="flex flex-col">
+          <PublicWorkspace></PublicWorkspace>
           <WorkspaceList></WorkspaceList>
           <JoinWorkspace></JoinWorkspace>
           <BoardList></BoardList>

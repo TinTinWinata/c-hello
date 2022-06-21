@@ -21,6 +21,7 @@ export async function getUserByEmail(email) {
   const ref = query(collection(db, "user"), where("email", "==", email));
   return getDocs(ref);
 }
+
 export async function updateUserOnDatabase(userId, changes) {
   const ref = query(collection(db, "user"), where("userId", "==", userId));
   const snapshot = await getDocs(ref);
@@ -46,6 +47,7 @@ export async function insertUser(user, newDisplayName) {
       education: "",
       email: user.email,
       notification: true,
+      workspace: [],
     });
   } catch (error) {}
 }

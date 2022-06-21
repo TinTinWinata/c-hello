@@ -11,8 +11,18 @@ import RealtimeCard from "./RealtimeCard";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { updateCard, updateCardWithId } from "../Script/Card";
 import { updateList, updateListById, updateListNameById } from "../Script/List";
+import listSearch from "./SearchingCard";
+import SearchingUI from "./SearchingUI";
 
 export default function Realtimelist() {
+  // Data
+
+  const [myQuery, setMyQuery] = useState("");
+  const [pageNumber, setPageNumber] = useState(1);
+  listSearch(myQuery, pageNumber);
+
+  // --
+
   const location = useLocation();
   const [list, setList] = useState([]);
   const [card, setCard] = useState([]);
@@ -42,7 +52,7 @@ export default function Realtimelist() {
     }
   };
 
-  function onDragEnd(result, columns, setColumns) {
+  function onDragEnd(result) {
     if (!result.destination) return;
 
     const { draggableId, source, destination } = result;
@@ -60,6 +70,19 @@ export default function Realtimelist() {
         console.log("error moving card :", error);
       });
   }
+
+  const handleScroll = (e) => {
+    console.log("hello world");
+    console.log("height", e.target.documentElement.scrollHeight);
+  };
+
+  // Infinity Scrool
+  useEffect(() => {
+    console.log("helo world");
+    window.addEventListener("scroll", (e) => {
+      console.log("asd");
+    });
+  }, []);
 
   useEffect(() => {
     const id = getWebId();
@@ -89,48 +112,56 @@ export default function Realtimelist() {
 
   return (
     <>
-      <DragDropContext
-        onDragEnd={(result) => {
-          onDragEnd(result, list, setList);
-        }}
-      >
-        {list.map((card) => {
-          const link = "/list/" + card.id;
-          const tag = "#" + card.tag;
-          return (
-            <div className="flex flex-col" key={card.id}>
-              <input
-                key={card.id}
-                onKeyDown={(e) => {
-                  handleKeyDown(e, card.id);
-                }}
-                className="rounded bg-transparent mx-auto font-bold text-gray-800"
-                defaultValue={card.name}
-              ></input>
-              <Droppable droppableId={card.id}>
-                {(provided, snapshot) => {
-                  return (
-                    <div
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      style={{
-                        background: snapshot.isDraggingOver ? "lightblue" : "",
-                        padding: 4,
-                        width: 250,
-                        minHeight: 500,
-                        margin: 4,
-                      }}
-                    >
-                      <RealtimeCard listId={card.id}></RealtimeCard>
-                      <CreateCard listId={card.id}></CreateCard>
-                    </div>
-                  );
-                }}
-              </Droppable>
-            </div>
-          );
-        })}
-      </DragDropContext>
+      <SearchingUI></SearchingUI>
+      <div className="w-full flex flex-wrap">
+        <DragDropContext
+          onDragEnd={(result) => {
+            onDragEnd(result, list, setList);
+          }}
+        >
+          {list.map((card) => {
+            const link = "/list/" + card.id;
+            const tag = "#" + card.tag;
+            return (
+              <div className="w-fit rounded-3xl ml-4 " key={card.id}>
+                <input
+                  key={card.id}
+                  onKeyDown={(e) => {
+                    handleKeyDown(e, card.id);
+                  }}
+                  className="ml-3 rounded bg-transparent font-bold text-gray-800"
+                  defaultValue={card.name}
+                ></input>
+
+                <div className="">
+                  <Droppable droppableId={card.id}>
+                    {(provided, snapshot) => {
+                      return (
+                        <div
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                          style={{
+                            background: snapshot.isDraggingOver
+                              ? "lightblue"
+                              : "",
+                            padding: 4,
+                            width: 250,
+                            minHeight: 500,
+                            margin: 4,
+                          }}
+                        >
+                          <RealtimeCard listId={card.id}></RealtimeCard>
+                          <CreateCard listId={card.id}></CreateCard>
+                        </div>
+                      );
+                    }}
+                  </Droppable>
+                </div>
+              </div>
+            );
+          })}
+        </DragDropContext>
+      </div>
     </>
   );
 }

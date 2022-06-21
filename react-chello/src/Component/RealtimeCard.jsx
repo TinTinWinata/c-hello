@@ -6,7 +6,6 @@ import {
 } from "../Library/firebase.collections";
 import { Link, useLocation } from "react-router-dom";
 import { getWebId } from "../Script/Util";
-import "./RealtimeCard.css";
 import { appendChecklistCard, deleteCard, updateCard } from "../Script/Card";
 import userEvent from "@testing-library/user-event";
 import CheckListCard from "./CheckListCard";

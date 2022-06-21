@@ -15,26 +15,28 @@ import {
   workspaceCollectionRef,
   workspaceILRef,
 } from "../Library/firebase.collections";
+import { useUserAuth } from "../Library/UserAuthContext";
 import { deleteBoard } from "./Board";
+import { updateUserOnDatabase } from "./User";
 
 const auth = getAuth();
-
 const ref = collection(db, "workspace");
+// const { userDb } = useUserAuth();
 
 export async function getWorkspaceById(id) {
   const ref = doc(db, "workspace", id);
   const temp = await getDoc(ref);
   return temp.data();
 }
-
 export async function insertWorkspace(
   newName,
   newDetail,
   newLanguange,
-  newCountry
+  newCountry,
+  userDb
 ) {
   try {
-    await addDoc(ref, {
+    const doc = await addDoc(ref, {
       name: newName,
       detail: newDetail,
       languange: newLanguange,
@@ -43,26 +45,46 @@ export async function insertWorkspace(
       memberId: [],
       visibility: "Private",
     });
-    console.log("succed add to docs");
+
+    const changes = {
+      workspace: [
+        ...userDb.workspace,
+        {
+          id: doc.id,
+          name: newName,
+          role: "Admin",
+        },
+      ],
+    };
+    updateUserOnDatabase(userDb.userId, changes).then(() => {
+      console.log("succesfully updated user!");
+    });
   } catch (error) {
     alert("error adding : ", error);
     console.log("error adding : ", error);
   }
 }
 
-export async function addMember(workspaceId, newMemberId) {
-  const ref = doc(db, "workspace", workspaceId);
-  // console.log(newMemberId)
-  try {
-    await updateDoc(ref, {
-      memberId: arrayUnion(newMemberId),
-    });
-    window.location.replace("/home");
-    console.log("succed add to docs");
-  } catch (error) {
-    alert("error update : ", error);
-    console.log("error update : ", error);
-  }
+
+
+export async function addMember(ws, newMemberId, userDb) {
+  const ref = doc(db, "workspace", ws.id);
+
+  return updateDoc(ref, {
+    memberId: arrayUnion(newMemberId),
+  }).then(() => {
+    const changes = {
+      workspace: [
+        ...userDb.workspace,
+        {
+          id: ws.id,
+          name: ws.name,
+          role: "Member",
+        },
+      ],
+    };
+    return updateUserOnDatabase(userDb.userId, changes);
+  });
 }
 
 export function deleteWorkspace(workspaceId) {
@@ -94,6 +116,6 @@ export async function updateWorkspace(workspace) {
 }
 
 export async function updateWorkspaceById(id, changes) {
-  const ref = doc(db, "workspace", workspaceid);
+  const ref = doc(db, "workspace", id);
   await updateDoc(ref, changes);
 }

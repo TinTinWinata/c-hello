@@ -1,20 +1,21 @@
 import { documentId, onSnapshot, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   workspaceCollectionRef,
   workspaceILRef,
 } from "../Library/firebase.collections";
 import { useUserAuth } from "../Library/UserAuthContext";
+import { toastError, toastSuccess } from "../Script/Toast";
 import { getWebId } from "../Script/Util";
 import { addMember, updateWorkspace } from "../Script/Workspace";
 
 export default function JoinWorkspaceForm() {
   const { id } = useParams();
   const [workspace, setWorkspace] = useState({ name: "Workspace" });
-  const [workspaceId, setWorkspaceId] = useState();
   const location = useLocation();
-  const { user } = useUserAuth();
+  const { user, userDb } = useUserAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const q = query(workspaceILRef, where(documentId(), "==", id));
@@ -22,8 +23,10 @@ export default function JoinWorkspaceForm() {
       var snap = snapshot.docs[0].data().workspaceId;
       const q2 = query(workspaceCollectionRef, where(documentId(), "==", snap));
       onSnapshot(q2, (snapshot2) => {
-        setWorkspace(snapshot2.docs[0].data());
-        setWorkspaceId(snapshot2.docs[0].id);
+        setWorkspace({
+          ...snapshot2.docs[0].data(),
+          id: snapshot2.docs[0].id,
+        });
       });
     });
     return () => {
@@ -34,10 +37,19 @@ export default function JoinWorkspaceForm() {
   function onClickBack() {}
 
   function handleJoin() {
-    if (workspaceId) {
-      addMember(workspaceId, user.uid);
+    if (workspace) {
+      addMember(workspace, user.uid, userDb)
+        .then(() => {
+          toastSuccess("Success join a workspace!");
+          navigate("/home");
+        })
+        .catch((e) => {
+          toastError("Failed to join workspace! " + e.message);
+          navigate("/home");
+        });
+    } else {
+      toastError("You too fast darling!");
     }
-    // window.location.replace("/home");
   }
 
   return (

@@ -7,6 +7,7 @@ function deleteWorkspace() {}
 
 export default function ManageWorkspaceForm(props) {
   const [tabIndex, setTabIndex] = useState(1);
+  const role = props.role;
 
   function handleInviteIdx() {
     setTabIndex(2);
@@ -65,7 +66,7 @@ export default function ManageWorkspaceForm(props) {
                     Invite Member
                   </button>
                   <button onClick={handleDeleteIdx} className={getClass(3)}>
-                    Delete Workspace
+                    {role == "Member" ? "Leave Workspace" : "Delete Workspace"}
                   </button>
                 </nav>
               </div>
@@ -78,7 +79,11 @@ export default function ManageWorkspaceForm(props) {
               ) : (
                 ""
               )}
-              {tabIndex == 3 ? <DeleteWorkspace></DeleteWorkspace> : ""}
+              {tabIndex == 3 ? (
+                <DeleteWorkspace role={role}></DeleteWorkspace>
+              ) : (
+                ""
+              )}
             </div>
           </div>
         </div>

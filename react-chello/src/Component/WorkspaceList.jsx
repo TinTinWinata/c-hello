@@ -45,7 +45,7 @@ export default function WorkspaceList() {
     <>
       <div className="ml-10 mt-10 flex flex-col w-full">
         <div className="ml-3 mt-3 mb-3 font-bold text-gray-800">
-          Workspace List
+          My Workspace
         </div>
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className=" py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">

@@ -34,6 +34,7 @@ export default function UpdateWorkspaceForm() {
 
     if (iDesc == "" || iName == "") {
       toastError("Please input all fields!");
+      return;
     }
 
     ws.name = iName;

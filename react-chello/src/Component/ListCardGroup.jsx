@@ -9,7 +9,7 @@ export default function ListCardGroup() {
 
   return (
     <>
-      <div className="ml-5 mt-5 flex flex-wrap">
+      <div className="ml-5 w-full  mt-5">
         <CreateNewListCard></CreateNewListCard>
         {tabIndex == 1 ? <Realtimelist></Realtimelist> : ""}
         {tabIndex == 2 ? <BoardCalendarView></BoardCalendarView> : ""}
