@@ -10,6 +10,7 @@ import ProtectedRoute from "./Library/ProtectedRoute";
 import Profile from "./Page/profile";
 import { ToastContainer } from "react-toastify";
 import JoinWorkspaceForm from "./Component/JoinWorkspaceForm";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
