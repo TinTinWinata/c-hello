@@ -11,6 +11,7 @@ import Profile from "./Page/profile";
 import { ToastContainer } from "react-toastify";
 import JoinWorkspaceForm from "./Component/JoinWorkspaceForm";
 import "react-toastify/dist/ReactToastify.css";
+import "quill/dist/quill.snow.css";
 
 function App() {
   return (

@@ -9,11 +9,6 @@ export default function RealtimeBoard({ role }) {
   const location = useLocation();
   const [board, setBoard] = useState([]);
   const { user } = useUserAuth();
-  const [refresh, setRefresh] = useState(false);
-
-  function refreshPage() {
-    setRefresh(!refresh);
-  }
 
   useEffect(() => {
     const id = getWebId();
@@ -29,7 +24,7 @@ export default function RealtimeBoard({ role }) {
     return () => {
       unsubscribe();
     };
-  }, [location]);
+  }, [location, role]);
 
   return (
     <>

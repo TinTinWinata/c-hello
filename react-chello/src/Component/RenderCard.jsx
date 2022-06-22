@@ -30,6 +30,7 @@ import RenderCardLabelForm from "./RenderCardLabelForm";
 import { toastError, toastSuccess } from "../Script/Toast";
 import RenderLabelList from "./RenderCardLabelList";
 import uuid from "react-uuid";
+import { useQuill } from "react-quilljs";
 
 export function RenderCard(props) {
   const { user } = useUserAuth();
@@ -47,6 +48,8 @@ export function RenderCard(props) {
   const [status, setStatus] = useState("");
   const [imageList, setImageList] = useState([]);
   const [refresh, setRefresh] = useState(true);
+
+  const { quill, quillRef } = useQuill();
 
   const [checklistForm, setChecklistForm] = useState(false);
   const [dateForm, setDateForm] = useState(false);
@@ -295,14 +298,18 @@ export function RenderCard(props) {
             >
               Description
             </p>
-            <textarea
+            {/* <textarea
               ref={descriptionInput}
               onChange={handleOnChange}
               aria-label="Description"
               className="ml-2 mt-1 bg-gray-300 rounded w-2/3 h-24 text-sm font-normal appearance-none bg-transparent border-none text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
               type="text"
               defaultValue={cardClicked.description}
-            />
+            /> */}
+            <div className="h-40">
+              <div className="font-normal" ref={quillRef} />
+            </div>
+            <div className="w-10 h-50"></div>
             {cardClicked.label.length > 0 ? (
               <p
                 className="mt-5 text-lg appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
