@@ -25,6 +25,8 @@
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "react-toastify": "^9.0.4",
+    "react-uuid": "^1.0.2",
+    "uuidv4": "^5.0.1",
     "web-vitals": "^2.1.4",
     "yarn": "^1.22.19"
   },

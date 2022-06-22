@@ -18,14 +18,14 @@ function App() {
       <ToastContainer></ToastContainer>
       <UserAuthContextProvider>
         <Routes>
-          {/* <Route
-            path="/home"
+          <Route
+            path="/*"
             element={
               <ProtectedRoute>
                 <Home></Home>
               </ProtectedRoute>
             }
-          /> */}
+          />
           <Route path="/home" element={<Home />} />
           <Route path="/signedIn" element={<Home />} />
           <Route path="/invite-link/:id" element={<JoinWorkspaceForm />} />

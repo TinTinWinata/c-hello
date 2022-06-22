@@ -23,7 +23,7 @@ function GridListComponent(props) {
   }
 
   return (
-    <div className="bg-white px-4 py-5 mb-4 sm:px-6 border shadow-sm rounded mr-7">
+    <div className="bg-white px-4 py-3 mb-4 sm:px-6 border shadow-sm rounded mr-7">
       <div className="flex space-x-3">
         <div className="flex-shrink-0">
           <img

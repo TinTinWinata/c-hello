@@ -10,6 +10,10 @@ export function removeArray(arr, value) {
   });
 }
 
+export function removeArrayByIndex(arr, index) {
+  arr.splice(index, 1);
+}
+
 export function arrayIsEqual(array1, array2) {
   return array1.join() == array2.join();
 }

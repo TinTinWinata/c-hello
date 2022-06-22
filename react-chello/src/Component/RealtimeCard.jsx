@@ -37,7 +37,6 @@ export default function RealtimeCard(props) {
   function handleOnClick(e, card) {
     console.log(card);
     setClickedCard(card);
-    // console.log("card clicked : ", cardClicked);
     if (cardClicked) {
       setTrigger(true);
     }
@@ -86,9 +85,22 @@ export default function RealtimeCard(props) {
                     }}
                   >
                     <p className="pl-2 pt-2">{card.name}</p>
-                    <p className="pl-2 pb-2 text-xs text-gray-400">
+                    <p className="pl-2 mb-2 text-xs text-gray-400">
                       {card.description}
                     </p>
+                    <div className="flex flex-wrap">
+                      {card.label.map((lbl) => {
+                        const color = "bg-[" + lbl.color + "] ";
+                        return (
+                          <div
+                            className={
+                              color + "ml-2 mb-1 mr-1 w-10 h-2 rounded-3xl"
+                            }
+                          ></div>
+                        );
+                      })}
+                      <div className="w-2 h-2 mb-2"></div>
+                    </div>
                   </div>
                 );
               }}

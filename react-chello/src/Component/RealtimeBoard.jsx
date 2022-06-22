@@ -9,6 +9,11 @@ export default function RealtimeBoard({ role }) {
   const location = useLocation();
   const [board, setBoard] = useState([]);
   const { user } = useUserAuth();
+  const [refresh, setRefresh] = useState(false);
+
+  function refreshPage() {
+    setRefresh(!refresh);
+  }
 
   useEffect(() => {
     const id = getWebId();
@@ -29,6 +34,7 @@ export default function RealtimeBoard({ role }) {
   return (
     <>
       {board.map((card) => {
+        console.log("card  :", card);
         if (!card) return;
         const link = "/board/" + card.id;
         const tag = "#" + card.tag;

@@ -24,14 +24,14 @@ export default function SearchingUI() {
   return (
     <>
       <div className="z-20 flex items-start mb-10">
-        <div className="relative w-3/4">
+        <div className="ml-5 relative w-fit mr-10">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <SearchIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
           </div>
           <input
             id="search"
             name="search"
-            className="block w-1/4 pl-10 pr-3 py-2 border border-transparent rounded-md leading-5 bg-slate-200 text-gray-300 placeholder-gray-400 focus:outline-none focus:slate-400 focus:border-slate-400 focus:ring-black focus:text-gray-900 sm:text-sm"
+            className="block w-96 pl-10 pr-3 py-2 border border-transparent rounded-md leading-5 bg-slate-200 text-gray-300 placeholder-gray-400 focus:outline-none focus:slate-400 focus:border-slate-400 focus:ring-black focus:text-gray-900 sm:text-sm"
             placeholder="Search"
             type="search"
           />
