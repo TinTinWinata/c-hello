@@ -4,7 +4,7 @@ import {
   cardCollectionRef,
   listCollectionRef,
 } from "../Library/firebase.collections";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { getWebId } from "../Script/Util";
 import { appendChecklistCard, deleteCard, updateCard } from "../Script/Card";
 import userEvent from "@testing-library/user-event";
@@ -18,8 +18,9 @@ export default function RealtimeCard(props) {
   const [trigger, setTrigger] = useState(false);
   const [cardClicked, setClickedCard] = useState();
 
+  const { id } = useParams();
+
   useEffect(() => {
-    const id = getWebId();
     const q = query(
       cardCollectionRef,
       where("boardId", "==", id),
@@ -34,12 +35,14 @@ export default function RealtimeCard(props) {
     };
   }, [location]);
 
-  function handleOnClick(e, card) {
-    console.log(card);
-    setClickedCard(card);
+  useEffect(() => {
     if (cardClicked) {
       setTrigger(true);
     }
+  }, [cardClicked]);
+
+  function handleOnClick(e, card) {
+    setClickedCard(card);
   }
 
   function handleOffClick() {
@@ -50,6 +53,7 @@ export default function RealtimeCard(props) {
     <>
       {trigger ? (
         <RenderCard
+          setClickedCard={setClickedCard}
           setTrigger={setTrigger}
           cardClicked={cardClicked}
         ></RenderCard>

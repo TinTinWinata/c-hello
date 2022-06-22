@@ -78,9 +78,7 @@ export default function Realtimelist() {
 
   // Infinity Scrool
   useEffect(() => {
-    console.log("helo world");
     window.addEventListener("scroll", (e) => {
-      console.log("asd");
     });
   }, []);
 

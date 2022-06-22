@@ -102,6 +102,12 @@ export function RenderCard(props) {
     uploadImage(img);
   }
 
+  useEffect(() => {
+    return () => {
+      props.setClickedCard();
+    };
+  }, []);
+
   function handleOnSubmitComment() {
     const comment = commentInput.current.value;
     if (!comment) return;
