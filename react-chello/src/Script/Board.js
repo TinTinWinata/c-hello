@@ -93,6 +93,40 @@ export async function insertBoard(newName, newTag, newVisibility, userDb) {
   }
 }
 
+export async function insertBoardWithBoard(newBoard, workspaceId, userDb) {
+  try {
+    let docsData = {
+      name: newBoard.name,
+      tag: newBoard.tag,
+      visibility: newBoard.visibility,
+      memberId: newBoard.memberId,
+      adminId: newBoard.adminId,
+      workspaceId: workspaceId,
+      closed: false,
+    };
+
+    console.log("new board :", docsData);
+    const doc = await addDoc(ref, newBoard);
+    const board = {
+      id: doc.id,
+      name: newBoard.name,
+      role: "Admin",
+    };
+    userDb.board = [...userDb.board, board];
+    updateUserDb(userDb)
+      .then(() => {
+        toastSuccess("Succed create a ", newBoard.name, " board");
+      })
+      .catch((e) => {
+        console.log("error : ", e);
+        toastError("Error adding! : ", e.message);
+      });
+  } catch (error) {
+    console.log("error : ", error);
+    toastError("Error adding a board ", error.message);
+  }
+}
+
 export function updateBoard(board) {
   const ref = doc(db, "board", board.id);
   return updateDoc(ref, board);

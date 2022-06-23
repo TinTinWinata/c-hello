@@ -16,7 +16,7 @@ import {
   workspaceILRef,
 } from "../Library/firebase.collections";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { deleteBoard } from "./Board";
+import { deleteBoard, insertBoard, insertBoardWithBoard } from "./Board";
 import { updateUserOnDatabase } from "./User";
 
 const auth = getAuth();
@@ -56,16 +56,49 @@ export async function insertWorkspace(
         },
       ],
     };
-    updateUserOnDatabase(userDb.userId, changes).then(() => {
-      console.log("succesfully updated user!");
-    });
+    return updateUserOnDatabase(userDb.userId, changes);
   } catch (error) {
     alert("error adding : ", error);
     console.log("error adding : ", error);
   }
 }
+export async function insertWorkspaceWithBoard(
+  newName,
+  newDetail,
+  newLanguange,
+  newCountry,
+  userDb,
+  board
+) {
+  try {
+    const doc = await addDoc(ref, {
+      name: newName,
+      detail: newDetail,
+      languange: newLanguange,
+      country: newCountry,
+      adminId: [auth.currentUser.uid],
+      memberId: [],
+      visibility: "Private",
+    });
 
+    insertBoardWithBoard(board, doc.id, userDb);
 
+    const changes = {
+      workspace: [
+        ...userDb.workspace,
+        {
+          id: doc.id,
+          name: newName,
+          role: "Admin",
+        },
+      ],
+    };
+    return updateUserOnDatabase(userDb.userId, changes);
+  } catch (error) {
+    alert("error adding : ", error);
+    console.log("error adding : ", error);
+  }
+}
 
 export async function addMember(ws, newMemberId, userDb) {
   const ref = doc(db, "workspace", ws.id);

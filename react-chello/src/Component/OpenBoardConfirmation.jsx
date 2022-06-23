@@ -1,10 +1,37 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment, useState } from "react";
+import { createRef, Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/outline";
+import { useUserAuth } from "../Library/UserAuthContext";
+import { toastError, toastSuccess } from "../Script/Toast";
+import {
+  insertWorkspaceWithBoard,
+  insertWorkspaceWithLabel,
+} from "../Script/Workspace";
 
-export default function OpenBoardConfirmation({ open, setOpen }) {
+export default function OpenBoardConfirmation({
+  selectedBoard,
+  open,
+  setOpen,
+}) {
+  const { userDb } = useUserAuth();
+  const nameRef = createRef();
 
+  function handleClick() {
+    if (!selectedBoard) {
+      toastError("You're too fast darling!");
+      return;
+    }
+    const name = nameRef.current.value;
+    if (!name) return;
+    selectedBoard.closed = false;
+    insertWorkspaceWithBoard(name, "", "", "", userDb, selectedBoard).then(
+      () => {
+        toastSuccess("Succesfully added  ", name, " workspace!");
+        setOpen(false);
+      }
+    );
+  }
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -46,34 +73,30 @@ export default function OpenBoardConfirmation({ open, setOpen }) {
           >
             <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
               <div>
-                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                  <CheckIcon
-                    className="h-6 w-6 text-green-600"
-                    aria-hidden="true"
-                  />
-                </div>
                 <div className="mt-3 text-center sm:mt-5">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg leading-6 font-medium text-gray-900"
+                    className="mb-2 text-lg leading-6 font-medium text-gray-900"
                   >
-                    Payment successful
+                    Do you want to
                   </Dialog.Title>
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Consequatur amet labore.
-                    </p>
-                  </div>
+                  <p className="text-sm text-gray-500 mb-2">
+                    Your board has been opened again on another workspace
+                  </p>
+                  <input
+                    ref={nameRef}
+                    className="p-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                    placeholder="Enter new Workspace name"
+                  />
                 </div>
               </div>
-              <div className="mt-5 sm:mt-6">
+              <div className="mt-3 ">
                 <button
+                  onClick={handleClick}
                   type="button"
                   className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
-                  onClick={() => setOpen(false)}
                 >
-                  Go back to dashboard
+                  Yes open it
                 </button>
               </div>
             </div>
