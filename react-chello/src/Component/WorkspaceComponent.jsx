@@ -30,7 +30,6 @@ function WorkspaceComponent(props) {
     const q2 = query(workspaceRef, where("memberId", "array-contains", id));
 
     onSnapshot(q2, (doc) => {
-      console.log("doc : ", doc);
       setWorkspaceMember(
         doc.docs.map((docs) => ({ ...docs.data(), id: docs.id }))
       );

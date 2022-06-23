@@ -14,11 +14,13 @@ import { db } from "../Config/firebase-config";
 import {
   boardCollectionRef,
   boardILRef,
+  deletedBoardCollectionRef,
 } from "../Library/firebase.collections";
+import { useUserAuth } from "../Library/UserAuthContext";
 import { deleteCardWithBoardId } from "./Card";
 import { deleteListWithBoardId } from "./List";
 import { toastError, toastSuccess } from "./Toast";
-import { updateUserOnDatabase } from "./User";
+import { updateUserDb, updateUserOnDatabase } from "./User";
 import { getWebId } from "./Util";
 
 const auth = getAuth();
@@ -61,7 +63,7 @@ export function addBoardIL(boardId) {
   });
 }
 
-export async function insertBoard(newName, newTag, newVisibility) {
+export async function insertBoard(newName, newTag, newVisibility, userDb) {
   try {
     let docsData = {
       name: newName,
@@ -72,8 +74,20 @@ export async function insertBoard(newName, newTag, newVisibility) {
       workspaceId: getWebId(),
       closed: false,
     };
-    await addDoc(ref, docsData);
-    toastSuccess("Succed create a ", newName, " board");
+    const doc = await addDoc(ref, docsData);
+    const board = {
+      id: doc.id,
+      name: newName,
+      role: "Admin",
+    };
+    userDb.board = [...userDb.board, board];
+    updateUserDb(userDb)
+      .then(() => {
+        toastSuccess("Succed create a ", newName, " board");
+      })
+      .catch((e) => {
+        toastError("Error adding! : ", e.message);
+      });
   } catch (error) {
     toastError("Error adding a board ", error);
   }
@@ -82,4 +96,11 @@ export async function insertBoard(newName, newTag, newVisibility) {
 export function updateBoard(board) {
   const ref = doc(db, "board", board.id);
   return updateDoc(ref, board);
+}
+
+export async function insertClosedBoard(boardId, adminList) {
+  await addDoc(deletedBoardCollectionRef, {
+    boardId: boardId,
+    adminId: adminList,
+  });
 }

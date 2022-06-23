@@ -49,7 +49,6 @@ function Sidebar() {
             <WorkspaceComponent></WorkspaceComponent>
           </ul>
           <ul className="pt-4 mt-4 space-y-2 border-t border-gray-200 dark:border-gray-700">
-
             <BoardComponent></BoardComponent>
           </ul>
         </div>

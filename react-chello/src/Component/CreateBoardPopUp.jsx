@@ -4,9 +4,11 @@ import "./WorkspacePopUp.css";
 import "./CreateBoardPopUp.css";
 import { insertBoard } from "../Script/Board";
 import { getWebId } from "../Script/Util";
+import { useUserAuth } from "../Library/UserAuthContext";
 
 function CreateBoardPopUp(props) {
   const [errorMessage, setErrorMessage] = useState("");
+  const { userDb } = useUserAuth();
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -20,7 +22,7 @@ function CreateBoardPopUp(props) {
     } else if (workspaceId == "workspace") {
       setErrorMessage("please select at least one workspace");
     } else {
-      insertBoard(name, tag, visibility);
+      insertBoard(name, tag, visibility, userDb);
       exitPopup();
     }
   }

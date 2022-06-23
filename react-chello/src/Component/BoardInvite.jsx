@@ -72,7 +72,6 @@ export default function BoardInvite({ board }) {
           toastError("Cannot found user with that email");
           return;
         }
-
         const recipient = snapshot.docs[0].data();
         recipient.id = snapshot.docs[0].id;
 
@@ -83,7 +82,7 @@ export default function BoardInvite({ board }) {
 
         addBoardIL(id).then((docRef) => {
           const link = "/board-invite-link/" + docRef.id;
-          const notification = {  
+          const notification = {
             senderId: user.uid,
             value: "I invite you to join this " + board.name + " board!",
             userId: recipient.userId,

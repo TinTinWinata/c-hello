@@ -12,6 +12,9 @@ import {
   userCollectionRef,
 } from "../Library/firebase.collections";
 import BoardInvite from "./BoardInvite";
+import { useUserAuth } from "../Library/UserAuthContext";
+import LeaveBoard from "./LeaveBoard";
+import CloseBoard from "./CloseBoard";
 
 export default function OptionBoard({ open, setOpen }) {
   const [tabIndex, setTabIndex] = useState(1);
@@ -20,7 +23,19 @@ export default function OptionBoard({ open, setOpen }) {
   const [memberList, setMemberList] = useState();
   const [adminList, setAdminList] = useState();
 
+  const { userDb } = useUserAuth();
   const { id } = useParams();
+  const [role, setRole] = useState();
+
+  useEffect(() => {
+    if (userDb) {
+      userDb.board.map((board) => {
+        if (board.id == id) {
+          setRole(board.role);
+        }
+      });
+    }
+  }, [userDb]);
 
   useEffect(() => {
     let unsubMember;
@@ -159,14 +174,20 @@ export default function OptionBoard({ open, setOpen }) {
                     >
                       Leave Board
                     </button>
-                    <button
-                      className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm"
-                      onClick={() => {
-                        setTabIndex(5);
-                      }}
-                    >
-                      Close Board
-                    </button>
+                    {role == "Admin" ? (
+                      <>
+                        <button
+                          className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm"
+                          onClick={() => {
+                            setTabIndex(5);
+                          }}
+                        >
+                          Close Board
+                        </button>
+                      </>
+                    ) : (
+                      ""
+                    )}
                   </nav>
                 </div>
               </div>
@@ -189,6 +210,12 @@ export default function OptionBoard({ open, setOpen }) {
                   ""
                 )}
                 {tabIndex == 3 ? <BoardInvite board={board}></BoardInvite> : ""}
+                {tabIndex == 4 ? (
+                  <LeaveBoard board={board} role={role}></LeaveBoard>
+                ) : (
+                  ""
+                )}
+                {tabIndex == 5 ? <CloseBoard board={board} role={role} /> : ""}
               </div>
             </div>
           </Transition.Child>

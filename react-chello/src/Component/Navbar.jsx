@@ -128,10 +128,10 @@ function Navbar() {
                               static
                               className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
                             >
-                              {notification.map((curr) => {
+                              {notification.map((curr, idx) => {
                                 return (
                                   <NotificationList
-                                    key={curr.id}
+                                    key={idx}
                                     notification={curr}
                                   ></NotificationList>
                                 );

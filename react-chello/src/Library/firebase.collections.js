@@ -10,3 +10,4 @@ export const workspaceILRef = collection(db, "workspaceInviteLink");
 export const boardILRef = collection(db, "boardInviteLink");
 export const userCollectionRef = collection(db, "user");
 export const notificationCollectionRef = collection(db, "notification");
+export const deletedBoardCollectionRef = collection(db, "deletedBoard");
