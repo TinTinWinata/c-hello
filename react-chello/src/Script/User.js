@@ -17,9 +17,13 @@ export function updateUser(user) {
 }
 
 export async function getUserByEmail(email) {
-  console.log("email :", email);
   const ref = query(collection(db, "user"), where("email", "==", email));
   return getDocs(ref);
+}
+
+export function updateUserDb(user) {
+  const ref = doc(db, "user", user.id);
+  return updateDoc(ref, user);
 }
 
 export async function updateUserOnDatabase(userId, changes) {
@@ -48,6 +52,8 @@ export async function insertUser(user, newDisplayName) {
       email: user.email,
       notification: true,
       workspace: [],
+      board: [],
+      notificationList: [],
     });
   } catch (error) {}
 }

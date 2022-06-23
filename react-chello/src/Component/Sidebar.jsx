@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import WorkspacePopUp from "./WorkspacePopUp";
 
 import LogoutButton from "./LogoutButton";
+import BoardComponent from "./BoardComponent";
 
 function Sidebar() {
   const [popUpCreateWP, setPopUpCreateWP] = useState(false);
@@ -46,7 +47,10 @@ function Sidebar() {
               </div>
             </li>
             <WorkspaceComponent></WorkspaceComponent>
-            {/* <LogoutButton></LogoutButton> */}
+          </ul>
+          <ul className="pt-4 mt-4 space-y-2 border-t border-gray-200 dark:border-gray-700">
+
+            <BoardComponent></BoardComponent>
           </ul>
         </div>
       </aside>

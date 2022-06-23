@@ -1,20 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { getUser } from "../Script/User";
+import { getUser, updateUserDb } from "../Script/User";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteNotificationWithId } from "../Script/Notification";
+import { useUserAuth } from "../Library/UserAuthContext";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join("");
 }
 
 export default function NotificationList({ notification }) {
+  const { userDb } = useUserAuth();
   const navigate = useNavigate();
 
   function handleOnClick(currSn) {
     const notificationId = currSn.id;
     navigate(currSn.link);
-    deleteNotificationWithId(notificationId);
+    const tempNotif = userDb.notificationList;
+
+    let idx = 0;
+    let deletedNotif = [];
+    tempNotif.map((notif) => {
+      if (notif.id == currSn.id) {
+        return;
+      }
+      deletedNotif.push(notif);
+    });
+    console.log("deleted notif : ", deletedNotif);
+    userDb.notificationList = deletedNotif;
+    updateUserDb(userDb);
   }
 
   const [user, setUser] = useState("User");

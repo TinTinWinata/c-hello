@@ -41,12 +41,16 @@ export default function WorkspaceList() {
     getWorkspace();
   }, []);
 
+  console.log(workspaceAdminList.length + workspaceMemberList.length);
+
   return (
     <>
+        {workspaceAdminList.length + workspaceMemberList.length != 0 ? (
       <div className="ml-10 mt-10 flex flex-col w-full">
-        <div className="ml-3 mt-3 mb-3 font-bold text-gray-800">
-          My Workspace
-        </div>
+          <div className="ml-3 mt-3 mb-3 font-bold text-gray-800">
+            My Workspace
+          </div>
+
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className=" py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
             <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -56,25 +60,25 @@ export default function WorkspaceList() {
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                      >
                       Name
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                      >
                       Title
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                      >
                       Email
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
+                      >
                       Role
                     </th>
                     <th scope="col" className="relative px-6 py-3">
@@ -125,7 +129,7 @@ export default function WorkspaceList() {
                         <a
                           href="#"
                           className="text-indigo-600 hover:text-indigo-900"
-                        >
+                          >
                           Edit
                         </a>
                       </td>
@@ -137,6 +141,9 @@ export default function WorkspaceList() {
           </div>
         </div>
       </div>
+          ) : (
+            ""
+          )}
     </>
   );
 }

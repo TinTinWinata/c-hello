@@ -5,16 +5,21 @@ import Select from "react-select";
 import uuid from "react-uuid";
 import { userCollectionRef } from "../Library/firebase.collections";
 import { useUserAuth } from "../Library/UserAuthContext";
+import { addBoardIL } from "../Script/Board";
 import { insertNotification } from "../Script/Notification";
 import { toastError, toastSuccess } from "../Script/Toast";
-import { getUserByEmail, updateUserDb } from "../Script/User";
+import {
+  getUserByEmail,
+  updateUserDb,
+  updateUserOnDatabase,
+} from "../Script/User";
 import { getWebId } from "../Script/Util";
 import { addWorkspaceIL, getWorkspaceById } from "../Script/Workspace";
 
-export default function InviteWorkspaceMember() {
+export default function BoardInvite({ board }) {
   const [link, setLink] = useState("");
   const [workspace, setWorkspace] = useState();
-  const { user } = useUserAuth();
+  const { user, userDb } = useUserAuth();
   const emailRef = createRef();
   const { id } = useParams();
 
@@ -32,10 +37,10 @@ export default function InviteWorkspaceMember() {
       setUserList(arrEmail);
     });
 
-    const snap = getWorkspaceById(id);
-    snap.then((workspace) => {
-      setWorkspace(workspace);
-    });
+    // const snap = getWorkspaceById(id);
+    // snap.then((workspace) => {
+    //   setWorkspace(workspace);
+    // });
 
     return () => {
       unsub();
@@ -43,14 +48,13 @@ export default function InviteWorkspaceMember() {
   }, []);
 
   function handleButton() {
-    addWorkspaceIL(id).then((docRef) => {
-      setLink("/invite-link/" + docRef.id);
+    addBoardIL(id).then((docRef) => {
+      setLink("/board-invite-link/" + docRef.id);
     });
   }
 
   function handleByEmail() {
     const selectedEmail = emailRef.current.getValue();
-
     const userEmail = selectedEmail[0].value;
 
     if (!userEmail) {
@@ -72,18 +76,18 @@ export default function InviteWorkspaceMember() {
         const recipient = snapshot.docs[0].data();
         recipient.id = snapshot.docs[0].id;
 
-        if (!workspace) {
+        if (!board) {
           toastError("Your to fast!");
           return;
         }
 
-        addWorkspaceIL(id).then((docRef) => {
-          const link = "/invite-link/" + docRef.id;
-          const notification = {
+        addBoardIL(id).then((docRef) => {
+          const link = "/board-invite-link/" + docRef.id;
+          const notification = {  
             senderId: user.uid,
-            value: "I invite you to join this " + workspace.name + " workspace",
+            value: "I invite you to join this " + board.name + " board!",
             userId: recipient.userId,
-            type: "invite-worksace",
+            type: "invite-board",
             link: link,
             id: uuid(),
           };
@@ -92,7 +96,6 @@ export default function InviteWorkspaceMember() {
           if (!userNotif) userNotif = [];
           userNotif = [...userNotif, notification];
           recipient.notificationList = userNotif;
-          console.log("recipient : ", recipient);
           updateUserDb(recipient).then(() => {
             toastSuccess("Succesfully invited user!");
           });

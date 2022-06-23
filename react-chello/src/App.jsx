@@ -12,6 +12,7 @@ import { ToastContainer } from "react-toastify";
 import JoinWorkspaceForm from "./Component/JoinWorkspaceForm";
 import "react-toastify/dist/ReactToastify.css";
 import "quill/dist/quill.snow.css";
+import BoardJoinForm from "./Component/BoardJoinForm";
 
 function App() {
   return (
@@ -36,6 +37,10 @@ function App() {
           <Route path="/workspace/:id" element={<Workspace />} />
           <Route path="/board/:id" element={<Board />} />
           <Route path="/profile" element={<Profile />} />
+          <Route
+            path="/board-invite-link/:id"
+            element={<BoardJoinForm></BoardJoinForm>}
+          />
         </Routes>
       </UserAuthContextProvider>
     </BrowserRouter>

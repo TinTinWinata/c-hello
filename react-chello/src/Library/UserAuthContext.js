@@ -28,22 +28,6 @@ export function UserAuthContextProvider({ children }) {
 
   const location = useLocation();
 
-  function attachNotification(currentUser) {
-    const q = query(
-      notificationCollectionRef,
-      where("userId", "==", currentUser.uid)
-    );
-
-    onSnapshot(q, (doc) => {
-      setNotification(
-        doc.docs.map((docs) => ({
-          ...docs.data(),
-          id: docs.id,
-        }))
-      );
-    });
-  }
-
   function refreshPage() {
     if (refresh) {
       setRefresh(false);
@@ -79,13 +63,16 @@ export function UserAuthContextProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        attachNotification(currentUser);
         const ref = query(
           collection(db, "user"),
           where("userId", "==", currentUser.uid)
         );
-        const snapshot = await getDocs(ref);
-        setUserDb(snapshot.docs[0].data());
+        onSnapshot(ref, (snap) => {
+          const docs = snap.docs[0];
+          const userDb = { ...docs.data(), id: docs.id };
+          setUserDb(userDb);
+          setNotification(userDb.notificationList);
+        });
       }
     });
 
