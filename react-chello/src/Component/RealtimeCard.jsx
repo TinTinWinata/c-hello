@@ -93,10 +93,11 @@ export default function RealtimeCard(props) {
                       {card.description}
                     </p>
                     <div className="flex flex-wrap">
-                      {card.label.map((lbl) => {
+                      {card.label.map((lbl, idx) => {
                         const color = "bg-[" + lbl.color + "] ";
                         return (
                           <div
+                            key={idx}
                             className={
                               color + "ml-2 mb-1 mr-1 w-10 h-2 rounded-3xl"
                             }

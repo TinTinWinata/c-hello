@@ -34,7 +34,7 @@ export default function ManageWorkspaceForm(props) {
         aria-hidden="true"
         className="z-100 fixed overflow-y-auto overflow-x-hidden w-full md:inset-0 md:h-full bg-gray-500 bg-opacity-30 h-full flex justify-center items-center"
       >
-        <Dialog className="z-100  fixed p-4 w-full max-w-2xl h-full md:h-auto">
+        <div className="z-100  fixed p-4 w-full max-w-2xl h-full md:h-auto">
           <div className="z-100 bg-white rounded-lg shadow border-2 relative">
             <button
               onClick={() => props.setTrigger(false)}
@@ -86,7 +86,7 @@ export default function ManageWorkspaceForm(props) {
               )}
             </div>
           </div>
-        </Dialog>
+        </div>
       </div>
     </>
   );

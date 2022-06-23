@@ -5,7 +5,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import React, { createRef, useEffect, useState } from "react";
+import React, { createRef, useEffect, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useLocation } from "react-router-dom";
@@ -49,12 +49,12 @@ export function RenderCard(props) {
   const [imageList, setImageList] = useState([]);
   const [refresh, setRefresh] = useState(true);
 
-  const { quill, quillRef } = useQuill();
-
   const [checklistForm, setChecklistForm] = useState(false);
   const [dateForm, setDateForm] = useState(false);
   const [locationForm, setLocationForm] = useState(false);
   const [labelForm, setLabelForm] = useState(false);
+
+  const { quill, quillRef } = useQuill();
 
   function handleLabelForm() {
     labelForm ? setLabelForm(false) : setLabelForm(true);
@@ -78,6 +78,25 @@ export function RenderCard(props) {
       setRefresh(true);
     }
   }
+
+  
+  useEffect(() => {
+    if (quill && cardClicked.innerDesc) {
+      quill.clipboard.dangerouslyPasteHTML(cardClicked.innerDesc);
+    }
+  }, [quill]);
+
+  useEffect(() => {
+    if (quill) {
+      quill.on("text-change", (delta, oldDelta, source) => {
+        const innerDesc = quill.root.innerHTML;
+        const desc = quill.getText();
+        cardClicked.description = desc;
+        cardClicked.innerDesc = innerDesc;
+        updateCard(cardClicked);
+      });
+    }
+  }, [quill]);
 
   const uploadImage = (img) => {
     if (img == null) {
@@ -207,7 +226,6 @@ export function RenderCard(props) {
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       cardClicked.name = titleInput.current.value;
-      cardClicked.description = descriptionInput.current.value;
       updateCard(cardClicked);
     }
   };
@@ -304,18 +322,10 @@ export function RenderCard(props) {
             >
               Description
             </p>
-            {/* <textarea
-              ref={descriptionInput}
-              onChange={handleOnChange}
-              aria-label="Description"
-              className="ml-2 mt-1 bg-gray-300 rounded w-2/3 h-24 text-sm font-normal appearance-none bg-transparent border-none text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
-              type="text"
-              defaultValue={cardClicked.description}
-            /> */}
             <div className="h-40">
               <div className="font-normal" ref={quillRef} />
             </div>
-            <div className="w-10 h-50"></div>
+            <div className="w-10 h-24 "></div>
             {cardClicked.label.length > 0 ? (
               <p
                 className="mt-5 text-lg appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"

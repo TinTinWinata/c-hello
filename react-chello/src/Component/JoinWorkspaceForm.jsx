@@ -34,7 +34,9 @@ export default function JoinWorkspaceForm() {
     };
   }, [location]);
 
-  function onClickBack() {}
+  function onClickBack() {
+    navigate(-1);
+  }
 
   function handleJoin() {
     if (workspace) {
@@ -68,7 +70,10 @@ export default function JoinWorkspaceForm() {
               <h3 className="ml-2 mb-4 text-xl font-medium text-gray-900 ">
                 {workspace.name}
               </h3>
-              <p className="flex-shrink text-sm cursor-pointer text-blue-500 mt-2 ml-2">
+              <p
+                onClick={onClickBack}
+                className="flex-shrink text-sm cursor-pointer text-blue-500 mt-2 ml-72"
+              >
                 Back
               </p>
             </div>

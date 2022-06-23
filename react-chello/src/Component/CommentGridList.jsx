@@ -109,10 +109,10 @@ export default function GridList(props) {
   return (
     <>
       {commentList
-        ? commentList.map((comment) => {
+        ? commentList.map((comment, idx) => {
             return (
               <GridListComponent
-                key={comment.id}
+                key={idx}
                 comment={comment}
               ></GridListComponent>
             );

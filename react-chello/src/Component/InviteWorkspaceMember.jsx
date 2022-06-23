@@ -1,5 +1,8 @@
+import { onSnapshot } from "firebase/firestore";
 import React, { createRef, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import Select from "react-select";
+import { userCollectionRef } from "../Library/firebase.collections";
 import { useUserAuth } from "../Library/UserAuthContext";
 import { insertNotification } from "../Script/Notification";
 import { toastError, toastSuccess } from "../Script/Toast";
@@ -14,11 +17,27 @@ export default function InviteWorkspaceMember() {
   const emailRef = createRef();
   const { id } = useParams();
 
+  const [userList, setUserList] = useState("");
+
   useEffect(() => {
+    const unsub = onSnapshot(userCollectionRef, (snap) => {
+      let arrEmail = [];
+      snap.docs.map((doc) => {
+        const email = doc.data().email;
+        const selectObject = { value: email, label: email };
+        arrEmail.push(selectObject);
+      });
+      setUserList(arrEmail);
+    });
+
     const snap = getWorkspaceById(id);
     snap.then((workspace) => {
       setWorkspace(workspace);
     });
+
+    return () => {
+      unsub();
+    };
   }, []);
 
   function handleButton() {
@@ -28,7 +47,10 @@ export default function InviteWorkspaceMember() {
   }
 
   function handleByEmail() {
-    const userEmail = emailRef.current.value;
+    const selectedEmail = emailRef.current.getValue();
+
+    const userEmail = selectedEmail[0].value;
+
     if (!userEmail) {
       toastError("Email cannot be empty");
       return;
@@ -53,7 +75,7 @@ export default function InviteWorkspaceMember() {
           return;
         }
 
-        addWorkspaceIL(id).then((docRef) => {
+           addWorkspaceIL(id).then((docRef) => {
           const link = "/invite-link/" + docRef.id;
           const notification = {
             senderId: user.uid,
@@ -83,13 +105,21 @@ export default function InviteWorkspaceMember() {
           <label htmlFor="email" className="sr-only">
             Email
           </label>
-          <input
+          <Select
+            className="basic-single"
+            classNamePrefix="select"
+            ref={emailRef}
+            name="color"
+            options={userList}
+          />
+
+          {/* <input
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="username"
             type="text"
             placeholder="Email Member"
             ref={emailRef}
-          />
+          /> */}
         </div>
         <button
           onClick={handleByEmail}

@@ -27,10 +27,8 @@ export async function insertCard(newName, boardId, listId) {
       label: [],
     };
     await addDoc(cardCollectionRef, docsData);
-    console.log("succed add to docs");
   } catch (error) {
     alert("error adding : ", error);
-    console.log("error adding : ", error);
   }
 }
 
@@ -43,7 +41,6 @@ export async function deleteCardWithBoardId(boardId) {
 }
 
 export function updateCard(card) {
-  console.log("card id :", card.id);
   const ref = doc(db, "card", card.id);
   return updateDoc(ref, card);
 }

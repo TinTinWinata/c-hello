@@ -20,7 +20,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function SearchingUI() {
+export default function SearchingUI({ searchChange }) {
   return (
     <>
       <div className="z-20 flex items-start mb-10">
@@ -29,6 +29,7 @@ export default function SearchingUI() {
             <SearchIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
           </div>
           <input
+            onChange={searchChange}
             id="search"
             name="search"
             className="block w-96 pl-10 pr-3 py-2 border border-transparent rounded-md leading-5 bg-slate-200 text-gray-300 placeholder-gray-400 focus:outline-none focus:slate-400 focus:border-slate-400 focus:ring-black focus:text-gray-900 sm:text-sm"
