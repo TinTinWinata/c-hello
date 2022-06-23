@@ -9,7 +9,7 @@ export default function CreateNewListCard() {
     if (name.current.value == "") return;
     else {
       const id = getWebId();
-      insertList(name.current.value, id);
+      insertList(name.current.value, id)
       name.current.value = "";
     }
   }

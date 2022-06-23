@@ -31,8 +31,18 @@ import { toastError, toastSuccess } from "../Script/Toast";
 import RenderLabelList from "./RenderCardLabelList";
 import uuid from "react-uuid";
 import { useQuill } from "react-quilljs";
+import {
+  getListWithListId,
+  updateList,
+  updateListWithId,
+} from "../Script/List";
 
 export function RenderCard(props) {
+  const modules = {
+    toolbar: [["bold", "italic", "underline", "strike"]],
+  };
+
+  const listId = props.listId;
   const { user } = useUserAuth();
 
   var titleInput = createRef();
@@ -54,7 +64,7 @@ export function RenderCard(props) {
   const [locationForm, setLocationForm] = useState(false);
   const [labelForm, setLabelForm] = useState(false);
 
-  const { quill, quillRef } = useQuill();
+  const { quill, quillRef } = useQuill({ modules });
 
   function handleLabelForm() {
     labelForm ? setLabelForm(false) : setLabelForm(true);
@@ -79,7 +89,6 @@ export function RenderCard(props) {
     }
   }
 
-  
   useEffect(() => {
     if (quill && cardClicked.innerDesc) {
       quill.clipboard.dangerouslyPasteHTML(cardClicked.innerDesc);
@@ -252,15 +261,25 @@ export function RenderCard(props) {
         text: text.current.value,
       };
       cardClicked.label = [...cardClicked.label, newLabel];
-      console.log("card : ", cardClicked);
-      updateCard(cardClicked)
-        .then(() => {
-          toastSuccess("Success update card");
-          handleLabelForm();
-        })
-        .catch((e) => {
-          toastError("error updating card ", e.message);
-        });
+      getListWithListId(listId).then((doc) => {
+        const list = { ...doc.data(), id: doc.id };
+
+        list.label = [...list.label, newLabel];
+        updateList(list)
+          .then(() => {
+            updateCard(cardClicked)
+              .then(() => {
+                toastSuccess("Success update card");
+                handleLabelForm();
+              })
+              .catch((e) => {
+                toastError("error updating card ", e.message);
+              });
+          })
+          .catch((e) => {
+            toastError(e.message);
+          });
+      });
     }
   }
 
@@ -343,6 +362,7 @@ export function RenderCard(props) {
 
               return (
                 <RenderLabelList
+                  listId={listId}
                   key={idx}
                   label={label}
                   cardClicked={cardClicked}

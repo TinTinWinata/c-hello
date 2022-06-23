@@ -19,6 +19,7 @@ export default function WorkspaceMemberlist({ role }) {
   };
 
   useEffect(() => {
+    setMember([]);
     const q = query(workspaceCollectionRef, where(documentId(), "==", id));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       if (snapshot.docs[0]) {

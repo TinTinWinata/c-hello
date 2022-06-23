@@ -1,9 +1,6 @@
 import React, { createRef, useEffect, useState } from "react";
 import { doc, documentId, onSnapshot, query, where } from "firebase/firestore";
-import {
-  cardCollectionRef,
-  listCollectionRef,
-} from "../Library/firebase.collections";
+import { cardCollectionRef } from "../Library/firebase.collections";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { getWebId } from "../Script/Util";
 import { appendChecklistCard, deleteCard, updateCard } from "../Script/Card";
@@ -48,11 +45,12 @@ export default function RealtimeCard(props) {
   function handleOffClick() {
     setTrigger(false);
   }
-
+  
   return (
     <>
       {trigger ? (
         <RenderCard
+          listId={props.listId}
           setClickedCard={setClickedCard}
           setTrigger={setTrigger}
           cardClicked={cardClicked}

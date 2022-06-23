@@ -33,7 +33,7 @@ function WorkspacePopUp(props) {
     <React.Fragment>
       <div className="z-20 fixed w-screen h-screen bg-black opacity-70"></div>
       <div className="z-20 fixed overflow-y-auto w-screen h-screen">
-        <div className="z-20 overflow-y-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-10">
+        <div className="z-20 overflow-y-auto fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-10">
           <svg
             onClick={exitPopup}
             className="cursor-pointer opacity-80 exit-popup absolute close transform -translate-x-1/2 -translate-y-1/2 h-8 w-8 text-red-500"

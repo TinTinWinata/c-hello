@@ -17,6 +17,48 @@ import listSearch from "./SearchingCard";
 const PAGE_DEFAULT_VALUE = 3;
 
 export default function Realtimelist() {
+  // Option Data
+  const [option, setOption] = useState([]);
+  const [selectedOption, setSelectedOption] = useState();
+
+  function addOption(n) {
+    option.map((optionList) => {
+      if (optionList.text == n.text) {
+        return;
+      }
+    });
+    setOption((prev) => [...prev, n]);
+  }
+
+  function isOptionExists(arr1, text) {
+    if (arr1.length == 0) return false;
+    console.log("arr : ", arr1);
+    arr1.map((opt) => {
+      console.log("opt : ", opt.text);
+      console.log("text : ", text);
+      if (opt.text == text) {
+        console.log("returning true!");
+        return true;
+      }
+    });
+    return false;
+  }
+
+  // Removing Option
+  useEffect(() => {
+    let uniqueOption = [];
+    option.map((opt) => {
+      if (isOptionExists(uniqueOption, opt.text)) {
+        console.log("not pushing ", opt.text);
+        return;
+      } else {
+        console.log("pushing ", opt.text);
+        uniqueOption.push(opt);
+      }
+    });
+    console.log("uniqueOption ", uniqueOption);
+  }, [option]);
+
   // Infinity Scrooling Data
 
   const { id } = useParams();
@@ -26,17 +68,20 @@ export default function Realtimelist() {
   const [searching, setSearching] = useState(false);
   const [docsLength, setDocsLength] = useState(0);
 
-  // Check if the last node is seen
+  // Check if the last node is seen (Observer)
 
   const observer = useRef();
   const lastListRef = useCallback((node) => {
     if (observer.current) observer.current.disconnect();
     observer.current = new IntersectionObserver((entry) => {
       if (
+        name == "" &&
+        !selectedOption &&
         !searching &&
         entry[0].isIntersecting &&
         queriedList.length != docsLength
       ) {
+        console.log("infinity scrooling");
         setPageNumber((prev) => {
           return prev + 3;
         });
@@ -50,18 +95,34 @@ export default function Realtimelist() {
 
   // Searching queried list
   useEffect(() => {
+    if (selectedOption || name != "") setPageNumber(999);
+    // console.log(name, page, searching, selectedOption, "affected");
     const q = query(listCollectionRef, where("boardId", "==", id), limit(page));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const list = snapshot.docs.map((docs) => ({
         ...docs.data(),
         id: docs.id,
       }));
+
       let filteredList = [];
       list.map((currList) => {
         const lowerCurrListName = currList.name.toLowerCase();
         const lowerName = name.toLowerCase();
         if (lowerCurrListName.includes(lowerName)) {
-          filteredList.push(currList);
+          let isPush = false;
+
+          // Kondisi ada card dan didalam card ada yang sama
+          currList.label.map((lbl) => {
+            if (selectedOption && selectedOption.text == lbl.text) {
+              isPush = true;
+            }
+          });
+
+          // Kondisi gak ada selected option
+          if (!selectedOption) isPush = true;
+
+          if (isPush) filteredList.push(currList);
+          // Push filtered list
         }
       });
       setQueriedList(filteredList);
@@ -70,7 +131,7 @@ export default function Realtimelist() {
     return () => {
       unsubscribe();
     };
-  }, [name, page, searching]);
+  }, [name, page, searching, selectedOption]);
 
   function searchChange(e) {
     setPageNumber(PAGE_DEFAULT_VALUE);
@@ -83,23 +144,30 @@ export default function Realtimelist() {
 
   useEffect(() => {
     const q = query(listCollectionRef, where("boardId", "==", id));
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const list = snapshot.docs.map((docs) => ({
         ...docs.data(),
         id: docs.id,
       }));
-
+      setOption([]);
       setDocsLength(list.length);
+      list.map((currList) => {
+        currList.label.map((lbl) => {
+          addOption(lbl);
+        });
+      });
+      return () => {
+        unsubscribe();
+        setOption([]);
+      };
     });
-
-    return () => {
-      unsubscribe();
-    };
   }, []);
+
   //
 
   const location = useLocation();
-  const [list, setList] = useState([]);
+
   const [card, setCard] = useState([]);
   const [refresh, setRefresh] = useState(true);
 
@@ -148,11 +216,15 @@ export default function Realtimelist() {
 
   return (
     <>
-      <SearchingUI searchChange={searchChange}></SearchingUI>
+      <SearchingUI
+        options={option}
+        searchChange={searchChange}
+        setSelectedOption={setSelectedOption}
+      ></SearchingUI>
       <div className="w-full flex flex-wrap">
         <DragDropContext
           onDragEnd={(result) => {
-            onDragEnd(result, list, setList);
+            onDragEnd(result, queriedList, setQueriedList);
           }}
         >
           {queriedList.map((card, idx) => {
@@ -191,7 +263,10 @@ export default function Realtimelist() {
                               margin: 4,
                             }}
                           >
-                            <RealtimeCard listId={card.id}></RealtimeCard>
+                            <RealtimeCard
+                              list={card}
+                              listId={card.id}
+                            ></RealtimeCard>
                             <CreateCard listId={card.id}></CreateCard>
                           </div>
                         );

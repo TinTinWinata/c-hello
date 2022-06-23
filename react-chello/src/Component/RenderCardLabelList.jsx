@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { updateCard } from "../Script/Card";
+import { getListWithListId, updateList } from "../Script/List";
 import { toastError, toastSuccess } from "../Script/Toast";
 import { removeArrayByIndex } from "../Script/Util";
 
-export default function RenderLabelList({ label, cardClicked }) {
+export default function RenderLabelList({ label, cardClicked, listId }) {
   const color = "bg-[" + label.color + "] ";
   const [remove, setRemove] = useState(false);
 
@@ -17,21 +18,45 @@ export default function RenderLabelList({ label, cardClicked }) {
   function handleClick() {
     const cardLabel = cardClicked.label;
     let idx = 0;
-    cardLabel.map((lbl) => {
-      if (lbl.id == label.id) {
-        return;
-      }
-      idx += 1;
-    });
-    removeArrayByIndex(cardLabel, idx);
-    cardClicked.label = cardLabel;
-    updateCard(cardClicked)
-      .then(() => {
-        toastSuccess("Succesfully to delete label!");
-      })
-      .catch((e) => {
-        toastError("Failed to delete label! ", e.message);
+
+    getListWithListId(listId).then((doc) => {
+      const list = { ...doc.data(), id: doc.id };
+
+      let listLabel = list.label;
+
+      let idx = 0;
+      listLabel.map((lbl) => {
+        if (lbl.id == label.id) {
+          return;
+        }
+        idx++;
       });
+      removeArrayByIndex(listLabel, idx);
+      list.label = listLabel;
+
+      updateList(list)
+        .then(() => {
+          idx = 0;
+          cardLabel.map((lbl) => {
+            if (lbl.id == label.id) {
+              return;
+            }
+            idx += 1;
+          });
+          removeArrayByIndex(cardLabel, idx);
+          cardClicked.label = cardLabel;
+          updateCard(cardClicked)
+            .then(() => {
+              toastSuccess("Succesfully to delete label!");
+            })
+            .catch((e) => {
+              toastError("Failed to delete label! ", e.message);
+            });
+        })
+        .catch((e) => {
+          toastError(e.message);
+        });
+    });
   }
 
   return (

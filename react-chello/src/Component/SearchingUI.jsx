@@ -1,4 +1,5 @@
 import {
+  AtSymbolIcon,
   ChevronDownIcon,
   SearchIcon,
   SortAscendingIcon,
@@ -16,11 +17,18 @@ import {
   UserAddIcon,
 } from "@heroicons/react/solid";
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
-export default function SearchingUI({ searchChange }) {
+export default function SearchingUI({
+  searchChange,
+  options,
+  setSelectedOption,
+}) {
+  function handleClick(opt) {
+    setSelectedOption(opt);
+  }
+  console.log("opt : ", options);
+  function handleClickEveryone() {
+    setSelectedOption(null);
+  }
   return (
     <>
       <div className="z-20 flex items-start mb-10">
@@ -64,45 +72,51 @@ export default function SearchingUI({ searchChange }) {
                   static
                   className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none"
                 >
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={handleClickEveryone}
+                        className={
+                          (active
+                            ? "bg-gray-100 text-gray-900"
+                            : " text-gray-700",
+                          "group flex items-center px-4 py-2 text-sm cursor-pointer")
+                        }
+                      >
+                        <AtSymbolIcon
+                          className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                          aria-hidden="true"
+                        ></AtSymbolIcon>
+                        Everyone
+                      </div>
+                    )}
+                  </Menu.Item>
+
                   <div className="py-1">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={classNames(
-                            active
-                              ? "bg-gray-100 text-gray-900"
-                              : "text-gray-700",
-                            "group flex items-center px-4 py-2 text-sm"
-                          )}
-                        >
-                          <PencilAltIcon
-                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                            aria-hidden="true"
-                          />
-                          Edit
-                        </a>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={classNames(
-                            active
-                              ? "bg-gray-100 text-gray-900"
-                              : "text-gray-700",
-                            "group flex items-center px-4 py-2 text-sm"
-                          )}
-                        >
-                          <DuplicateIcon
-                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                            aria-hidden="true"
-                          />
-                          Duplicate
-                        </a>
-                      )}
-                    </Menu.Item>
+                    {options.map((opt, idx) => (
+                      <Menu.Item key={idx}>
+                        {({ active }) => (
+                          <div
+                            onClick={() => {
+                              handleClick(opt);
+                            }}
+                            className={
+                              (active
+                                ? "bg-gray-100 text-gray-900"
+                                : " text-gray-700",
+                              "group flex items-center px-4 py-2 text-sm cursor-pointer")
+                            }
+                          >
+                            <AtSymbolIcon
+                              className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                              aria-hidden="true"
+                            ></AtSymbolIcon>
+
+                            {opt.text}
+                          </div>
+                        )}
+                      </Menu.Item>
+                    ))}
                   </div>
                 </Menu.Items>
               </Transition>

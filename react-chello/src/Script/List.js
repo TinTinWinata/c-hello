@@ -6,6 +6,7 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../Config/firebase-config";
 import { listCollectionRef } from "../Library/firebase.collections";
@@ -22,16 +23,21 @@ export async function deleteListWithBoardId(boardId) {
   });
 }
 
+export function updateListWithId(listId, changes) {
+  const ref = doc(db, "list", listId);
+  return updateDoc(ref, changes);
+}
+
 export async function insertList(newName, boardId) {
-  console.log("hello world");
   try {
     let docsData = {
       name: newName,
       adminId: [auth.currentUser.uid],
       boardId: boardId,
+      label: [],
     };
     await addDoc(listCollectionRef, docsData);
-    toastSuccess("Sucessfuly add a list!");
+    // toastSuccess("Sucessfuly add a list!");
   } catch (error) {
     toastError("Error adding list! : ", error);
   }
@@ -41,6 +47,13 @@ export function updateListById(listId, changes) {
   const ref = doc(db, "list", listId);
   return updateDoc(ref, changes);
 }
+
+export function getListWithListId(listId) {
+  const ref = doc(db, "list", listId);
+  return getDoc(ref);
+}
+
+export function addLabelInList(listId, changes) {}
 
 export function updateList(list) {
   const ref = doc(db, "list", list.id);
