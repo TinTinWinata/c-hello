@@ -14,21 +14,29 @@ import {
   cardCollectionRef,
   listCollectionRef,
 } from "../Library/firebase.collections";
+import { toastError } from "./Toast";
 import { getWebId } from "./Util";
 
 const auth = getAuth();
 
-export async function insertCard(newName, boardId, listId) {
+export async function insertCard(newName, boardId, listId, date) {
   try {
+    if (!date) {
+      date = new Date();
+    }
+    if (!newName) {
+      newName = "New Name";
+    }
     let docsData = {
       name: newName,
       boardId: boardId,
       listId: listId,
       label: [],
+      date: date,
     };
     await addDoc(cardCollectionRef, docsData);
   } catch (error) {
-    alert("error adding : ", error);
+    console.log("error adding : ", error);
   }
 }
 

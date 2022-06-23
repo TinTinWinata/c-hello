@@ -12,7 +12,6 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { updateCard, updateCardWithId } from "../Script/Card";
 import { updateList, updateListById, updateListNameById } from "../Script/List";
 import SearchingUI from "./SearchingUI";
-import listSearch from "./SearchingCard";
 
 const PAGE_DEFAULT_VALUE = 3;
 
@@ -44,20 +43,20 @@ export default function Realtimelist() {
     return false;
   }
 
-  // Removing Option
-  useEffect(() => {
-    let uniqueOption = [];
-    option.map((opt) => {
-      if (isOptionExists(uniqueOption, opt.text)) {
-        console.log("not pushing ", opt.text);
-        return;
-      } else {
-        console.log("pushing ", opt.text);
-        uniqueOption.push(opt);
-      }
-    });
-    console.log("uniqueOption ", uniqueOption);
-  }, [option]);
+  // Get Unique Option Name
+  // useEffect(() => {
+  //   let uniqueOption = [];
+  //   option.map((opt) => {
+  //     if (isOptionExists(uniqueOption, opt.text)) {
+  //       console.log("not pushing ", opt.text);
+  //       return;
+  //     } else {
+  //       console.log("pushing ", opt.text);
+  //       uniqueOption.push(opt);
+  //     }
+  //   });
+  //   console.log("uniqueOption ", uniqueOption);
+  // }, [option]);
 
   // Infinity Scrooling Data
 
@@ -81,7 +80,7 @@ export default function Realtimelist() {
         entry[0].isIntersecting &&
         queriedList.length != docsLength
       ) {
-        console.log("infinity scrooling");
+        // console.log("infinity scrooling");
         setPageNumber((prev) => {
           return prev + 3;
         });

@@ -18,6 +18,7 @@ export default function InviteWorkspaceMember() {
   const { id } = useParams();
 
   const [userList, setUserList] = useState("");
+  const selectedList = createRef();
 
   useEffect(() => {
     const unsub = onSnapshot(userCollectionRef, (snap) => {
@@ -75,7 +76,7 @@ export default function InviteWorkspaceMember() {
           return;
         }
 
-           addWorkspaceIL(id).then((docRef) => {
+        addWorkspaceIL(id).then((docRef) => {
           const link = "/invite-link/" + docRef.id;
           const notification = {
             senderId: user.uid,

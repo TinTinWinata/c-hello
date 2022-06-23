@@ -1,39 +1,79 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import { onSnapshot, query, where } from "firebase/firestore";
+import { useParams } from "react-router-dom";
+import {
+  cardCollectionRef,
+  listCollectionRef,
+} from "../Library/firebase.collections";
+import BoardCalenderPopUp from "./BoardCalenderPopUp";
 
 export default function BoardCalendarView() {
+  const [eventList, setEventList] = useState([]);
+  const [card, setCard] = useState();
+  const { id } = useParams();
+  const [open, setOpen] = useState(false);
+  // Get event data
+
+  // Debugging get event
+  // useEffect(() => {
+  //   console.log("event : ", eventList);
+  // }, [eventList]);
+
+  function handleClick() {
+    setOpen(true);
+  }
+
+  useEffect(() => {
+    const q = query(cardCollectionRef, where("boardId", "==", id));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const card = snapshot.docs.map((docs) => ({
+        ...docs.data(),
+        id: docs.id,
+      }));
+      setCard(card);
+
+      setEventList([]);
+
+      card.map((card) => {
+        console.log("card : ", card);
+        console.log("date : ", card.date);
+        const event = {
+          title: card.name,
+          allDay: true,
+          start: card.date.toDate(),
+          end: card.date.toDate(),
+        };
+        setEventList((prev) => [...prev, event]);
+      });
+    });
+    return () => {
+      setEventList([]);
+      unsubscribe();
+    };
+  }, []);
   const localizer = momentLocalizer(moment);
-  const myEvent = [
-    {
-      title: "Big Meeting",
-      allDay: true,
-      start: new Date(),
-      end: new Date(),
-    },
-    {
-      title: "Vacation",
-      start: new Date(2022, 6, 7),
-      end: new Date(2022, 6, 10),
-    },
-    {
-      title: "Conference",
-      start: new Date(2022, 6, 20),
-      end: new Date(2022, 6, 23),
-    },
-  ];
 
   return (
     <>
+      <BoardCalenderPopUp setOpen={setOpen} open={open}></BoardCalenderPopUp>
       <div className="w-full h-full">
         <Calendar
           localizer={localizer}
-          events={myEvent}
+          events={eventList}
           startAccessor="start"
           endAccessor="end"
           style={{ height: 500 }}
         />
+        <button
+          onClick={handleClick}
+          type="button"
+          className="inline-flex items-center px-3 py-3 border border-transparent text-xl mt-5 font-medium rounded-full shadow-sm text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500"
+        >
+          Create Card
+        </button>
       </div>
     </>
   );

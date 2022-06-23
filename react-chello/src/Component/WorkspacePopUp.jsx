@@ -33,7 +33,7 @@ function WorkspacePopUp(props) {
     <React.Fragment>
       <div className="z-20 fixed w-screen h-screen bg-black opacity-70"></div>
       <div className="z-20 fixed overflow-y-auto w-screen h-screen">
-        <div className="z-20 overflow-y-auto fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-10">
+        <div className="z-100 overflow-y-auto fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-10">
           <svg
             onClick={exitPopup}
             className="cursor-pointer opacity-80 exit-popup absolute close transform -translate-x-1/2 -translate-y-1/2 h-8 w-8 text-red-500"
@@ -48,8 +48,8 @@ function WorkspacePopUp(props) {
               d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <form className="w-full max-w-lg" onSubmit={createWorkspace}>
-            <div className="font-bold text-3xl"> Let's build a Workspace</div>
+          <form className="w-full max-w-lg " onSubmit={createWorkspace}>
+            <div className="font-bold text-3xl "> Let's build a Workspace</div>
             <div className="text-label mb-10 mt-2">
               Boost your productivity by making it easier for everyone to access
               boards in one location.
