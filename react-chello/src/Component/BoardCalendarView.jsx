@@ -15,6 +15,7 @@ export default function BoardCalendarView() {
   const [card, setCard] = useState();
   const { id } = useParams();
   const [open, setOpen] = useState(false);
+  const [link, setLink] = useState();
   // Get event data
 
   // Debugging get event
@@ -38,8 +39,6 @@ export default function BoardCalendarView() {
       setEventList([]);
 
       card.map((card) => {
-        console.log("card : ", card);
-        console.log("date : ", card.date);
         const event = {
           title: card.name,
           allDay: true,

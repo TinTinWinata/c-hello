@@ -4,6 +4,7 @@ import { onSnapshot, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import BoardList from "../Component/BoardList";
 import ClosedBoardButton from "../Component/ClosedBoardButton";
+import JoinBoard from "../Component/JoinBoard";
 import JoinWorkspace from "../Component/JoinWorkspace";
 import Navbar from "../Component/Navbar";
 import PublicBoard from "../Component/PublicBoard";
@@ -56,9 +57,10 @@ function Home() {
           ) : (
             <React.Fragment>
               <PublicWorkspace></PublicWorkspace>
-              <PublicBoard></PublicBoard>
-              <WorkspaceList></WorkspaceList>
               <JoinWorkspace></JoinWorkspace>
+              <PublicBoard></PublicBoard>
+              <JoinBoard></JoinBoard>
+              <WorkspaceList></WorkspaceList>
               <BoardList></BoardList>
             </React.Fragment>
           )}

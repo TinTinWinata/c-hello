@@ -30,9 +30,10 @@ export default function CardMap(props) {
   const ref = useRef();
   const [map, setMap] = useState();
   const onClick = props.onClick;
+  const cardClicked = props.cardClicked;
 
   const zoom = 10;
-  const center = { lat: -6.182211, lng: 106.794078 };
+  const [center, setCenter] = useState({ lat: -6.182211, lng: 106.794078 });
   useEffect(() => {
     if (ref.current && !map) {
       setMap(new window.google.Map(ref.current, {}));
@@ -42,6 +43,17 @@ export default function CardMap(props) {
   const render = (status) => {
     return <h1>{status}</h1>;
   };
+
+  useEffect(() => {
+    if (cardClicked && cardClicked.latitude !== undefined) {
+      const latitude = {
+        lat: cardClicked.latitude.latitude,
+        lng: cardClicked.latitude.longitude,
+      };
+      // console.log(latitude);
+      setCenter(latitude);
+    }
+  }, [cardClicked]);
 
   return (
     <>

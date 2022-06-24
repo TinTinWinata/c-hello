@@ -10,6 +10,7 @@ import {
   where,
   arrayUnion,
   getDoc,
+  documentId,
 } from "firebase/firestore";
 import { db } from "../Config/firebase-config";
 import {
@@ -37,8 +38,12 @@ export async function deleteBoard(workspaceId) {
     // return deleteDoc(doc(db, ""))
   });
 }
-export async function permanentDelete(workspaceId) {
-  const q = query(boardCollectionRef, where("workspaceId", "==", workspaceId));
+export async function permanentDelete(workspaceId, boardId) {
+  const q = query(
+    boardCollectionRef,
+    where("workspaceId", "==", workspaceId),
+    where(documentId(), "==", boardId)
+  );
   const boardList = await getDocs(q);
   boardList.docs.map((board) => {
     board.closed = true;
@@ -55,23 +60,25 @@ export async function getBoardById(id) {
 
 export async function addBoardMember(board, newMemberId, userDb) {
   const ref = doc(db, "board", board.id);
-  console.log("board id : ", board.id);
 
-  return updateDoc(ref, {
-    memberId: arrayUnion(newMemberId),
-  }).then(() => {
-    const changes = {
-      board: [
-        ...userDb.board,
-        {
-          id: board.id,
-          name: board.name,
-          role: "Member",
-        },
-      ],
-    };
-    return updateUserOnDatabase(userDb.userId, changes);
-  });
+  board.memberId = [...board.memberId, newMemberId];
+  updateBoard(board)
+    .then(() => {
+      const changes = {
+        board: [
+          ...userDb.board,
+          {
+            id: board.id,
+            name: board.name,
+            role: "Member",
+          },
+        ],
+      };
+      return updateUserOnDatabase(userDb.userId, changes);
+    })
+    .catch((e) => {
+      toastError("Failed to update board", e.message);
+    });
 }
 
 export function addBoardIL(boardId) {
@@ -122,7 +129,6 @@ export async function insertBoardWithBoard(newBoard, workspaceId, userDb) {
       closed: false,
     };
 
-    console.log("new board :", docsData);
     const doc = await addDoc(ref, newBoard);
     const board = {
       id: doc.id,
@@ -135,11 +141,9 @@ export async function insertBoardWithBoard(newBoard, workspaceId, userDb) {
         toastSuccess("Succed create a ", newBoard.name, " board");
       })
       .catch((e) => {
-        console.log("error : ", e);
         toastError("Error adding! : ", e.message);
       });
   } catch (error) {
-    console.log("error : ", error);
     toastError("Error adding a board ", error.message);
   }
 }

@@ -14,41 +14,49 @@ export default function RenderCardWatcherForm({ setWatcherForm, cardClicked }) {
   const [board, setBoard] = useState([]);
 
   function checkExists(userId) {
-    if (cardClicked) {
+    return new Promise((resolve, reject) => {
       cardClicked.watcher.map((watcher) => {
         if (watcher == userId) {
-          return true;
+          resolve(true);
         }
       });
-      console.log("return false ");
-      return false;
-    } else {
-      toastError("card not found!");
-    }
+      reject(false);
+    });
   }
 
   function handleClick() {
     if (selected && board) {
       const selectedMember = selected.current.getValue();
-      let toBePush = [];
       selectedMember.map((member) => {
-        const ifExists = checkExists(member.value);
-        if (ifExists) {
-          toastError("User already exists!");
-          return;
-        }
-        toBePush = [...toBePush, member.value];
+        checkExists(member.value)
+          .then(
+            (result) => {
+              toastError("User already exists!");
+            },
+            (error) => {
+              cardClicked.watcher = [...cardClicked.watcher, member.value];
+              updateCard(cardClicked)
+                .then(() => {
+                  toastSuccess("Succesfully insert watcher");
+                })
+                .catch((e) => {
+                  toastError("Failed to update card!", e.message);
+                });
+            }
+          )
+          .catch((e) => {});
       });
-      if (toBePush.length > 0) {
-        cardClicked.watcher = [...cardClicked.watcher, ...toBePush];
-        updateCard(cardClicked)
-          .then(() => {
-            toastSuccess("Success add watcher!");
-          })
-          .catch((e) => {
-            toastError("Error adding watcher !", e.message);
-          });
-      }
+      // if (toBePush.length > 0) {
+      //   console.log("tobepush : ", toBePush);
+      //   cardClicked.watcher = [...cardClicked.watcher, ...toBePush];
+      //   updateCard(cardClicked)
+      //     .then(() => {
+      //       toastSuccess("Success add watcher!");
+      //     })
+      //     .catch((e) => {
+      //       toastError("Error adding watcher !", e.message);
+      //     });
+      // }
     } else {
       toastError("Too fast darling!");
     }
@@ -63,6 +71,8 @@ export default function RenderCardWatcherForm({ setWatcherForm, cardClicked }) {
         setBoard(board);
 
         setMember([]);
+        setOption([]);
+
         board.memberId.map((member) => {
           const q = query(userCollectionRef, where("userId", "==", member));
           unsub = onSnapshot(q, (doc) => {
@@ -108,9 +118,8 @@ export default function RenderCardWatcherForm({ setWatcherForm, cardClicked }) {
   }, [cardClicked]);
 
   return (
-    <div className="absolute w-fit h-fit px-3 -mt-2 -ml-2 bg-white drop-shadow-xl z-30">
-      <div className="flex flex-col items-center content-center gap-1">
-        {/* <p className="w-full text-center">Search User</p> */}
+    <div className="absolute w-fit h-fit px-3 -mt-2 -ml-2 bg-white drop-shadow-lg rounded z-30">
+      <div className="p-2 rounded-lg first-letter:flex flex-col items-center content-center gap-1">
         <hr className="w-fit" />
         <button
           onClick={() => {

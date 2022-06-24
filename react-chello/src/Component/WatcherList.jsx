@@ -1,6 +1,10 @@
+import { XIcon } from "@heroicons/react/solid";
 import { onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { userCollectionRef } from "../Library/firebase.collections";
+import { updateCard } from "../Model/Card";
+import { toastError, toastSuccess } from "../Model/Toast";
+import { removeArray, removeArrayByIndex } from "../Model/Util";
 
 export default function WatcherList({ cardClicked }) {
   const [watcher, setWatcher] = useState([]);
@@ -8,6 +12,27 @@ export default function WatcherList({ cardClicked }) {
   useEffect(() => {
     console.log("watch : ", watcher);
   }, [watcher]);
+
+  function handleRemove(watcher) {
+    const temp = cardClicked.watcher;
+    let idx = 0;
+    temp.map((watcherId) => {
+      if (watcherId === watcher.userId) {
+        return;
+      }
+      idx += 1;
+    });
+    console.log(" idx : ", idx);
+    const a = removeArrayByIndex(temp, idx);
+    cardClicked.watcher = temp;
+    updateCard(cardClicked)
+      .then(() => {
+        toastSuccess("Succesfully deleted watcher!");
+      })
+      .catch((e) => {
+        toastError("Failed to delete watcher: " + e.message);
+      });
+  }
 
   useEffect(() => {
     let unsub;
@@ -43,13 +68,21 @@ export default function WatcherList({ cardClicked }) {
             />
           </div>
           <div className="flex-1 min-w-0">
-            <a href="#" className="focus:outline-none">
+            <div
+              onClick={() => {
+                handleRemove(watcher);
+              }}
+              className="focus:outline-none"
+            >
               <span className="absolute inset-0" aria-hidden="true" />
-              <p className="text-xs font-medium text-gray-900">
-                {watcher.displayName}
-              </p>
+              <div className="flex">
+                <p className="text-xs font-medium text-gray-900">
+                  {watcher.displayName}
+                </p>
+                <XIcon className="text-gray-500 w-3 h-3 mt-[3px]"></XIcon>
+              </div>
               <p className="text-xs text-gray-500 truncate">{watcher.email}</p>
-            </a>
+            </div>
           </div>
         </div>
       ))}

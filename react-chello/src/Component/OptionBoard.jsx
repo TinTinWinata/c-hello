@@ -41,14 +41,14 @@ export default function OptionBoard({ open, setOpen }) {
     let unsubMember;
     let unsubAdmin;
 
-    if (board) {
+    if (board && board.memberId !== undefined) {
       board.memberId.map((mId) => {
         const q = query(userCollectionRef, where("userId", "==", mId));
         setMemberList([]);
         unsubMember = onSnapshot(q, (snapshot) => {
           const currentUser = {
             ...snapshot.docs[0].data(),
-            userId: snapshot.id,
+            id: snapshot.docs[0].id,
             role: "Member",
           };
           setMemberList((prev) => [...prev, currentUser]);

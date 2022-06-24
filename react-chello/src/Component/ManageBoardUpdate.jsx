@@ -19,6 +19,8 @@ export default function ManageBoardUpdate({ board, setOpen }) {
     }
   }, [board]);
 
+ 
+
   function handleClick() {
     if (!board) return;
 
@@ -44,7 +46,7 @@ export default function ManageBoardUpdate({ board, setOpen }) {
         htmlFor="email"
         className="block text-sm font-medium text-gray-700"
       >
-        Email
+        Workspace Name
       </label>
       <div className="mt-1">
         <input

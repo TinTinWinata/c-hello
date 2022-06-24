@@ -13,6 +13,7 @@ import JoinWorkspaceForm from "./Component/JoinWorkspaceForm";
 import "react-toastify/dist/ReactToastify.css";
 import "quill/dist/quill.snow.css";
 import BoardJoinForm from "./Component/BoardJoinForm";
+import CardWithInvitedLink from "./Component/CardWithInvitedLink";
 
 function App() {
   return (
@@ -29,7 +30,7 @@ function App() {
             }
           />
 
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Login />} />
           <Route path="/home" element={<Home />} />
           <Route path="/signedIn" element={<Home />} />
           <Route path="/invite-link/:id" element={<JoinWorkspaceForm />} />
@@ -39,6 +40,10 @@ function App() {
           <Route path="/workspace/:id" element={<Workspace />} />
           <Route path="/board/:id" element={<Board />} />
           <Route path="/profile" element={<Profile />} />
+          <Route
+            path="/card-invite-link/:id"
+            element={<CardWithInvitedLink />}
+          />
           <Route
             path="/board-invite-link/:id"
             element={<BoardJoinForm></BoardJoinForm>}

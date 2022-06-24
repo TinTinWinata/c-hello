@@ -51,7 +51,7 @@ export default function BoardComponent() {
               replace
               className="flex items-center p-2 text-base font-normal text-grey-500 rounded-lg dark:text-black hover:bg-gray-100 dark:hover:bg-gray-200"
             >
-              <div className={"w-3 h-3 rounded-lg mr-2 bg-black-400"}></div>
+              <div className={"w-3 h-3 rounded-lg mr-2 bg-black"}></div>
               <span className="mr-3">{board.name}</span>
             </Link>
           </li>

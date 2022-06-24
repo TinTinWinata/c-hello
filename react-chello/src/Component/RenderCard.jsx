@@ -13,7 +13,7 @@ import {
   cardCollectionRef,
   checklistCollectionRef,
 } from "../Library/firebase.collections";
-import { deleteCard, updateCard } from "../Model/Card";
+import { addCardIL, deleteCard, updateCard } from "../Model/Card";
 import { insertChecklist } from "../Model/Checklist";
 import CheckListCard from "./CheckListCard";
 import moment from "moment";
@@ -169,6 +169,14 @@ export function RenderCard(props) {
     updateCard(cardClicked);
   }
 
+  function generateLink() {
+    addCardIL(cardClicked.id, cardClicked.boardId).then((docRef) => {
+      const link = "/card-invite-link/" + docRef.id;
+      navigator.clipboard.writeText(link);
+      toastSuccess("Succesfully Generate Card Link! Coppied to clipboard!");
+    });
+  }
+
   function getLatitude() {
     if (!cardClicked.latitude) {
       return "";
@@ -216,6 +224,11 @@ export function RenderCard(props) {
     () => {
       if (cardClicked.date) {
         setDate(moment(cardClicked.date.toDate()).format("MMM Do YYYY"));
+        setDateForm(true);
+      }
+
+      if (cardClicked && cardClicked.latitude !== undefined) {
+        setLocationForm(true);
       }
 
       const q = query(
@@ -426,7 +439,7 @@ export function RenderCard(props) {
                   </p>
                 </div>
                 <div className="ml-2 mt-1">
-                  <CardMap onClick={handleMapClick} />
+                  <CardMap cardClicked={cardClicked} onClick={handleMapClick} />
                 </div>
               </div>
             ) : (
@@ -529,6 +542,13 @@ export function RenderCard(props) {
             >
               <TagIcon className="scale-50 stroke-gray-800"></TagIcon>
               <p className="mt-[0.3rem] font-light">Location</p>
+            </div>
+            <div
+              className="hover:bg-gray-400 cursor-pointer flex w-full h-9 my-3 bg-gray-300 rounded-md"
+              onClick={generateLink}
+            >
+              <TagIcon className="scale-50 stroke-gray-800"></TagIcon>
+              <p className="mt-[0.3rem] font-light">Copy Link</p>
             </div>
           </div>
           <div onClick={handleWatcherForm} className="flex cursor-pointer">

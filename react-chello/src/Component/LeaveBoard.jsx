@@ -45,6 +45,39 @@ export default function LeaveBoard({ board, role }) {
         .catch((e) => {
           toastError("Failed to remove admin ", e.message);
         });
+    } else if (role == "Member") {
+      const adminList = board.memberId;
+      let idx = 0;
+      adminList.map((aId) => {
+        if (aId == userDb.userId) {
+          return;
+        }
+        idx += 1;
+      });
+      removeArrayByIndex(adminList, idx);
+      board.adminId = adminList;
+      updateBoard(board)
+        .then(() => {
+          userDb.board.map((userBoard) => {
+            let idx = 0;
+            if (userBoard.id == board.id) {
+              return;
+            }
+            idx++;
+          });
+          removeArrayByIndex(userDb.board, idx);
+          updateUserDb(userDb)
+            .then(() => {
+              toastSuccess("Success leaving board");
+              navigate("/home");
+            })
+            .catch((e) => {
+              toastError("Failed to remove board from user!", e.message);
+            });
+        })
+        .catch((e) => {
+          toastError("Failed to remove admin ", e.message);
+        });
     }
 
     // navigate("/home")

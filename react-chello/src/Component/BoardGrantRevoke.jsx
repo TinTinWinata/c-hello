@@ -1,9 +1,14 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { BanIcon, DotsVerticalIcon } from "@heroicons/react/solid";
+import {
+  ArrowCircleUpIcon,
+  BanIcon,
+  DotsVerticalIcon,
+} from "@heroicons/react/solid";
 import { useUserAuth } from "../Library/UserAuthContext";
 import { updateBoard } from "../Model/Board";
-import { toastError } from "../Model/Toast";
-import { arrayIsEqual, removeArray } from "../Model/Util";
+import { toastError, toastSuccess } from "../Model/Toast";
+import { getUser, updateUserDb } from "../Model/User";
+import { arrayIsEqual, removeArray, removeArrayByIndex } from "../Model/Util";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -11,9 +16,41 @@ function classNames(...classes) {
 
 export default function BoardGrantRevoke({ board, memberList, adminList }) {
   const { user } = useUserAuth();
+  console.log("board : ", board);
+  function handleGrant(member) {
+    if (member.role == "Admin") {
+      toastError("Cannot grant an admin!");
+      return;
+    } else {
+      member.board.map((curr) => {
+        if (curr.id == board.id) {
+          curr.role = "Admin";
+          return;
+        }
+      });
+      updateUserDb(member).then(() => {
+        // 1. Remove member id di board
+        let idx = 0;
+        console.log("board [0] : ", board);
+        board.memberId.map((id) => {
+          if (id == member.userId) {
+            return;
+          }
+          idx += 1;
+        });
+        const temp2 = board.memberId;
+        removeArrayByIndex(board.memberId);
+
+        // 2. Add admin id
+        board.adminId = [...board.adminId, member.userId];
+        updateBoard(board).then(() => {
+          toastSuccess("Succesfully granted user!");
+        });
+      });
+    }
+  }
 
   function handleRemove(currMember) {
-    console.log(currMember);
     if (currMember.userId == user.uid) {
       toastError("Cannot remove yourself!");
       return;
@@ -32,8 +69,6 @@ export default function BoardGrantRevoke({ board, memberList, adminList }) {
         });
     }
   }
-
-  function handleOnRemove() {}
 
   return (
     <div>
@@ -69,6 +104,18 @@ export default function BoardGrantRevoke({ board, memberList, adminList }) {
                       <span className="sr-only">Open options</span>
                       <BanIcon className="w-5 h-5" aria-hidden="true" />
                     </button>
+                    <button
+                      onClick={() => {
+                        handleGrant(members);
+                      }}
+                      className="w-8 h-8 bg-white inline-flex items-center justify-center text-gray-400 rounded-full bg-transparent hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      <span className="sr-only">Open options</span>
+                      <ArrowCircleUpIcon
+                        className="w-5 h-5"
+                        aria-hidden="true"
+                      />
+                    </button>
                   </div>
                 </div>
               </li>
@@ -101,7 +148,21 @@ export default function BoardGrantRevoke({ board, memberList, adminList }) {
                         className="w-8 h-8 bg-white inline-flex items-center justify-center text-gray-400 rounded-full bg-transparent hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                       >
                         <span className="sr-only">Remov</span>
+
                         <BanIcon className="w-5 h-5" aria-hidden="true" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleGrant(members);
+                        }}
+                        className="w-8 h-8 bg-white inline-flex items-center justify-center text-gray-400 rounded-full bg-transparent hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                      >
+                        <span className="sr-only">Remov</span>
+
+                        <ArrowCircleUpIcon
+                          className="w-5 h-5"
+                          aria-hidden="true"
+                        />
                       </button>
                     </div>
                   </div>

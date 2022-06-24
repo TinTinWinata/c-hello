@@ -104,121 +104,136 @@ function Navbar() {
                       </div>
                     </div>
                   </div>
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                    {/* Notification */}
-                    <Menu as="div" className="ml-3 relative">
-                      {({ open }) => (
-                        <>
-                          <div>
-                            {notification.length == 0
-                              ? divButton(notification)
-                              : menuButton(notification)}
-                          </div>
-                          <Transition
-                            show={open}
-                            as={Fragment}
-                            enter="transition ease-out duration-100"
-                            enterFrom="transform opacity-0 scale-95"
-                            enterTo="transform opacity-100 scale-100"
-                            leave="transition ease-in duration-75"
-                            leaveFrom="transform opacity-100 scale-100"
-                            leaveTo="transform opacity-0 scale-95"
-                          >
-                            <Menu.Items
-                              static
-                              className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
-                            >
-                              {notification.map((curr, idx) => {
-                                return (
-                                  <NotificationList
-                                    key={idx}
-                                    notification={curr}
-                                  ></NotificationList>
-                                );
-                              })}
-                            </Menu.Items>
-                          </Transition>
-                        </>
-                      )}
-                    </Menu>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm :inset-auto sm:ml-6 sm:pr-0">
+                    {user ? (
+                      <>
+                        {/* Notification */}
+                        <Menu as="div" className="ml-3 relative">
+                          {({ open }) => (
+                            <>
+                              <div>
+                                {notification.length == 0
+                                  ? divButton(notification)
+                                  : menuButton(notification)}
+                              </div>
+                              <Transition
+                                show={open}
+                                as={Fragment}
+                                enter="transition ease-out duration-100"
+                                enterFrom="transform opacity-0 scale-95"
+                                enterTo="transform opacity-100 scale-100"
+                                leave="transition ease-in duration-75"
+                                leaveFrom="transform opacity-100 scale-100"
+                                leaveTo="transform opacity-0 scale-95"
+                              >
+                                <Menu.Items
+                                  static
+                                  className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                >
+                                  {notification.map((curr, idx) => {
+                                    return (
+                                      <NotificationList
+                                        key={idx}
+                                        notification={curr}
+                                      ></NotificationList>
+                                    );
+                                  })}
+                                </Menu.Items>
+                              </Transition>
+                            </>
+                          )}
+                        </Menu>
 
-                    {/* Profile dropdown */}
-                    <Menu as="div" className="ml-3 relative">
-                      {({ open }) => (
-                        <>
-                          <div>
-                            <Menu.Button className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                              <span className="sr-only">Open user menu</span>
-                              <img
-                                className="h-8 w-8 rounded-full"
-                                src={
-                                  userDb
-                                    ? userDb.photoUrl
-                                    : "https://picsum.photos/200"
-                                }
-                                alt=""
-                              />
-                            </Menu.Button>
-                          </div>
-                          <Transition
-                            show={open}
-                            as={Fragment}
-                            enter="transition ease-out duration-100"
-                            enterFrom="transform opacity-0 scale-95"
-                            enterTo="transform opacity-100 scale-100"
-                            leave="transition ease-in duration-75"
-                            leaveFrom="transform opacity-100 scale-100"
-                            leaveTo="transform opacity-0 scale-95"
-                          >
-                            <Menu.Items
-                              static
-                              className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
-                            >
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <Link
-                                    to="/profile"
-                                    href="#"
-                                    className={classNames(
-                                      active ? "bg-gray-100" : "",
-                                      "block px-4 py-2 text-sm text-gray-700"
+                        {/* Profile dropdown */}
+                        <Menu as="div" className="ml-3 relative">
+                          {({ open }) => (
+                            <>
+                              <div>
+                                <Menu.Button className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                                  <span className="sr-only">
+                                    Open user menu
+                                  </span>
+                                  <img
+                                    className="h-8 w-8 rounded-full"
+                                    src={
+                                      userDb
+                                        ? userDb.photoUrl
+                                        : "https://picsum.photos/200"
+                                    }
+                                    alt=""
+                                  />
+                                </Menu.Button>
+                              </div>
+                              <Transition
+                                show={open}
+                                as={Fragment}
+                                enter="transition ease-out duration-100"
+                                enterFrom="transform opacity-0 scale-95"
+                                enterTo="transform opacity-100 scale-100"
+                                leave="transition ease-in duration-75"
+                                leaveFrom="transform opacity-100 scale-100"
+                                leaveTo="transform opacity-0 scale-95"
+                              >
+                                <Menu.Items
+                                  static
+                                  className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                >
+                                  <Menu.Item>
+                                    {({ active }) => (
+                                      <Link
+                                        to="/profile"
+                                        href="#"
+                                        className={classNames(
+                                          active ? "bg-gray-100" : "",
+                                          "block px-4 py-2 text-sm text-gray-700"
+                                        )}
+                                      >
+                                        Your Profile
+                                      </Link>
                                     )}
-                                  >
-                                    Your Profile
-                                  </Link>
-                                )}
-                              </Menu.Item>
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <a
-                                    href="#"
-                                    className={classNames(
-                                      active ? "bg-gray-100" : "",
-                                      "block px-4 py-2 text-sm text-gray-700"
+                                  </Menu.Item>
+                                  <Menu.Item>
+                                    {({ active }) => (
+                                      <a
+                                        href="#"
+                                        className={classNames(
+                                          active ? "bg-gray-100" : "",
+                                          "block px-4 py-2 text-sm text-gray-700"
+                                        )}
+                                      >
+                                        Settings
+                                      </a>
                                     )}
-                                  >
-                                    Settings
-                                  </a>
-                                )}
-                              </Menu.Item>
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <div
-                                    onClick={handleLogout}
-                                    className={classNames(
-                                      active ? "bg-gray-100" : "",
-                                      "cursor-pointer block px-4 py-2 text-sm text-gray-700"
+                                  </Menu.Item>
+                                  <Menu.Item>
+                                    {({ active }) => (
+                                      <div
+                                        onClick={handleLogout}
+                                        className={classNames(
+                                          active ? "bg-gray-100" : "",
+                                          "cursor-pointer block px-4 py-2 text-sm text-gray-700"
+                                        )}
+                                      >
+                                        Sign out
+                                      </div>
                                     )}
-                                  >
-                                    Sign out
-                                  </div>
-                                )}
-                              </Menu.Item>
-                            </Menu.Items>
-                          </Transition>
-                        </>
-                      )}
-                    </Menu>
+                                  </Menu.Item>
+                                </Menu.Items>
+                              </Transition>
+                            </>
+                          )}
+                        </Menu>
+                      </>
+                    ) : (
+                      <Link to="/login">
+                        <button
+                          type="button"
+                          className="inline-flex items-center px-7 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white "
+                        >
+                          Login
+                        </button>
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>

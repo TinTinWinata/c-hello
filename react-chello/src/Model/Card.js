@@ -12,6 +12,7 @@ import {
 import { db } from "../Config/firebase-config";
 import {
   cardCollectionRef,
+  cardInviteLinkCollectionRef,
   listCollectionRef,
 } from "../Library/firebase.collections";
 import { toastError } from "./Toast";
@@ -19,7 +20,14 @@ import { getWebId } from "./Util";
 
 const auth = getAuth();
 
-export async function insertCard(newName, boardId, listId, date) {
+export function addCardIL(cardId, boardId) {
+  return addDoc(cardInviteLinkCollectionRef, {
+    cardId: cardId,
+    boardId: boardId,
+  });
+}
+export async function insertCard(newName, boardId, listId, date, userDb) {
+  console.log("user db : ", userDb);
   try {
     if (!date) {
       date = new Date();
@@ -33,9 +41,9 @@ export async function insertCard(newName, boardId, listId, date) {
       listId: listId,
       label: [],
       date: date,
-      watcher: [],
+      watcher: [userDb.userId],
     };
-    await addDoc(cardCollectionRef, docsData);
+    return await addDoc(cardCollectionRef, docsData);
   } catch (error) {
     console.log("error adding : ", error);
   }

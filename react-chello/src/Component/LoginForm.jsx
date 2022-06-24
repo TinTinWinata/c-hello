@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const auth = getAuth();
 
@@ -76,12 +76,20 @@ function LoginForm() {
           >
             Sign In
           </button>
-          <a
-            className="inline-block align-baseline font-bold text-xs text-blue-500 hover:text-blue-800"
-            href="/register"
-          >
-            Don't have any account yet ?
-          </a>
+          <div className="flex">
+            <Link
+              className="mr-1 inline-block align-baseline font-bold text-xs text-blue-500 hover:text-blue-800"
+              to="/register"
+            >
+              Register
+            </Link>
+            <Link
+              className="inline-block align-baseline font-bold text-xs text-blue-500 hover:text-blue-800"
+              to="/home"
+            >
+              | Or Login with Guest
+            </Link>
+          </div>
         </div>
       </form>
       <p className="text-center text-gray-500 text-xs">

@@ -45,7 +45,7 @@ export default function RealtimeCard(props) {
   function handleOffClick() {
     setTrigger(false);
   }
-  
+
   return (
     <>
       {trigger ? (

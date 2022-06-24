@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import uuid from "react-uuid";
 import { useUserAuth } from "../Library/UserAuthContext";
 import { toastSuccess } from "../Model/Toast";
 import { updateUserOnDatabase } from "../Model/User";
@@ -11,6 +12,7 @@ import {
   updateWorkspace,
   updateWorkspaceById,
 } from "../Model/Workspace";
+import { notifyAdminDeletionWorkspace } from "../Script/Observer";
 
 export default function DeleteWorkspace({ role }) {
   const navigate = useNavigate();
@@ -40,12 +42,30 @@ export default function DeleteWorkspace({ role }) {
         toast.error("Failed Leaving Workspace " + e.message);
       });
     } else {
-      deleteWorkspace(id)
-        .then(() => {
-          toastSuccess("Succesfully delete workspace!");
-          navigate("/home");
-        })
-        .catch((e) => {});
+      // Validate if admin workspace more than one
+      const ws = getWorkspaceById(id);
+      if (ws.adminId.length > 1) {
+        const notification = {
+          id: uuid(),
+          senderId: userDb.userId,
+          type: "delete-workspace",
+          value:
+            userDb.displayName +
+            " Invite you to Delete " +
+            ws.name +
+            " Workspace",
+          link: "/delete-workspace/" + ws.id,
+        };
+        notifyAdminDeletionWorkspace(ws.adminId, notification);
+      } else {
+        // Delete
+        deleteWorkspace(id)
+          .then(() => {
+            toastSuccess("Succesfully delete workspace!");
+            navigate("/home");
+          })
+          .catch((e) => {});
+      }
     }
   }
 

@@ -4,10 +4,22 @@ import { insertClosedBoard, updateBoard } from "../Model/Board";
 import { toastError, toastSuccess } from "../Model/Toast";
 import { updateUserDb } from "../Model/User";
 import { removeArrayByIndex } from "../Model/Util";
+import { permanentDelete } from "../Model/Board";
 
 export default function CloseBoard({ board, role }) {
   const { userDb } = useUserAuth();
   const navigate = useNavigate();
+
+  function handlePermanent() {
+    permanentDelete(board.workspaceId, board.id)
+      .then(() => {
+        toastSuccess("Succesfully delete boards!");
+        navigate("/home");
+      })
+      .catch((e) => {
+        toastError("Failed to delete board!" + e.message);
+      });
+  }
 
   function handleClick() {
     if (!role || !board) toastError("Too fast darling!");
@@ -35,6 +47,13 @@ export default function CloseBoard({ board, role }) {
           className="inline-flex items-center justify-center px-4 py-2 border border-transparent font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm"
         >
           Close Board
+        </button>
+        <button
+          onClick={handlePermanent}
+          type="button"
+          className="ml-5 inline-flex items-center justify-center px-4 py-2 border border-transparent font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm"
+        >
+          Permanent Close Board
         </button>
       </div>
     </div>
