@@ -1,5 +1,5 @@
 import React from "react";
-import { updateChecklist } from "../Script/Checklist";
+import { updateChecklist } from "../Model/Checklist";
 
 export default function CheckListCard(props) {
   const checklist = props.checklist;

@@ -5,16 +5,16 @@ import Select from "react-select";
 import uuid from "react-uuid";
 import { userCollectionRef } from "../Library/firebase.collections";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { addBoardIL } from "../Script/Board";
-import { insertNotification } from "../Script/Notification";
-import { toastError, toastSuccess } from "../Script/Toast";
+import { addBoardIL } from "../Model/Board";
+import { insertNotification } from "../Model/Notification";
+import { toastError, toastSuccess } from "../Model/Toast";
 import {
   getUserByEmail,
   updateUserDb,
   updateUserOnDatabase,
-} from "../Script/User";
-import { getWebId } from "../Script/Util";
-import { addWorkspaceIL, getWorkspaceById } from "../Script/Workspace";
+} from "../Model/User";
+import { getWebId } from "../Model/Util";
+import { addWorkspaceIL, getWorkspaceById } from "../Model/Workspace";
 
 export default function BoardInvite({ board }) {
   const [link, setLink] = useState("");

@@ -1,8 +1,8 @@
 import React, { createRef, useEffect, useState } from "react";
 import SwitchToggle from "../Layout/Switch";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { toastError, toastSuccess } from "../Script/Toast";
-import { updateUser, updateUserOnDatabase } from "../Script/User";
+import { toastError, toastSuccess } from "../Model/Toast";
+import { updateUser, updateUserOnDatabase } from "../Model/User";
 
 export default function ProfileContent(props) {
   var user = props.user;

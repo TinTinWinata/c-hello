@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { doc, onSnapshot, query, where } from "firebase/firestore";
 import { boardCollectionRef } from "../Library/firebase.collections";
 import { Link, useLocation } from "react-router-dom";
-import { getWebId } from "../Script/Util";
+import { getWebId } from "../Model/Util";
 import { useUserAuth } from "../Library/UserAuthContext";
 
 export default function RealtimeBoard({ role }) {

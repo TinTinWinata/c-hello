@@ -6,9 +6,9 @@ import {
   workspaceILRef,
 } from "../Library/firebase.collections";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { toastError, toastSuccess } from "../Script/Toast";
-import { getWebId } from "../Script/Util";
-import { addMember, updateWorkspace } from "../Script/Workspace";
+import { toastError, toastSuccess } from "../Model/Toast";
+import { getWebId } from "../Model/Util";
+import { addMember, updateWorkspace } from "../Model/Workspace";
 
 export default function JoinWorkspaceForm() {
   const { id } = useParams();

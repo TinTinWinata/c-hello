@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { insertClosedBoard, updateBoard } from "../Script/Board";
-import { toastError, toastSuccess } from "../Script/Toast";
-import { updateUserDb } from "../Script/User";
-import { removeArrayByIndex } from "../Script/Util";
+import { insertClosedBoard, updateBoard } from "../Model/Board";
+import { toastError, toastSuccess } from "../Model/Toast";
+import { updateUserDb } from "../Model/User";
+import { removeArrayByIndex } from "../Model/Util";
 
 export default function CloseBoard({ board, role }) {
   const { userDb } = useUserAuth();

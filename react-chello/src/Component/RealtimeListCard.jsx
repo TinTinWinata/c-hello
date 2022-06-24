@@ -5,12 +5,12 @@ import {
   listCollectionRef,
 } from "../Library/firebase.collections";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { getWebId } from "../Script/Util";
+import { getWebId } from "../Model/Util";
 import CreateCard from "./CreateCard";
 import RealtimeCard from "./RealtimeCard";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import { updateCard, updateCardWithId } from "../Script/Card";
-import { updateList, updateListById, updateListNameById } from "../Script/List";
+import { updateCard, updateCardWithId } from "../Model/Card";
+import { updateList, updateListById, updateListNameById } from "../Model/List";
 import SearchingUI from "./SearchingUI";
 
 const PAGE_DEFAULT_VALUE = 3;

@@ -1,6 +1,6 @@
 import React from 'react'
-import { insertCard } from '../Script/Card'
-import { getWebId } from '../Script/Util'
+import { insertCard } from '../Model/Card'
+import { getWebId } from '../Model/Util'
 
 
 export default function CreateCard(props) {

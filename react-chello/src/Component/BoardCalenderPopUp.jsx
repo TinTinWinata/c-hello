@@ -3,7 +3,7 @@ import { createRef, Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/outline";
 import DatePicker from "react-datepicker";
-import { insertCard } from "../Script/Card";
+import { insertCard } from "../Model/Card";
 import { useParams } from "react-router-dom";
 import { onSnapshot, query, where } from "firebase/firestore";
 import { listCollectionRef } from "../Library/firebase.collections";

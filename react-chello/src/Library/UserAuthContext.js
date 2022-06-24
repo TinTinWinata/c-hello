@@ -8,7 +8,7 @@ import {
 } from "firebase/auth";
 import { auth, db } from "../Config/firebase-config";
 import { useLocation } from "react-router-dom";
-import { insertUser } from "../Script/User";
+import { insertUser } from "../Model/User";
 import {
   collection,
   getDocs,

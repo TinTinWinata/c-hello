@@ -4,11 +4,11 @@ import {
   getWorkspaceById,
   updateWorkspace,
   updateWorkspaceById,
-} from "../Script/Workspace";
+} from "../Model/Workspace";
 import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
-import { toastError, toastSuccess } from "../Script/Toast";
+import { toastError, toastSuccess } from "../Model/Toast";
 import WorkspaceMemberlist from "./WorkspaceMemberlist";
 import UpdateWorkspaceMemberList from "./UpdateWorkspaceMemberList";
 

@@ -8,9 +8,9 @@ import {
   workspaceILRef,
 } from "../Library/firebase.collections";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { addBoardMember } from "../Script/Board";
-import { toastError, toastSuccess } from "../Script/Toast";
-import { getWebId } from "../Script/Util";
+import { addBoardMember } from "../Model/Board";
+import { toastError, toastSuccess } from "../Model/Toast";
+import { getWebId } from "../Model/Util";
 
 export default function BoardJoinForm() {
   const { id } = useParams();

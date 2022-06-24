@@ -4,8 +4,8 @@ import Profile from "./ProfilePitcure";
 import React, { Fragment, useEffect, useState } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
-import { getNotification } from "../Script/Notification";
-import { getUser } from "../Script/User";
+import { getNotification } from "../Model/Notification";
+import { getUser } from "../Model/User";
 import NotificationList from "./NotificationList";
 
 const navigation = [
@@ -23,6 +23,7 @@ function Navbar() {
   const { user, userDb, logout, notification, refreshPage } = useUserAuth();
 
   const userName = user ? user.displayName : "CHello";
+
   const navigate = useNavigate();
 
   function handleLogout() {
@@ -30,7 +31,6 @@ function Navbar() {
     navigate("/login");
   }
   function menuButton(notification) {
-    2;
     if (!userDb.notification) return;
     return (
       <Menu.Button className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
@@ -151,7 +151,11 @@ function Navbar() {
                               <span className="sr-only">Open user menu</span>
                               <img
                                 className="h-8 w-8 rounded-full"
-                                src={userDb.photoUrl}
+                                src={
+                                  userDb
+                                    ? userDb.photoUrl
+                                    : "https://picsum.photos/200"
+                                }
                                 alt=""
                               />
                             </Menu.Button>

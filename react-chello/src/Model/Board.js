@@ -9,6 +9,7 @@ import {
   query,
   where,
   arrayUnion,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../Config/firebase-config";
 import {
@@ -30,10 +31,26 @@ export async function deleteBoard(workspaceId) {
   const q = query(boardCollectionRef, where("workspaceId", "==", workspaceId));
   const boardList = await getDocs(q);
   boardList.docs.map((board) => {
+    board.closed = true;
+    // deleteListWithBoardId(board.id);
+    // deleteCardWithBoardId(board.id);
+    // return deleteDoc(doc(db, ""))
+  });
+}
+export async function permanentDelete(workspaceId) {
+  const q = query(boardCollectionRef, where("workspaceId", "==", workspaceId));
+  const boardList = await getDocs(q);
+  boardList.docs.map((board) => {
+    board.closed = true;
     deleteListWithBoardId(board.id);
     deleteCardWithBoardId(board.id);
     return deleteDoc(doc(db, "board", board.id));
   });
+}
+
+export async function getBoardById(id) {
+  const promise = doc(db, "board", id);
+  return await getDoc(promise);
 }
 
 export async function addBoardMember(board, newMemberId, userDb) {

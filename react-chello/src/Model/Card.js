@@ -33,6 +33,7 @@ export async function insertCard(newName, boardId, listId, date) {
       listId: listId,
       label: [],
       date: date,
+      watcher: [],
     };
     await addDoc(cardCollectionRef, docsData);
   } catch (error) {
@@ -47,6 +48,8 @@ export async function deleteCardWithBoardId(boardId) {
     return deleteDoc(doc(db, "card", card.id));
   });
 }
+
+export function addWatcher() {}
 
 export function updateCard(card) {
   const ref = doc(db, "card", card.id);

@@ -7,9 +7,9 @@ import {
   workspaceCollectionRef,
 } from "../Library/firebase.collections";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { toastError, toastSuccess } from "../Script/Toast";
-import { arrayIsEqual, removeArray } from "../Script/Util";
-import { updateWorkspace, updateWorkspaceById } from "../Script/Workspace";
+import { toastError, toastSuccess } from "../Model/Toast";
+import { arrayIsEqual, removeArray } from "../Model/Util";
+import { updateWorkspace, updateWorkspaceById } from "../Model/Workspace";
 
 export default function UpdateWorkspaceMemberList({ ws }) {
   const location = useLocation();

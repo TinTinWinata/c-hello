@@ -13,8 +13,8 @@ import {
   cardCollectionRef,
   checklistCollectionRef,
 } from "../Library/firebase.collections";
-import { deleteCard, updateCard } from "../Script/Card";
-import { insertChecklist } from "../Script/Checklist";
+import { deleteCard, updateCard } from "../Model/Card";
+import { insertChecklist } from "../Model/Checklist";
 import CheckListCard from "./CheckListCard";
 import moment from "moment";
 import "./RenderCard.css";
@@ -27,15 +27,14 @@ import { storage } from "../Config/firebase-config";
 import { TagIcon } from "@heroicons/react/solid";
 import RenderCardChecklist from "./RenderCardChecklist";
 import RenderCardLabelForm from "./RenderCardLabelForm";
-import { toastError, toastSuccess } from "../Script/Toast";
+import { toastError, toastSuccess } from "../Model/Toast";
 import RenderLabelList from "./RenderCardLabelList";
 import uuid from "react-uuid";
 import { useQuill } from "react-quilljs";
-import {
-  getListWithListId,
-  updateList,
-  updateListWithId,
-} from "../Script/List";
+import { getListWithListId, updateList, updateListWithId } from "../Model/List";
+import { PlusIcon } from "@heroicons/react/outline";
+import RenderCardWatcherForm from "./RenderCardWatcherForm";
+import WatcherList from "./WatcherList";
 
 export function RenderCard(props) {
   const modules = {
@@ -63,8 +62,13 @@ export function RenderCard(props) {
   const [dateForm, setDateForm] = useState(false);
   const [locationForm, setLocationForm] = useState(false);
   const [labelForm, setLabelForm] = useState(false);
+  const [watcherForm, setWatcherForm] = useState(false);
 
   const { quill, quillRef } = useQuill({ modules });
+
+  function handleWatcherForm() {
+    watcherForm ? setWatcherForm(false) : setWatcherForm(true);
+  }
 
   function handleLabelForm() {
     labelForm ? setLabelForm(false) : setLabelForm(true);
@@ -91,7 +95,7 @@ export function RenderCard(props) {
 
   useEffect(() => {
     if (quill && cardClicked.innerDesc) {
-      quill.clipboard.dangerouslyPasteHTML(cardClicked.innerDesc);
+      quill.clip.dangerouslyPasteHTML(cardClicked.innerDesc);
     }
   }, [quill]);
 
@@ -527,6 +531,19 @@ export function RenderCard(props) {
               <p className="mt-[0.3rem] font-light">Location</p>
             </div>
           </div>
+          <div onClick={handleWatcherForm} className="flex cursor-pointer">
+            <p className="mt-[0.4rem] font-light">Add Watcher</p>
+            <PlusIcon className="w-10 h-10 scale-50 stroke-gray-800"></PlusIcon>
+          </div>
+          <WatcherList cardClicked={cardClicked}></WatcherList>
+          {watcherForm ? (
+            <RenderCardWatcherForm
+              setWatcherForm={setWatcherForm}
+              cardClicked={cardClicked}
+            ></RenderCardWatcherForm>
+          ) : (
+            ""
+          )}
         </div>
       </div>
     </>

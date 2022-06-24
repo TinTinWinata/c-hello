@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { getUser, updateUserDb } from "../Script/User";
+import { getUser, updateUserDb } from "../Model/User";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Link, useNavigate } from "react-router-dom";
-import { deleteNotificationWithId } from "../Script/Notification";
+import { deleteNotificationWithId } from "../Model/Notification";
 import { useUserAuth } from "../Library/UserAuthContext";
 
 function classNames(...classes) {

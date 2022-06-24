@@ -20,7 +20,7 @@ function Sidebar() {
         trigger={popUpCreateWP}
         setTrigger={setPopUpCreateWP}
       ></WorkspacePopUp>
-      <aside className="w-52" aria-label="Sidebar">
+      <aside className="w-64" aria-label="Sidebar">
         <div className="pl-10 fixed top-10 h-screen overflow-y-auto py-4 px-3 bg-gray-50 rounded">
           <ul className="space-y-2 mt-10">
             <SidebarComponent text="Home" link="/home"></SidebarComponent>

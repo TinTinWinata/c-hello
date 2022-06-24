@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { updateUserOnDatabase } from "../Script/User";
-import { toastError, toastSuccess } from "../Script/Toast";
+import { updateUserOnDatabase } from "../Model/User";
+import { toastError, toastSuccess } from "../Model/Toast";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");

@@ -2,15 +2,15 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { toastSuccess } from "../Script/Toast";
-import { updateUserOnDatabase } from "../Script/User";
-import { getWebId, removeArray } from "../Script/Util";
+import { toastSuccess } from "../Model/Toast";
+import { updateUserOnDatabase } from "../Model/User";
+import { getWebId, removeArray } from "../Model/Util";
 import {
   deleteWorkspace,
   getWorkspaceById,
   updateWorkspace,
   updateWorkspaceById,
-} from "../Script/Workspace";
+} from "../Model/Workspace";
 
 export default function DeleteWorkspace({ role }) {
   const navigate = useNavigate();

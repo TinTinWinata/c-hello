@@ -3,8 +3,8 @@ import { createRef, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Select from "react-select";
 import { db } from "../Config/firebase-config";
-import { updateBoard } from "../Script/Board";
-import { toastError, toastSuccess } from "../Script/Toast";
+import { updateBoard } from "../Model/Board";
+import { toastError, toastSuccess } from "../Model/Toast";
 
 export default function ManageBoardUpdate({ board, setOpen }) {
   const name = createRef();

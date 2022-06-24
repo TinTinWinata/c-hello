@@ -3,7 +3,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { createRef, useState } from "react";
 import { storage } from "../Config/firebase-config";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { updateUserOnDatabase } from "../Script/User";
+import { updateUserOnDatabase } from "../Model/User";
 import ChangePassword from "./ChangePassword";
 import "react-toastify/dist/ReactToastify.css";
 

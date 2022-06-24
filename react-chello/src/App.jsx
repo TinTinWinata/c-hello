@@ -28,10 +28,12 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route path="/login" element={<Login />} />
           <Route path="/home" element={<Home />} />
           <Route path="/signedIn" element={<Home />} />
           <Route path="/invite-link/:id" element={<JoinWorkspaceForm />} />
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/workspace/:id" element={<Workspace />} />

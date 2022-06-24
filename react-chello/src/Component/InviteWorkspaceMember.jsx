@@ -5,11 +5,11 @@ import Select from "react-select";
 import uuid from "react-uuid";
 import { userCollectionRef } from "../Library/firebase.collections";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { insertNotification } from "../Script/Notification";
-import { toastError, toastSuccess } from "../Script/Toast";
-import { getUserByEmail, updateUserDb } from "../Script/User";
-import { getWebId } from "../Script/Util";
-import { addWorkspaceIL, getWorkspaceById } from "../Script/Workspace";
+import { insertNotification } from "../Model/Notification";
+import { toastError, toastSuccess } from "../Model/Toast";
+import { getUserByEmail, updateUserDb } from "../Model/User";
+import { getWebId } from "../Model/Util";
+import { addWorkspaceIL, getWorkspaceById } from "../Model/Workspace";
 
 export default function InviteWorkspaceMember() {
   const [link, setLink] = useState("");

@@ -1,15 +1,6 @@
 import { useState } from "react";
 import OpenBoardConfirmation from "./OpenBoardConfirmation";
 
-const people = [
-  {
-    name: "Jane Cooper",
-    title: "Regional Paradigm Technician",
-    role: "Admin",
-    email: "jane.cooper@example.com",
-  },
-];
-
 export default function ViewClosedBoard({ closedBoard }) {
   const [open, setOpen] = useState(false);
   const [selectedBoard, setSelectedBoard] = useState();
@@ -63,32 +54,34 @@ export default function ViewClosedBoard({ closedBoard }) {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {closedBoard.map((board) => (
-                    <tr key={board.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {board.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {board.tag}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {board.visibility}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {board.memberId.length + board.adminId.length}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div
-                          onClick={() => {
-                            handleClick(board);
-                          }}
-                          className="cursor-pointer text-indigo-600 hover:text-indigo-900"
-                        >
-                          Open
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {closedBoard
+                    ? closedBoard.map((board) => (
+                        <tr key={board.id}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {board.name}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {board.tag}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {board.visibility}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {board.memberId.length + board.adminId.length}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div
+                              onClick={() => {
+                                handleClick(board);
+                              }}
+                              className="cursor-pointer text-indigo-600 hover:text-indigo-900"
+                            >
+                              Open
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    : ""}
                 </tbody>
               </table>
             </div>

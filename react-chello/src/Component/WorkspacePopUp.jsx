@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { insertWorkspace } from "../Script/Workspace";
+import { insertWorkspace } from "../Model/Workspace";
 import "./WorkspacePopUp.css";
 
 function WorkspacePopUp(props) {

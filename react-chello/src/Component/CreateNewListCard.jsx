@@ -1,6 +1,6 @@
 import React, { createRef, useState } from "react";
-import { insertList } from "../Script/List";
-import { getWebId } from "../Script/Util";
+import { insertList } from "../Model/List";
+import { getWebId } from "../Model/Util";
 
 export default function CreateNewListCard() {
   const name = createRef();

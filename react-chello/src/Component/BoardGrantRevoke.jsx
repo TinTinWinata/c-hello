@@ -1,42 +1,40 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { DotsVerticalIcon } from "@heroicons/react/solid";
-
-const projects = [
-  {
-    name: "Graph API",
-    initials: "GA",
-    href: "#",
-    members: 16,
-    bgColor: "bg-pink-600",
-  },
-  {
-    name: "Component Design",
-    initials: "CD",
-    href: "#",
-    members: 12,
-    bgColor: "bg-purple-600",
-  },
-  {
-    name: "Templates",
-    initials: "T",
-    href: "#",
-    members: 16,
-    bgColor: "bg-yellow-500",
-  },
-  {
-    name: "React Components",
-    initials: "RC",
-    href: "#",
-    members: 8,
-    bgColor: "bg-green-500",
-  },
-];
+import { BanIcon, DotsVerticalIcon } from "@heroicons/react/solid";
+import { useUserAuth } from "../Library/UserAuthContext";
+import { updateBoard } from "../Model/Board";
+import { toastError } from "../Model/Toast";
+import { arrayIsEqual, removeArray } from "../Model/Util";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function BoardGrantRevoke({ board, memberList, adminList }) {
+  const { user } = useUserAuth();
+
+  function handleRemove(currMember) {
+    console.log(currMember);
+    if (currMember.userId == user.uid) {
+      toastError("Cannot remove yourself!");
+      return;
+    }
+    const removedArray = removeArray(board.memberId, currMember.userId);
+    if (arrayIsEqual(removedArray, board.memberId)) {
+      toastError("Cannot remove admin roles!");
+    } else {
+      board.memberId = removedArray;
+      updateBoard(board)
+        .then(() => {
+          toastSuccess("Success removing member!");
+        })
+        .catch((e) => {
+          toastError("Failed to remove member! " + e.message);
+        });
+    }
+  }
+
+  function handleOnRemove() {}
+
   return (
     <div>
       <h2 className="text-gray-500 text-xs font-medium uppercase tracking-wide">
@@ -44,11 +42,8 @@ export default function BoardGrantRevoke({ board, memberList, adminList }) {
       </h2>
       <ul className="mt-3">
         {memberList
-          ? memberList.map((members) => (
-              <li
-                key={members.userId}
-                className="mt-3 flex shadow-sm rounded-md"
-              >
+          ? memberList.map((members, idx) => (
+              <li key={idx} className="mt-3 flex shadow-sm rounded-md">
                 <div
                   className={classNames(
                     "bg-green-500",
@@ -65,12 +60,14 @@ export default function BoardGrantRevoke({ board, memberList, adminList }) {
                     <p className="text-gray-500">{members.role}</p>
                   </div>
                   <div className="flex-shrink-0 pr-2">
-                    <button className="w-8 h-8 bg-white inline-flex items-center justify-center text-gray-400 rounded-full bg-transparent hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <button
+                      onClick={() => {
+                        handleRemove(members);
+                      }}
+                      className="w-8 h-8 bg-white inline-flex items-center justify-center text-gray-400 rounded-full bg-transparent hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
                       <span className="sr-only">Open options</span>
-                      <DotsVerticalIcon
-                        className="w-5 h-5"
-                        aria-hidden="true"
-                      />
+                      <BanIcon className="w-5 h-5" aria-hidden="true" />
                     </button>
                   </div>
                 </div>
@@ -78,12 +75,9 @@ export default function BoardGrantRevoke({ board, memberList, adminList }) {
             ))
           : ""}
         {adminList
-          ? adminList.map((members) => {
+          ? adminList.map((members, idx) => {
               return (
-                <li
-                  key={members.userId}
-                  className="mt-3 flex shadow-sm rounded-md"
-                >
+                <li key={idx} className="mt-3 flex shadow-sm rounded-md">
                   <div
                     className={classNames(
                       "bg-green-500",
@@ -100,12 +94,14 @@ export default function BoardGrantRevoke({ board, memberList, adminList }) {
                       <p className="text-gray-500">{members.role}</p>
                     </div>
                     <div className="flex-shrink-0 pr-2">
-                      <button className="w-8 h-8 bg-white inline-flex items-center justify-center text-gray-400 rounded-full bg-transparent hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        <span className="sr-only">Open options</span>
-                        <DotsVerticalIcon
-                          className="w-5 h-5"
-                          aria-hidden="true"
-                        />
+                      <button
+                        onClick={() => {
+                          handleRemove(members);
+                        }}
+                        className="w-8 h-8 bg-white inline-flex items-center justify-center text-gray-400 rounded-full bg-transparent hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                      >
+                        <span className="sr-only">Remov</span>
+                        <BanIcon className="w-5 h-5" aria-hidden="true" />
                       </button>
                     </div>
                   </div>

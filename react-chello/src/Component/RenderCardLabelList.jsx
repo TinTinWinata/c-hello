@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { updateCard } from "../Script/Card";
-import { getListWithListId, updateList } from "../Script/List";
-import { toastError, toastSuccess } from "../Script/Toast";
-import { removeArrayByIndex } from "../Script/Util";
+import { updateCard } from "../Model/Card";
+import { getListWithListId, updateList } from "../Model/List";
+import { toastError, toastSuccess } from "../Model/Toast";
+import { removeArrayByIndex } from "../Model/Util";
 
 export default function RenderLabelList({ label, cardClicked, listId }) {
   const color = "bg-[" + label.color + "] ";

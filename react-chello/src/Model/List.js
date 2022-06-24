@@ -53,7 +53,6 @@ export function getListWithListId(listId) {
   return getDoc(ref);
 }
 
-export function addLabelInList(listId, changes) {}
 
 export function updateList(list) {
   const ref = doc(db, "list", list.id);

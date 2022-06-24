@@ -42,10 +42,11 @@ export async function getUser(id) {
 }
 
 export async function insertUser(user, newDisplayName) {
+  let name = newDisplayName ? newDisplayName : "New User";
   try {
     await addDoc(userCollectionRef, {
       userId: user.uid,
-      displayName: newDisplayName,
+      displayName: name,
       photoUrl: "https://picsum.photos/id/237/200/300",
       about: "",
       education: "",

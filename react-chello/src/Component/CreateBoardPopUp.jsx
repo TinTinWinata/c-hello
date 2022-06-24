@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { insertWorkspace } from "../Script/Workspace";
+import { insertWorkspace } from "../Model/Workspace";
 import "./WorkspacePopUp.css";
 import "./CreateBoardPopUp.css";
-import { insertBoard } from "../Script/Board";
-import { getWebId } from "../Script/Util";
+import { insertBoard } from "../Model/Board";
+import { getWebId } from "../Model/Util";
 import { useUserAuth } from "../Library/UserAuthContext";
 
 function CreateBoardPopUp(props) {

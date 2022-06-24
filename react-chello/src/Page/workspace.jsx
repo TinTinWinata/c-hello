@@ -1,7 +1,7 @@
 import Navbar from "../Component/Navbar";
 import Sidebar from "../Component/Sidebar";
 import { useParams } from "react-router-dom";
-import { getWebId } from "../Script/Util";
+import { getWebId } from "../Model/Util";
 import { BoardCardGroup } from "../Component/BoardCardGroup";
 import ManageWorkspace from "../Component/ManageWorkspace";
 import WorkspaceMemberlist from "../Component/WorkspaceMemberlist";
