@@ -54,15 +54,8 @@ export default function WatcherList({ cardClicked, role }) {
   }
 
   function addWatcher(n) {
-    const len = watcher.length;
-    for (let i = 0; i < len; i++) {
-      if (watcher[i] == n.userId) {
-        console.log("return!");
-        return;
-      }
-    }
+    // setWatcher([...watcher, n]);
     setWatcher((prev) => [...prev, n]);
-    console.log("watcher : ", watcher);
   }
 
   useEffect(() => {
@@ -77,7 +70,7 @@ export default function WatcherList({ cardClicked, role }) {
     return () => {
       setWatcher([]);
     };
-  }, [cardClicked, refresh]);
+  }, [refresh]);
 
   return (
     <div className="flex flex-col">

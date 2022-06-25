@@ -3,10 +3,83 @@ import {
   SortAscendingIcon,
   UsersIcon,
 } from "@heroicons/react/solid";
+import { onSnapshot, query, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { Mention, MentionsInput } from "react-mentions";
+import { userCollectionRef } from "../Library/firebase.collections";
+import { getBoardById } from "../Model/Board";
+import { getUser } from "../Model/User";
+import DefaultStyle from "../Library/DefaultStyle";
+import DefaultMentionStyle from "../Library/DefaultMentionStyle";
 
 export default function InputComment(props) {
   const handle = props.handle;
   const commentInput = props.commentInput;
+  const cardClicked = props.cardClicked;
+  const value = props.value;
+  const setValue = props.setValue;
+
+  const [data, setData] = useState([]);
+  const [board, setBoard] = useState();
+
+  useEffect(() => {
+    console.log("data : ", data);
+  }, [data]);
+
+  useEffect(() => {
+    let unsub;
+    let unsub2;
+    if (cardClicked) {
+      getBoardById(cardClicked.boardId).then((doc) => {
+        const board = { ...doc.data(), id: doc.id };
+        setBoard(board);
+        board.memberId.map((member) => {
+          const q = query(userCollectionRef, where("userId", "==", member));
+          unsub = onSnapshot(q, (doc) => {
+            doc.docs.map((docs) => {
+              const userDoc = { ...docs.data(), id: docs.id };
+              const option = {
+                id: userDoc.userId,
+                display: userDoc.displayName,
+              };
+
+              setData((prev) => [...prev, option]);
+            });
+          });
+        });
+        board.adminId.map((member) => {
+          const q = query(userCollectionRef, where("userId", "==", member));
+          unsub2 = onSnapshot(q, (doc) => {
+            doc.docs.map((docs) => {
+              const userDoc = { ...docs.data(), id: docs.id };
+
+              const option = {
+                id: userDoc.userId,
+                display: userDoc.displayName,
+              };
+              setData((prev) => [...prev, option]);
+            });
+          });
+        });
+      });
+    }
+
+    return () => {
+      setData([]);
+      if (unsub !== undefined) unsub();
+      if (unsub2 !== undefined) unsub2();
+    };
+  }, [cardClicked]);
+
+  useEffect(() => {
+    console.log("value :", value);
+  }, [value]);
+
+  // useEffect(() => {
+  //   getBoardById(cardClicked.boardId).then((doc) => {
+  //     setBoard({ ...doc.data(), id: doc.id });
+  //   });
+  // }, []);
 
   return (
     <div>
@@ -19,17 +92,28 @@ export default function InputComment(props) {
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <UsersIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
           </div>
-          <input
-            ref={commentInput}
-            type="text"
-            name="email"
-            id="email"
-            className="focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md pl-10 sm:text-sm border-gray-300"
+
+          <MentionsInput
+            style={DefaultStyle}
+            onChange={(e) => {
+              setValue(e.target.value);
+            }}
+            value={value}
+            className="focus:ring-indigo-500
+            block focus:border-indigo-500 ml-10  w-full rounded-none rounded-l-md sm:text-sm border-gray-300"
             placeholder="Add a comment..."
-          />
+          >
+            <Mention
+              style={DefaultMentionStyle}
+              trigger="@"
+              data={data}
+            ></Mention>
+          </MentionsInput>
         </div>
         <button
-          onClick={handle}
+          onClick={() => {
+            handle(value);
+          }}
           className="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
         >
           <ChatAltIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />

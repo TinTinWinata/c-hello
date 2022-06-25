@@ -43,6 +43,7 @@ import RenderCardWatcherForm from "./RenderCardWatcherForm";
 import WatcherList from "./WatcherList";
 import { useDropzone } from "react-dropzone";
 import { notifyCommentWatcher } from "../Script/Observer";
+import { getUser, updateUserDb } from "../Model/User";
 
 export function RenderCard(props) {
   const modules = {
@@ -60,6 +61,7 @@ export function RenderCard(props) {
   var commentInput = createRef();
   const location = useLocation();
 
+  const [value, setValue] = useState("");
   const [checklist, setChecklist] = useState([]);
   const [date, setDate] = useState();
   const [cardClicked, setCardClicked] = useState(props.cardClicked);
@@ -173,8 +175,20 @@ export function RenderCard(props) {
     };
   }, []);
 
-  function handleOnSubmitComment() {
-    const comment = commentInput.current.value;
+  function handleOnSubmitComment(val) {
+    let comment = val;
+    const temp = comment.match(/\(([^)]+)\)/);
+    let mentionedUser = null;
+    if (temp) {
+      const idx1 = val.indexOf("]");
+      const idx2 = val.lastIndexOf(")");
+      comment =
+        comment.substring(0, idx1) +
+        comment.substring(idx2 + 1, comment.length);
+      comment = comment.replace("[", "");
+      mentionedUser = temp[1];
+    }
+
     if (!comment) return;
     // Return
 
@@ -193,7 +207,6 @@ export function RenderCard(props) {
       cardClicked.commentList = [...cardClicked.commentList, commentObj];
     }
 
-    commentInput.current.value = "";
     updateCard(cardClicked).then(() => {
       const notification = {
         link: "/board/" + cardClicked.boardId,
@@ -209,6 +222,27 @@ export function RenderCard(props) {
         senderId: user.uid,
       };
       console.log("card : ", cardClicked);
+      if (mentionedUser) {
+        const notification = {
+          link: "/board/" + cardClicked.boardId,
+          value: userDb.displayName + " Mention you on " + cardClicked.name,
+          type: "mentioned-comment",
+          id: uuid(),
+          senderId: user.uid,
+        };
+        getUser(mentionedUser).then((doc) => {
+          console.log("doc : ", doc);
+          const currUser = { ...doc.docs[0].data(), id: doc.docs[0].id };
+          console.log("currUser : ", currUser);
+          currUser.notificationList = [
+            ...currUser.notificationList,
+            notification,
+          ];
+          updateUserDb(currUser).then(() => {
+            setValue();
+          });
+        });
+      }
       notifyCommentWatcher(cardClicked.watcher, notification);
     });
   }
@@ -589,6 +623,9 @@ export function RenderCard(props) {
               </div>
               <div className="ml-2 mr-5 font-normal">
                 <InputComment
+                  value={value}
+                  setValue={setValue}
+                  cardClicked={cardClicked}
                   handle={handleOnSubmitComment}
                   commentInput={commentInput}
                 ></InputComment>
