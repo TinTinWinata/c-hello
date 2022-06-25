@@ -8,14 +8,48 @@ import userEvent from "@testing-library/user-event";
 import CheckListCard from "./CheckListCard";
 import { RenderCard } from "./RenderCard";
 import { Draggable } from "react-beautiful-dnd";
+import { toastError } from "../Model/Toast";
+import { useUserAuth } from "../Library/UserAuthContext";
+import { db } from "../Config/firebase-config";
 
 export default function RealtimeCard(props) {
+  const refreshRole = props.refreshRole;
   const location = useLocation();
   const [card, setCard] = useState([]);
   const [trigger, setTrigger] = useState(false);
   const [cardClicked, setClickedCard] = useState();
+  const [role, setRole] = useState();
+  const [board, setBoard] = useState();
 
+  const { userDb } = useUserAuth();
   const { id } = useParams();
+
+  // FIND ROLE
+  useEffect(() => {
+    console.log("setting role...");
+    if (userDb && board) {
+      userDb.board.map((userBoard) => {
+        if (userBoard.id == board.id) {
+          console.log("user board role :", userBoard.role);
+          setRole(userBoard.role);
+        }
+      });
+    }
+  }, [board]);
+
+  useEffect(() => {
+    const q = doc(db, "board", id);
+    const unsub = onSnapshot(q, (snapshot) => {
+      const temp = { ...snapshot.data(), id: snapshot.id };
+      setBoard(temp);
+    });
+
+    return () => {
+      unsub();
+    };
+  }, []);
+
+  // ----------------------------------------------------------------
 
   useEffect(() => {
     const q = query(
@@ -39,7 +73,12 @@ export default function RealtimeCard(props) {
   }, [cardClicked]);
 
   function handleOnClick(e, card) {
-    setClickedCard(card);
+    if (role) {
+      setClickedCard(card);
+    } else {
+      console.log("role : ", role);
+      toastError("You dont have access to see this card!");
+    }
   }
 
   function handleOffClick() {
@@ -50,6 +89,7 @@ export default function RealtimeCard(props) {
     <>
       {trigger ? (
         <RenderCard
+          role={role}
           listId={props.listId}
           setClickedCard={setClickedCard}
           setTrigger={setTrigger}

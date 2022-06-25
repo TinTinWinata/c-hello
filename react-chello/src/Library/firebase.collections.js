@@ -12,3 +12,7 @@ export const userCollectionRef = collection(db, "user");
 export const notificationCollectionRef = collection(db, "notification");
 export const deletedBoardCollectionRef = collection(db, "deletedBoard");
 export const cardInviteLinkCollectionRef = collection(db, "cardInviteLink");
+export const workspaceDeleteDetailCollectionRef = collection(
+  db,
+  "workspaceDeleteDetail"
+);

@@ -4,7 +4,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationIcon, XIcon } from "@heroicons/react/outline";
 import ManageBoardUpdate from "./ManageBoardUpdate";
 import BoardGrantRevoke from "./BoardGrantRevoke";
-import { doc, onSnapshot, query, where } from "firebase/firestore";
+import { doc, getDocs, onSnapshot, query, where } from "firebase/firestore";
 import { db } from "../Config/firebase-config";
 import { useParams } from "react-router-dom";
 import {
@@ -16,7 +16,7 @@ import { useUserAuth } from "../Library/UserAuthContext";
 import LeaveBoard from "./LeaveBoard";
 import CloseBoard from "./CloseBoard";
 
-export default function OptionBoard({ open, setOpen }) {
+export default function OptionBoard({ role, open, setOpen }) {
   const [tabIndex, setTabIndex] = useState(1);
 
   const [board, setBoard] = useState();
@@ -25,17 +25,6 @@ export default function OptionBoard({ open, setOpen }) {
 
   const { userDb } = useUserAuth();
   const { id } = useParams();
-  const [role, setRole] = useState();
-
-  useEffect(() => {
-    if (userDb) {
-      userDb.board.map((board) => {
-        if (board.id == id) {
-          setRole(board.role);
-        }
-      });
-    }
-  }, [userDb]);
 
   useEffect(() => {
     let unsubMember;
@@ -45,7 +34,7 @@ export default function OptionBoard({ open, setOpen }) {
       board.memberId.map((mId) => {
         const q = query(userCollectionRef, where("userId", "==", mId));
         setMemberList([]);
-        unsubMember = onSnapshot(q, (snapshot) => {
+        getDocs(q).then((snapshot) => {
           const currentUser = {
             ...snapshot.docs[0].data(),
             id: snapshot.docs[0].id,
@@ -58,7 +47,7 @@ export default function OptionBoard({ open, setOpen }) {
       board.adminId.map((aId) => {
         const q = query(userCollectionRef, where("userId", "==", aId));
         setAdminList([]);
-        unsubAdmin = onSnapshot(q, (snapshot) => {
+        getDocs(q).then((snapshot) => {
           const currentUser = {
             ...snapshot.docs[0].data(),
             userId: snapshot.id,
@@ -158,14 +147,19 @@ export default function OptionBoard({ open, setOpen }) {
                     >
                       Manage User
                     </button>
-                    <button
-                      className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm"
-                      onClick={() => {
-                        setTabIndex(3);
-                      }}
-                    >
-                      Invite
-                    </button>
+                    {role == "Admin" ? (
+                      <button
+                        className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm"
+                        onClick={() => {
+                          setTabIndex(3);
+                        }}
+                      >
+                        Invite
+                      </button>
+                    ) : (
+                      ""
+                    )}
+
                     <button
                       className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm"
                       onClick={() => {
@@ -211,7 +205,11 @@ export default function OptionBoard({ open, setOpen }) {
                 )}
                 {tabIndex == 3 ? <BoardInvite board={board}></BoardInvite> : ""}
                 {tabIndex == 4 ? (
-                  <LeaveBoard board={board} role={role}></LeaveBoard>
+                  <LeaveBoard
+                    setTabIndex={setTabIndex}
+                    board={board}
+                    role={role}
+                  ></LeaveBoard>
                 ) : (
                   ""
                 )}

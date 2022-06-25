@@ -15,6 +15,7 @@ import {
 } from "../Model/User";
 import { getWebId } from "../Model/Util";
 import { addWorkspaceIL, getWorkspaceById } from "../Model/Workspace";
+import { createInviteDetail } from "../Script/Factory";
 
 export default function BoardInvite({ board }) {
   const [link, setLink] = useState("");
@@ -48,7 +49,8 @@ export default function BoardInvite({ board }) {
   }, []);
 
   function handleButton() {
-    addBoardIL(id).then((docRef) => {
+    const data = { id: id };
+    createInviteDetail("board", data).then((docRef) => {
       setLink("/board-invite-link/" + docRef.id);
     });
   }

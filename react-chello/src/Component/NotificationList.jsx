@@ -4,6 +4,12 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteNotificationWithId } from "../Model/Notification";
 import { useUserAuth } from "../Library/UserAuthContext";
+import {
+  CheckCircleIcon,
+  EyeIcon,
+  MinusCircleIcon,
+  XIcon,
+} from "@heroicons/react/solid";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join("");
@@ -13,8 +19,22 @@ export default function NotificationList({ notification }) {
   const { userDb } = useUserAuth();
   const navigate = useNavigate();
 
+  function removeNotification(currSn) {
+    const tempNotif = userDb.notificationList;
+
+    let idx = 0;
+    let deletedNotif = [];
+    tempNotif.map((notif) => {
+      if (notif.id == currSn.id) {
+        return;
+      }
+      deletedNotif.push(notif);
+    });
+    userDb.notificationList = deletedNotif;
+    updateUserDb(userDb);
+  }
+
   function handleOnClick(currSn) {
-    const notificationId = currSn.id;
     navigate(currSn.link);
     const tempNotif = userDb.notificationList;
 
@@ -26,7 +46,6 @@ export default function NotificationList({ notification }) {
       }
       deletedNotif.push(notif);
     });
-    console.log("deleted notif : ", deletedNotif);
     userDb.notificationList = deletedNotif;
     updateUserDb(userDb);
   }
@@ -43,15 +62,26 @@ export default function NotificationList({ notification }) {
       <Menu.Item>
         {({ active }) => (
           <div
-            onClick={() => {
-              handleOnClick(notification);
-            }}
             className={
               (active ? "bg-gray-800" : "",
-              "block px-4 py-2 text-sm text-gray-700 cursor-pointer")
+              "block px-4 py-2 text-sm text-gray-700")
             }
           >
-            <h1 className="font-bold mb-2">{user ? user.displayName : ""}</h1>
+            <div className="flex">
+              <h1 className="font-bold mb-2">{user ? user.displayName : ""}</h1>
+              <CheckCircleIcon
+                onClick={() => {
+                  handleOnClick(notification);
+                }}
+                className="ml-2 w-5 h-5 cursor-pointer"
+              ></CheckCircleIcon>
+              <MinusCircleIcon
+                onClick={() => {
+                  removeNotification(notification);
+                }}
+                className="ml-1 w-5 h-5 cursor-pointer"
+              ></MinusCircleIcon>
+            </div>
             <p> {notification.value}</p>
           </div>
         )}

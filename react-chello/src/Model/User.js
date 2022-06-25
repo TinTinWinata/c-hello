@@ -37,8 +37,6 @@ export async function updateUserOnDatabase(userId, changes) {
 export async function getUser(id) {
   const q = query(collection(db, "user"), where("userId", "==", id));
   return getDocs(q);
-  const data = qs.docs[0].data();
-  return data;
 }
 
 export async function insertUser(user, newDisplayName) {
@@ -55,6 +53,8 @@ export async function insertUser(user, newDisplayName) {
       workspace: [],
       board: [],
       notificationList: [],
+      favoriteWorkspace: [],
+      favoriteBoard: [],
     });
   } catch (error) {}
 }

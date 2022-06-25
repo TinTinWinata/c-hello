@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { getWorkspaceById } from "../Model/Workspace";
 import DeleteWorkspace from "./DeleteWorkspace";
 import InviteWorkspaceMember from "./InviteWorkspaceMember";
+import LeaveWorkspace from "./LeaveWorkspace";
 import UpdateWorkspaceForm from "./UpdateWorkspaceForm";
 
 function deleteWorkspace() {}
@@ -8,6 +11,16 @@ function deleteWorkspace() {}
 export default function ManageWorkspaceForm(props) {
   const [tabIndex, setTabIndex] = useState(1);
   const role = props.role;
+  const [ws, setWs] = useState();
+  const { id } = useParams();
+
+  useEffect(() => {
+    getWorkspaceById(id).then((ws) => {
+      const temp = { ...ws, id: id };
+      setWs(temp);
+    });
+    return () => {};
+  }, []);
 
   function handleInviteIdx() {
     setTabIndex(2);
@@ -17,6 +30,9 @@ export default function ManageWorkspaceForm(props) {
   }
   function handleDeleteIdx() {
     setTabIndex(3);
+  }
+  function handleLeaveIndex() {
+    setTabIndex(4);
   }
 
   function getClass(idx) {
@@ -59,14 +75,27 @@ export default function ManageWorkspaceForm(props) {
             <div className="border-b border-gray-200">
               <div className="sm:flex sm:items-baseline">
                 <nav className="mt-4 ml-4 -mb-px flex space-x-8">
-                  <button onClick={handleUpdateIdx} className={getClass(1)}>
-                    Update Wokspace
-                  </button>
+                  {role ? (
+                    <button onClick={handleUpdateIdx} className={getClass(1)}>
+                      Update Wokspace
+                    </button>
+                  ) : (
+                    ""
+                  )}
+
                   <button onClick={handleInviteIdx} className={getClass(2)}>
                     Invite Member
                   </button>
-                  <button onClick={handleDeleteIdx} className={getClass(3)}>
-                    {role == "Member" ? "Leave Workspace" : "Delete Workspace"}
+                  {role == "Admin" ? (
+                    <button onClick={handleDeleteIdx} className={getClass(3)}>
+                      Delete Workspace
+                    </button>
+                  ) : (
+                    ""
+                  )}
+
+                  <button onClick={handleLeaveIndex} className={getClass(4)}>
+                    Leave Workspace
                   </button>
                 </nav>
               </div>
@@ -80,7 +109,16 @@ export default function ManageWorkspaceForm(props) {
                 ""
               )}
               {tabIndex == 3 ? (
-                <DeleteWorkspace role={role}></DeleteWorkspace>
+                <DeleteWorkspace ws={ws} role={role}></DeleteWorkspace>
+              ) : (
+                ""
+              )}
+              {tabIndex == 4 ? (
+                <LeaveWorkspace
+                  setTabIndex={setTabIndex}
+                  ws={ws}
+                  role={role}
+                ></LeaveWorkspace>
               ) : (
                 ""
               )}

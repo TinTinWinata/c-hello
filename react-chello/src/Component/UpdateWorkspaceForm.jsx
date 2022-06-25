@@ -51,13 +51,12 @@ export default function UpdateWorkspaceForm() {
   }
 
   useEffect(() => {
-    getWorkspaceById(id).then((ws, id) => {
+    getWorkspaceById(id).then((ws) => {
       if (ws.visibility == "Public") setSelected(visibility[0]);
       else if (ws.visibility == "Private") setSelected(visibility[1]);
-
-      setWs(ws);
+      const temp = { ...ws, id: id };
+      setWs(temp);
     });
-    return () => {};
   }, []);
 
   return (

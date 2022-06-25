@@ -19,6 +19,7 @@ import {
 import OptionBoard from "./OptionBoard";
 
 export default function SearchingUI({
+  role,
   searchChange,
   options,
   setSelectedOption,
@@ -34,7 +35,7 @@ export default function SearchingUI({
   }
   return (
     <>
-      <OptionBoard open={open} setOpen={setOpen}></OptionBoard>
+      <OptionBoard role={role} open={open} setOpen={setOpen}></OptionBoard>
       <div className="z-20 flex items-start mb-10">
         <div className="ml-5 relative w-fit mr-10">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -127,14 +128,18 @@ export default function SearchingUI({
             </>
           )}
         </Menu>
-        <button
-          onClick={() => {
-            setOpen(true);
-          }}
-          className="inline-flex items-center ml-3 px-4 py-1.5 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Option
-        </button>
+        {role ? (
+          <button
+            onClick={() => {
+              setOpen(true);
+            }}
+            className="inline-flex items-center ml-3 px-4 py-1.5 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Option
+          </button>
+        ) : (
+          ""
+        )}
       </div>
     </>
   );

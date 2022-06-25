@@ -1,13 +1,43 @@
+import { StarIcon } from "@heroicons/react/solid";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { auth, db } from "../Config/firebase-config";
 import { boardCollectionRef } from "../Library/firebase.collections";
+import { useUserAuth } from "../Library/UserAuthContext";
+import { toastError, toastSuccess } from "../Model/Toast";
+import { updateUserDb } from "../Model/User";
 import CardList from "./CardList";
 
 export default function WorkspaceList() {
   const [boardAdminList, setBoardAdminList] = useState([]);
   const [boardMemberList, setBoardMemberList] = useState([]);
+  const { userDb } = useUserAuth();
+
+  function handleFavorite(board) {
+    let favoriteBoard = userDb.favoriteBoard;
+    if (!favoriteBoard) favoriteBoard = [];
+
+    let isExists = true;
+
+    console.log("user : ", userDb);
+
+    favoriteBoard.map((favorite) => {
+      // Checking if favorite board already exisss
+      if (favorite == board.id) {
+        isExists = false;
+      }
+    });
+    if (isExists == false) {
+      toastError("Board already exists in your favorite Board!");
+    } else {
+      favoriteBoard = [...favoriteBoard, board.id];
+      userDb.favoriteBoard = favoriteBoard;
+      updateUserDb(userDb).then(() => {
+        toastSuccess("Board succesfully added to favorite!");
+      });
+    }
+  }
 
   async function get(id) {
     const q = query(boardCollectionRef, where("adminId", "array-contains", id));
@@ -79,7 +109,7 @@ export default function WorkspaceList() {
                       Member
                     </th>
                     <th scope="col" className="relative px-6 py-3">
-                      <span className="sr-only">Edit</span>
+                      <span className="sr-only"></span>
                     </th>
                   </tr>
                 </thead>
@@ -123,12 +153,12 @@ export default function WorkspaceList() {
                         {board.adminId.length}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a
-                          href="#"
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          Edit
-                        </a>
+                        <StarIcon
+                          onClick={() => {
+                            handleFavorite(board);
+                          }}
+                          className="cursor-pointer w-5 h-5 text-indigo-600 hover:text-indigo-900"
+                        ></StarIcon>
                       </td>
                     </tr>
                   ))}

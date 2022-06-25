@@ -5,13 +5,28 @@ import { toastError, toastSuccess } from "../Model/Toast";
 import { updateUserDb } from "../Model/User";
 import { removeArrayByIndex } from "../Model/Util";
 
-export default function LeaveBoard({ board, role }) {
+export default function LeaveBoard({ board, role, setTabIndex }) {
   const { userDb } = useUserAuth();
   const navigate = useNavigate();
 
-  function handleClick() {
+  function checkDelete() {
+    if (board) {
+      const memberLength = board.memberId.length;
+      const adminLength = board.adminId.length;
+      if (memberLength + adminLength > 1) {
+        leaveBoard();
+      } else {
+        setTabIndex(5);
+      }
+    } else {
+      toastError("Too fast darling!");
+    }
+  }
+
+  function leaveBoard() {
     if (!role) toastError("Too fast darling!");
 
+    // If Role Admin
     if (role == "Admin") {
       const adminList = board.adminId;
       let idx = 0;
@@ -45,7 +60,10 @@ export default function LeaveBoard({ board, role }) {
         .catch((e) => {
           toastError("Failed to remove admin ", e.message);
         });
-    } else if (role == "Member") {
+    }
+
+    // If Role Member
+    else if (role == "Member") {
       const adminList = board.memberId;
       let idx = 0;
       adminList.map((aId) => {
@@ -96,7 +114,7 @@ export default function LeaveBoard({ board, role }) {
       </div>
       <div className="mt-5">
         <button
-          onClick={handleClick}
+          onClick={checkDelete}
           type="button"
           className="inline-flex items-center justify-center px-4 py-2 border border-transparent font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm"
         >

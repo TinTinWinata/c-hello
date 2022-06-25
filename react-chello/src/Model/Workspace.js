@@ -13,6 +13,7 @@ import {
 import { db } from "../Config/firebase-config";
 import {
   workspaceCollectionRef,
+  workspaceDeleteDetailCollectionRef,
   workspaceILRef,
 } from "../Library/firebase.collections";
 import { useUserAuth } from "../Library/UserAuthContext";
@@ -25,9 +26,17 @@ const ref = collection(db, "workspace");
 
 export async function getWorkspaceById(id) {
   const ref = doc(db, "workspace", id);
-  const temp = await getDoc(ref);
-  return temp.data();
+  const a = await getDoc(ref);
+  const temp = { ...a.data(), id: a.id };
+  return temp;
 }
+export async function getWorkspaceDeleteById(id) {
+  const ref = doc(db, "workspaceDeleteDetail", id);
+  const a = await getDoc(ref);
+  const temp = { ...a.data(), id: a.id };
+  return temp;
+}
+
 export async function insertWorkspace(
   newName,
   newDetail,
@@ -45,7 +54,6 @@ export async function insertWorkspace(
       memberId: [],
       visibility: "Private",
     });
-
     const changes = {
       workspace: [
         ...userDb.workspace,
@@ -56,7 +64,8 @@ export async function insertWorkspace(
         },
       ],
     };
-    return updateUserOnDatabase(userDb.userId, changes);
+    updateUserOnDatabase(userDb.userId, changes);
+    return doc.id;
   } catch (error) {
     alert("error adding : ", error);
     console.log("error adding : ", error);
@@ -120,6 +129,11 @@ export async function addMember(ws, newMemberId, userDb) {
   });
 }
 
+export function updateDeleteWorkspace(detailDelete) {
+  const ref = doc(db, "workspaceDeleteDetail", detailDelete.id);
+  return updateDoc(ref, detailDelete);
+}
+
 export function deleteWorkspace(workspaceId) {
   const ref = doc(db, "workspace", workspaceId);
   deleteBoard(workspaceId)
@@ -139,6 +153,24 @@ export async function addWorkspaceIL(workspaceId) {
     });
   } catch (error) {
     alert("error adding : ", error);
+    console.log("error adding : ", error);
+  }
+}
+
+export async function addWorkspaceDeleteLink(ws) {
+  try {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    let arr = [];
+    ws.adminId.map((admin) => {
+      arr.push({ admin, status: false });
+    });
+    return await addDoc(workspaceDeleteDetailCollectionRef, {
+      workspaceId: ws.id,
+      adminId: arr,
+      dueDate: date,
+    });
+  } catch (error) {
     console.log("error adding : ", error);
   }
 }

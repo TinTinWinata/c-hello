@@ -10,7 +10,7 @@ import {
 } from "../Library/firebase.collections";
 import BoardCalenderPopUp from "./BoardCalenderPopUp";
 
-export default function BoardCalendarView() {
+export default function BoardCalendarView({role}) {
   const [eventList, setEventList] = useState([]);
   const [card, setCard] = useState();
   const { id } = useParams();
@@ -66,13 +66,14 @@ export default function BoardCalendarView() {
           endAccessor="end"
           style={{ height: 500 }}
         />
-        <button
+        {role ?   (<button
           onClick={handleClick}
           type="button"
           className="inline-flex items-center px-3 py-3 border border-transparent text-xl mt-5 font-medium rounded-full shadow-sm text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500"
         >
           Create Card
-        </button>
+        </button>) : ""}
+      
       </div>
     </>
   );

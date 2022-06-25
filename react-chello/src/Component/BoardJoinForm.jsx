@@ -28,15 +28,15 @@ export default function BoardJoinForm() {
     // Check if board private & user not workspace member
 
     if (board && workspace) {
-      if (board.visibility == "Private") {
+      if (board.visibility == "Private" || board.visibility == "Workspace") {
         workspace.memberId.map((id) => {
           if (id == userDb.userId) {
             setValid(true);
           }
         });
+      } else if (board.visibility == "Public") {
+        setValid(true);
       }
-    } else {
-      setValid(true);
     }
   }, [workspace]);
 
@@ -79,6 +79,7 @@ export default function BoardJoinForm() {
 
   function handleJoin() {
     if (board) {
+      // Join Board
       addBoardMember(board, userDb.userId, userDb)
         .then(() => {
           toastSuccess("Success join a board!");
@@ -130,8 +131,8 @@ export default function BoardJoinForm() {
                   <>
                     <div className="flex">
                       <h3 className="mb-4 text-xl font-medium text-gray-900 ">
-                        You cannot join a private board while you're not a
-                        workspace member!
+                        You cannot join a private/workspace type board while
+                        you're not a workspace member!
                       </h3>
                     </div>
                     <button

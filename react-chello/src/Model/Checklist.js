@@ -2,16 +2,11 @@ import { addDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../Config/firebase-config";
 import { checklistCollectionRef } from "../Library/firebase.collections";
 
-export async function insertChecklist(cardId, checklist) {
+export async function insertChecklist(checklist) {
   try {
-    let docsData = {
-      cardId: cardId,
-      name: checklist.name,
-      value: checklist.value,
-    };
-    await addDoc(checklistCollectionRef, docsData);
+    await addDoc(checklistCollectionRef, checklist);
   } catch (error) {
-    console.log("error adding : ", error);
+    console.log("error adding : ", error.message);
   }
 }
 

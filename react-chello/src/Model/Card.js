@@ -8,6 +8,7 @@ import {
   doc,
   where,
   arrayUnion,
+  query,
 } from "firebase/firestore";
 import { db } from "../Config/firebase-config";
 import {
@@ -42,6 +43,7 @@ export async function insertCard(newName, boardId, listId, date, userDb) {
       label: [],
       date: date,
       watcher: [userDb.userId],
+      attachment: [],
     };
     return await addDoc(cardCollectionRef, docsData);
   } catch (error) {

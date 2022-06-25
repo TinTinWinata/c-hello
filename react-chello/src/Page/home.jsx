@@ -4,6 +4,8 @@ import { onSnapshot, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import BoardList from "../Component/BoardList";
 import ClosedBoardButton from "../Component/ClosedBoardButton";
+import FavoriteBoard from "../Component/FavoriteBoard";
+import HomeSearching from "../Component/HomeSearching";
 import JoinBoard from "../Component/JoinBoard";
 import JoinWorkspace from "../Component/JoinWorkspace";
 import Navbar from "../Component/Navbar";
@@ -20,14 +22,14 @@ import { useUserAuth } from "../Library/UserAuthContext";
 
 function Home() {
   const [showCloseBoard, setShowCloseBoard] = useState(false);
-
   const [closedBoard, setClosedBoard] = useState();
-
   const { userDb } = useUserAuth();
+  const [favLength, setFavLength] = useState(0);
 
   useEffect(() => {
     let unsub;
-    if (userDb) {
+    if (userDb && userDb.favoriteBoard !== undefined) {
+      setFavLength(userDb.favoriteBoard.length);
       const q = query(
         boardCollectionRef,
         where("adminId", "array-contains", userDb.userId),
@@ -51,11 +53,13 @@ function Home() {
       <Navbar></Navbar>
       <div className="flex">
         <Sidebar></Sidebar>
-        <div className="flex flex-col">
+        <div className="w-fit flex flex-col">
           {showCloseBoard ? (
             <ViewClosedBoard closedBoard={closedBoard}></ViewClosedBoard>
           ) : (
             <React.Fragment>
+              <HomeSearching></HomeSearching>
+              {favLength > 0 ? <FavoriteBoard></FavoriteBoard> : ""}
               <PublicWorkspace></PublicWorkspace>
               <JoinWorkspace></JoinWorkspace>
               <PublicBoard></PublicBoard>

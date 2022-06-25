@@ -16,7 +16,7 @@ function classNames(...classes) {
 
 export default function BoardGrantRevoke({ board, memberList, adminList }) {
   const { user } = useUserAuth();
-  console.log("board : ", board);
+  
   function handleGrant(member) {
     if (member.role == "Admin") {
       toastError("Cannot grant an admin!");
@@ -31,7 +31,6 @@ export default function BoardGrantRevoke({ board, memberList, adminList }) {
       updateUserDb(member).then(() => {
         // 1. Remove member id di board
         let idx = 0;
-        console.log("board [0] : ", board);
         board.memberId.map((id) => {
           if (id == member.userId) {
             return;

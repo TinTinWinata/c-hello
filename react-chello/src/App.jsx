@@ -14,6 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "quill/dist/quill.snow.css";
 import BoardJoinForm from "./Component/BoardJoinForm";
 import CardWithInvitedLink from "./Component/CardWithInvitedLink";
+import DeleteWorkspaceForm from "./Component/DeleteWorkspaceForm";
 
 function App() {
   return (
@@ -48,6 +49,10 @@ function App() {
             path="/board-invite-link/:id"
             element={<BoardJoinForm></BoardJoinForm>}
           />
+          <Route
+            path="/delete-workspace/:id"
+            element={<DeleteWorkspaceForm></DeleteWorkspaceForm>}
+          ></Route>
         </Routes>
       </UserAuthContextProvider>
     </BrowserRouter>

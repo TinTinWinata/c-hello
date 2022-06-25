@@ -3,12 +3,17 @@ import { useUserAuth } from "../Library/UserAuthContext";
 import { insertCard } from "../Model/Card";
 import { getWebId } from "../Model/Util";
 
-export default function CreateCard(props) {
+export default function CreateCard({ listId, refreshRole }) {
   const { userDb } = useUserAuth();
 
   function handleClick() {
+    console.log("refresh role :", refreshRole);
     const boardId = getWebId();
-    insertCard("New Card", boardId, props.listId, new Date(), userDb);
+    insertCard("New Card", boardId, listId, new Date(), userDb);
+    if (refreshRole) {
+      console.log("refreshign...");
+      refreshRole();
+    }
   }
 
   return (

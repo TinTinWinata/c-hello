@@ -22,9 +22,15 @@ import CardMap from "../Layout/Map";
 import InputComment from "./InputComment";
 import { useUserAuth } from "../Library/UserAuthContext";
 import GridList from "./CommentGridList";
-import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import {
+  ref,
+  uploadBytes,
+  listAll,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 import { storage } from "../Config/firebase-config";
-import { TagIcon } from "@heroicons/react/solid";
+import { TagIcon, UploadIcon, XIcon } from "@heroicons/react/solid";
 import RenderCardChecklist from "./RenderCardChecklist";
 import RenderCardLabelForm from "./RenderCardLabelForm";
 import { toastError, toastSuccess } from "../Model/Toast";
@@ -35,14 +41,17 @@ import { getListWithListId, updateList, updateListWithId } from "../Model/List";
 import { PlusIcon } from "@heroicons/react/outline";
 import RenderCardWatcherForm from "./RenderCardWatcherForm";
 import WatcherList from "./WatcherList";
+import { useDropzone } from "react-dropzone";
+import { notifyCommentWatcher } from "../Script/Observer";
 
 export function RenderCard(props) {
   const modules = {
     toolbar: [["bold", "italic", "underline", "strike"]],
   };
 
+  const role = props.role;
   const listId = props.listId;
-  const { user } = useUserAuth();
+  const { user, userDb } = useUserAuth();
 
   var titleInput = createRef();
   var descriptionInput = createRef();
@@ -64,6 +73,18 @@ export function RenderCard(props) {
   const [labelForm, setLabelForm] = useState(false);
   const [watcherForm, setWatcherForm] = useState(false);
 
+  // DROP ZONE
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: "*",
+    noClick: true,
+    noKeyboard: true,
+    onDrop: (acceptedFiles) => {
+      // console.log("accepted file ", acceptedFiles);
+      uploadImage(acceptedFiles[0]);
+    },
+  });
+
+  // QUILL
   const { quill, quillRef } = useQuill({ modules });
 
   function handleWatcherForm() {
@@ -95,7 +116,7 @@ export function RenderCard(props) {
 
   useEffect(() => {
     if (quill && cardClicked.innerDesc) {
-      quill.clip.dangerouslyPasteHTML(cardClicked.innerDesc);
+      quill.clipboard.dangerouslyPasteHTML(cardClicked.innerDesc);
     }
   }, [quill]);
 
@@ -112,18 +133,30 @@ export function RenderCard(props) {
   }, [quill]);
 
   const uploadImage = (img) => {
+    const link = cardClicked.id + "/" + img.name;
+    // Save Card Clicked Name
+
+    if (cardClicked.attachment !== undefined) cardClicked.attachment = [];
+    cardClicked.attachment = [
+      ...cardClicked.attachment,
+      { link: link, name: img.name },
+    ];
+    updateCard(cardClicked);
+
+    // Uploading the image
+
     if (img == null) {
       return;
     }
-
-    const link = cardClicked.id + "/" + img.name;
     const imageRef = ref(storage, link);
     uploadBytes(imageRef, img)
       .then(() => {
+        toastSuccess("Succesfully to upload data!");
         setStatus("Success upload data!");
         refreshPage();
       })
       .catch((e) => {
+        toastError("Faild to upload data!" + e.message);
         setStatus(e.message);
       });
   };
@@ -153,6 +186,7 @@ export function RenderCard(props) {
       value: comment,
       date: new Date(),
     };
+
     if (!cardClicked.commentList) {
       cardClicked.commentList = [commentObj];
     } else {
@@ -160,7 +194,23 @@ export function RenderCard(props) {
     }
 
     commentInput.current.value = "";
-    updateCard(cardClicked);
+    updateCard(cardClicked).then(() => {
+      const notification = {
+        link: "/board/" + cardClicked.boardId,
+        value:
+          userDb.displayName +
+          " Commented on " +
+          cardClicked.name +
+          " '" +
+          comment +
+          "'",
+        type: "comment-watcher",
+        id: uuid(),
+        senderId: user.uid,
+      };
+      console.log("card : ", cardClicked);
+      notifyCommentWatcher(cardClicked.watcher, notification);
+    });
   }
 
   function handleMapClick(e) {
@@ -304,12 +354,18 @@ export function RenderCard(props) {
     const checklistName = newChecklist.current.value;
 
     const checklist = {
-      value: false,
       name: checklistName,
+      cardId: cardClicked.id,
+      data: [
+        {
+          value: false,
+          name: "New Checklist",
+        },
+      ],
     };
 
     newChecklist.current.value = "";
-    insertChecklist(cardClicked.id, checklist);
+    insertChecklist(checklist);
   };
 
   const handleDateOnChange = (date) => {
@@ -321,249 +377,316 @@ export function RenderCard(props) {
   return (
     <>
       <div className="w-screen h-screen fixed top-0 left-0 bg-black opacity-70"></div>
-      <div className="flex flex-row overflow-y-auto z-10 w-fit h-5/6 fixed bg-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-        {/* LEFT SIDE */}
-        <div className="w-96 h-fit ">
-          <svg
-            onClick={handleOffClick}
-            className="right-5 top-5 absolute h-8 w-8 text-gray-500 cursor-pointer"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            strokeWidth="2"
-            stroke="currentColor"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            {" "}
-            <path stroke="none" d="M0 0h24v24H0z" />{" "}
-            <line x1="18" y1="6" x2="6" y2="18" />{" "}
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-          <div className="z-20 ml-5 mt-5 text-2xl font-bold flex flex-col">
-            <input
-              ref={titleInput}
-              className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
-              type="text"
-              onKeyDown={handleKeyDown}
-              defaultValue={cardClicked ? cardClicked.name : "New Card"}
-              aria-label="Full name"
-            />
-            <div className="pt-4 mt-4 w-5/6 space-y-2 border-t border-gray-200 dark:border-gray-700"></div>
-            <p
-              className="text-lg appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
-              type="text"
-              aria-label="Full name"
+      <div>
+        <div
+          {...getRootProps()}
+          className="flex flex-row overflow-y-auto z-10 w-fit h-5/6 fixed bg-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        >
+          {/* LEFT SIDE */}
+          <div className="w-96 h-fit ">
+            <input {...getInputProps()} />
+            <svg
+              onClick={handleOffClick}
+              className="right-5 top-5 absolute h-8 w-8 text-gray-500 cursor-pointer"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
+              stroke="currentColor"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              Description
-            </p>
-            <div className="h-40">
-              <div className="font-normal" ref={quillRef} />
-            </div>
-            <div className="w-10 h-24 "></div>
-            {cardClicked.label.length > 0 ? (
+              {" "}
+              <path stroke="none" d="M0 0h24v24H0z" />{" "}
+              <line x1="18" y1="6" x2="6" y2="18" />{" "}
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+            <div className="z-20 ml-5 mt-5 text-2xl font-bold flex flex-col">
+              <input
+                ref={titleInput}
+                className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+                type="text"
+                onKeyDown={handleKeyDown}
+                defaultValue={cardClicked ? cardClicked.name : "New Card"}
+                aria-label="Full name"
+              />
+              <div className="pt-4 mt-4 w-5/6 space-y-2 border-t border-gray-200 dark:border-gray-700"></div>
               <p
-                className="mt-5 text-lg appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+                className="text-lg appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
                 type="text"
                 aria-label="Full name"
               >
-                Label
+                Description
               </p>
-            ) : (
-              ""
-            )}
-
-            {cardClicked.label.map((label, idx) => {
-              const color = "bg-[" + label.color + "] ";
-
-              return (
-                <RenderLabelList
-                  listId={listId}
-                  key={idx}
-                  label={label}
-                  cardClicked={cardClicked}
-                ></RenderLabelList>
-              );
-            })}
-            {/* CHECKLIST */}
-            {checklistForm ? (
-              <RenderCardChecklist
-                checklist={checklist}
-                newChecklist={newChecklist}
-                handleAddChecklist={handleAddChecklist}
-              ></RenderCardChecklist>
-            ) : (
-              ""
-            )}
-            {dateForm ? (
-              <div className="mt-5">
-                <div className="flex">
-                  <p
-                    className="mt-3 w-32 text-lg appearance-none bg-transparent border-none  text-gray-700 px-2 leading-tight focus:outline-none"
-                    type="text"
-                    aria-label="Full name"
-                  >
-                    Due Date
-                  </p>
-                  <DatePicker
-                    ref={datePicker}
-                    className="pb-2 border-2 fit-content rounded-xl text-sm font-normal cursor-pointer date-picker "
-                    onChange={handleDateOnChange}
-                  />
-                </div>
-                <p className="z-10 ml-2 font-normal italic text-gray-700 text-sm w-1/4">
-                  {date}
+              <div className="h-40">
+                <div className="font-normal" ref={quillRef} />
+              </div>
+              <div className="w-10 h-24 "></div>
+              {cardClicked.label.length > 0 ? (
+                <p
+                  className="mt-5 text-lg appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+                  type="text"
+                  aria-label="Full name"
+                >
+                  Label
                 </p>
-              </div>
-            ) : (
-              ""
-            )}
+              ) : (
+                ""
+              )}
 
-            {locationForm ? (
-              <div className="mt-8">
-                <div className="flex">
-                  <p
-                    className="ml-2 mt-2 text-lg appearance-none bg-transparent border-none w-fit text-gray-700 leading-tight focus:outline-none"
-                    type="text"
-                    aria-label="Full name"
-                  >
-                    Location
-                  </p>
-                  <p
-                    className="ml-2 location text-sm appearance-none bg-transparent border-none w-fit text-gray-700 font-normal italic leading-tight focus:outline-none"
-                    type="text"
-                    aria-label="Full name"
-                  >
-                    {getLatitude()}
-                  </p>
-                </div>
-                <div className="ml-2 mt-1">
-                  <CardMap cardClicked={cardClicked} onClick={handleMapClick} />
-                </div>
-              </div>
-            ) : (
-              ""
-            )}
+              {cardClicked.label.map((label, idx) => {
+                const color = "bg-[" + label.color + "] ";
 
-            <p
-              className="ml-2 mt-4 text-lg appearance-none bg-transparent border-none w-fit text-gray-700 leading-tight focus:outline-none"
-              type="text"
-              aria-label="Full name"
-            >
-              {imageList.length > 0 ? "Attachment" : ""}
-            </p>
-            <div className="flex w-full flex-row flex-wrap mb-5 mt-5">
-              {imageList.map((src) => {
                 return (
-                  <>
-                    <img src={src} className="mt-2 ml-2 w-[100px] h-[100px]" />
-                  </>
+                  <RenderLabelList
+                    listId={listId}
+                    key={idx}
+                    label={label}
+                    cardClicked={cardClicked}
+                  ></RenderLabelList>
                 );
               })}
-            </div>
-            {/* <p
+              {/* CHECKLIST */}
+              {checklist > 0 ? (
+                <p
+                  className="mt-3 text-lg appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+                  type="text"
+                  aria-label="Full name"
+                >
+                  Check List
+                </p>
+              ) : (
+                ""
+              )}
+              {checklist.map((card, idx) => {
+                return (
+                  <CheckListCard key={idx} checklist={card}></CheckListCard>
+                );
+              })}
+
+              {checklistForm ? (
+                <RenderCardChecklist
+                  checklist={checklist}
+                  newChecklist={newChecklist}
+                  handleAddChecklist={handleAddChecklist}
+                ></RenderCardChecklist>
+              ) : (
+                ""
+              )}
+              {dateForm ? (
+                <div className="mt-5">
+                  <div className="flex">
+                    <p
+                      className="mt-3 w-32 text-lg appearance-none bg-transparent border-none  text-gray-700 px-2 leading-tight focus:outline-none"
+                      type="text"
+                      aria-label="Full name"
+                    >
+                      Due Date
+                    </p>
+                    <DatePicker
+                      ref={datePicker}
+                      className="pb-2 border-2 fit-content rounded-xl text-sm font-normal cursor-pointer date-picker "
+                      onChange={handleDateOnChange}
+                    />
+                  </div>
+                  <p className="z-10 ml-2 font-normal italic text-gray-700 text-sm w-1/4">
+                    {date}
+                  </p>
+                </div>
+              ) : (
+                ""
+              )}
+
+              {locationForm ? (
+                <div className="mt-8">
+                  <div className="flex">
+                    <p
+                      className="ml-2 mt-2 text-lg appearance-none bg-transparent border-none w-fit text-gray-700 leading-tight focus:outline-none"
+                      type="text"
+                      aria-label="Full name"
+                    >
+                      Location
+                    </p>
+                    <p
+                      className="ml-2 location text-sm appearance-none bg-transparent border-none w-fit text-gray-700 font-normal italic leading-tight focus:outline-none"
+                      type="text"
+                      aria-label="Full name"
+                    >
+                      {getLatitude()}
+                    </p>
+                  </div>
+                  <div className="ml-2 mt-1">
+                    <CardMap
+                      cardClicked={cardClicked}
+                      onClick={handleMapClick}
+                    />
+                  </div>
+                </div>
+              ) : (
+                ""
+              )}
+
+              <p
+                className="ml-2 mt-4 text-lg appearance-none bg-transparent border-none w-fit text-gray-700 leading-tight focus:outline-none"
+                type="text"
+                aria-label="Full name"
+              >
+                {imageList.length > 0 ? "Attachment" : ""}
+              </p>
+              <div className="flex w-full flex-row flex-wrap mb-5 mt-5">
+                {imageList.map((src, idx) => {
+                  console.log("src : ", src);
+                  function handleDelete() {
+                    const link = cardClicked.attachment[idx].link;
+                    const refImage = ref(storage, link);
+                    deleteObject(refImage)
+                      .then(() => {
+                        toastSuccess("Deleted Succesfully!");
+                        refreshPage();
+                      })
+                      .catch((e) => {
+                        toastError("Failed to delete files! " + e.message);
+                      });
+                  }
+
+                  return (
+                    <>
+                      <div className="flex" key={idx}>
+                        <a
+                          href={src}
+                          className="shadow-xs rounded-lg  border p-2 text-xs hover:bg-gray-100 font-normal text-gray-700 mt-2 ml-2"
+                          target="_blank"
+                        >
+                          <div className="flex">
+                            <div className="mt-1">
+                              {cardClicked.attachment[idx]
+                                ? cardClicked.attachment[idx].name
+                                : ""}
+                              <span>{" " + (idx + 1)}</span>
+                            </div>
+                            <UploadIcon className="w-5 h-5"></UploadIcon>
+                          </div>
+                        </a>
+                        <XIcon
+                          onClick={handleDelete}
+                          className="w-5 h-5 text-gray-500 hover:text-gray-700 cursor-pointer ml-2 mt-4"
+                        ></XIcon>
+                      </div>
+                    </>
+                  );
+                })}
+              </div>
+              {/* <p
               className="ml-2 text-lg appearance-none bg-transparent border-none w-fit text-gray-700 leading-tight focus:outline-none"
               type="text"
               aria-label="Full name"
             >
               Comment
             </p> */}
-            <div className="ml-2 mt-2 mb-5 ">
-              <GridList cardClicked={cardClicked}></GridList>
+              <div className="ml-2 mt-2 mb-5 ">
+                <GridList cardClicked={cardClicked}></GridList>
+              </div>
+              <div className="ml-2 mr-5 font-normal">
+                <InputComment
+                  handle={handleOnSubmitComment}
+                  commentInput={commentInput}
+                ></InputComment>
+              </div>
+              <div className="flex mt-3">
+                <button
+                  onClick={handleDelete}
+                  className="w-1/6 mt-5 appearance-none bg-transparent border-mt-2  bg-red-500 hover:bg-red-700 text-white text-sm font-bold py-2 rounded"
+                >
+                  Delete
+                </button>
+                <label
+                  htmlFor="file-upload"
+                  className="ml-3 w-1/6 mt-5 appearance-none b  g-transparent border-mt-2  bg-sky-500 hover:bg-sky-700 text-white text-sm font-bold py-2 px-2  rounded"
+                >
+                  <div className="text">Attach</div>
+                </label>
+                <input
+                  onChange={handleAttachChange}
+                  id="file-upload"
+                  type="file"
+                  className="hidden"
+                />
+              </div>
+              <p className="font-normal text-xs mb-5 text-green-700">
+                {status}
+              </p>
             </div>
-            <div className="ml-2 mr-5 font-normal">
-              <InputComment
-                handle={handleOnSubmitComment}
-                commentInput={commentInput}
-              ></InputComment>
-            </div>
-            <div className="flex mt-3">
-              <button
-                onClick={handleDelete}
-                className="w-1/6 mt-5 appearance-none bg-transparent border-mt-2  bg-red-500 hover:bg-red-700 text-white text-sm font-bold py-2 rounded"
-              >
-                Delete
-              </button>
-              <label
-                htmlFor="file-upload"
-                className="ml-3 w-1/6 mt-5 appearance-none b  g-transparent border-mt-2  bg-sky-500 hover:bg-sky-700 text-white text-sm font-bold py-2 px-2  rounded"
-              >
-                <div className="text">Attach</div>
-              </label>
-              <input
-                onChange={handleAttachChange}
-                id="file-upload"
-                type="file"
-                className="hidden"
-              />
-            </div>
-            <p className="font-normal text-xs mb-5 text-green-700">{status}</p>
           </div>
-        </div>
 
-        {/* RIGHT SIDE */}
-        <div className="w-[16rem] mt-16 pr-8 ml-8">
-          <div className="">
-            <div
-              onClick={handleLabelForm}
-              className="hover:bg-gray-400 cursor-pointer flex w-full h-9 my-3 bg-gray-300 rounded-md"
-            >
-              <TagIcon className="scale-50 stroke-gray-800"></TagIcon>
-              <p className="mt-[0.3rem] font-light">Labels</p>
+          {/* RIGHT SIDE */}
+          <div className="w-[16rem] mt-16 pr-8 ml-8">
+            <div className="">
+              <div
+                onClick={handleLabelForm}
+                className="hover:bg-gray-400 cursor-pointer flex w-full h-9 my-3 bg-gray-300 rounded-md"
+              >
+                <TagIcon className="scale-50 stroke-gray-800"></TagIcon>
+                <p className="mt-[0.3rem] font-light">Labels</p>
+              </div>
+              {labelForm ? (
+                <RenderCardLabelForm
+                  handleInsertLabelCard={handleInsertLabelCard}
+                  handle={handleLabelForm}
+                ></RenderCardLabelForm>
+              ) : (
+                ""
+              )}
+              <div
+                className="hover:bg-gray-400 cursor-pointer flex w-full h-9 my-3 bg-gray-300 rounded-md"
+                onClick={handleChecklistForm}
+              >
+                <TagIcon className="scale-50 stroke-gray-800"></TagIcon>
+                <p className="mt-[0.3rem] font-light">Checklist</p>
+              </div>
+
+              <div
+                className="hover:bg-gray-400 cursor-pointer flex w-full h-9 my-3 bg-gray-300 rounded-md"
+                onClick={handleDateForm}
+              >
+                <TagIcon className="scale-50 stroke-gray-800"></TagIcon>
+                <p className="mt-[0.3rem] font-light">Due Date</p>
+              </div>
+
+              <div
+                className="hover:bg-gray-400 cursor-pointer flex w-full h-9 my-3 bg-gray-300 rounded-md"
+                onClick={handleLocationForm}
+              >
+                <TagIcon className="scale-50 stroke-gray-800"></TagIcon>
+                <p className="mt-[0.3rem] font-light">Location</p>
+              </div>
+              <div
+                className="hover:bg-gray-400 cursor-pointer flex w-full h-9 my-3 bg-gray-300 rounded-md"
+                onClick={generateLink}
+              >
+                <TagIcon className="scale-50 stroke-gray-800"></TagIcon>
+                <p className="mt-[0.3rem] font-light">Copy Link</p>
+              </div>
             </div>
-            {labelForm ? (
-              <RenderCardLabelForm
-                handleInsertLabelCard={handleInsertLabelCard}
-                handle={handleLabelForm}
-              ></RenderCardLabelForm>
+            {role == "Admin" ? (
+              <div onClick={handleWatcherForm} className="flex cursor-pointer">
+                <p className="mt-[0.4rem] font-light">Add Watcher</p>
+                <PlusIcon className="w-10 h-10 scale-50 stroke-gray-800"></PlusIcon>
+              </div>
             ) : (
               ""
             )}
-            <div
-              className="hover:bg-gray-400 cursor-pointer flex w-full h-9 my-3 bg-gray-300 rounded-md"
-              onClick={handleChecklistForm}
-            >
-              <TagIcon className="scale-50 stroke-gray-800"></TagIcon>
-              <p className="mt-[0.3rem] font-light">Checklist</p>
-            </div>
 
-            <div
-              className="hover:bg-gray-400 cursor-pointer flex w-full h-9 my-3 bg-gray-300 rounded-md"
-              onClick={handleDateForm}
-            >
-              <TagIcon className="scale-50 stroke-gray-800"></TagIcon>
-              <p className="mt-[0.3rem] font-light">Due Date</p>
-            </div>
-
-            <div
-              className="hover:bg-gray-400 cursor-pointer flex w-full h-9 my-3 bg-gray-300 rounded-md"
-              onClick={handleLocationForm}
-            >
-              <TagIcon className="scale-50 stroke-gray-800"></TagIcon>
-              <p className="mt-[0.3rem] font-light">Location</p>
-            </div>
-            <div
-              className="hover:bg-gray-400 cursor-pointer flex w-full h-9 my-3 bg-gray-300 rounded-md"
-              onClick={generateLink}
-            >
-              <TagIcon className="scale-50 stroke-gray-800"></TagIcon>
-              <p className="mt-[0.3rem] font-light">Copy Link</p>
-            </div>
+            <WatcherList role={role} cardClicked={cardClicked}></WatcherList>
+            {watcherForm ? (
+              <RenderCardWatcherForm
+                setWatcherForm={setWatcherForm}
+                cardClicked={cardClicked}
+              ></RenderCardWatcherForm>
+            ) : (
+              ""
+            )}
           </div>
-          <div onClick={handleWatcherForm} className="flex cursor-pointer">
-            <p className="mt-[0.4rem] font-light">Add Watcher</p>
-            <PlusIcon className="w-10 h-10 scale-50 stroke-gray-800"></PlusIcon>
-          </div>
-          <WatcherList cardClicked={cardClicked}></WatcherList>
-          {watcherForm ? (
-            <RenderCardWatcherForm
-              setWatcherForm={setWatcherForm}
-              cardClicked={cardClicked}
-            ></RenderCardWatcherForm>
-          ) : (
-            ""
-          )}
         </div>
       </div>
     </>

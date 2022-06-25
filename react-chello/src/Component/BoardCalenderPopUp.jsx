@@ -9,7 +9,8 @@ import { onSnapshot, query, where } from "firebase/firestore";
 import { listCollectionRef } from "../Library/firebase.collections";
 import Select from "react-select";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { toastError } from "../Model/Toast";
+import { toastError, toastSuccess } from "../Model/Toast";
+import { createInviteDetail } from "../Script/Factory";
 
 export default function BoardCalenderPopUp({ open, setOpen }) {
   const name = createRef();
@@ -82,7 +83,8 @@ export default function BoardCalenderPopUp({ open, setOpen }) {
       const listId = selectValue[0].value;
 
       insertCard(nameValue, id, listId, date, userDb).then((doc) => {
-        addCardIL(doc.id, id).then((docRef) => {
+        const data = { cardId: doc.id, boardId: id };
+        createInviteDetail("card", data).then((docRef) => {
           setLink("/card-invite-link/" + docRef.id);
         });
       });

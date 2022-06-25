@@ -33,7 +33,7 @@ function Workspace(props) {
         <div className="flex-col ml-16 mt-7 ">
           <div className="font-bold text-2xl mb-5">Boards List</div>
           <BoardCardGroup role={role}></BoardCardGroup>
-          <div className="font-bold text-2xl mb-5 mt-10">Member List</div>
+
           <WorkspaceMemberlist></WorkspaceMemberlist>
         </div>
       </div>

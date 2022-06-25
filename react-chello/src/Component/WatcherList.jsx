@@ -1,19 +1,37 @@
 import { XIcon } from "@heroicons/react/solid";
-import { onSnapshot, query, where } from "firebase/firestore";
+import {
+  documentId,
+  getDocs,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { userCollectionRef } from "../Library/firebase.collections";
 import { updateCard } from "../Model/Card";
 import { toastError, toastSuccess } from "../Model/Toast";
+import { getUser } from "../Model/User";
 import { removeArray, removeArrayByIndex } from "../Model/Util";
 
-export default function WatcherList({ cardClicked }) {
+export default function WatcherList({ cardClicked, role }) {
   const [watcher, setWatcher] = useState([]);
+  const [refresh, setRefresh] = useState(false);
+
+  function refreshPage() {
+    setRefresh(!refresh);
+  }
 
   useEffect(() => {
+    console.log("length : " + cardClicked.watcher.length);
     console.log("watch : ", watcher);
   }, [watcher]);
 
   function handleRemove(watcher) {
+    if (role != "Admin") {
+      toastError("You dont have access to delete this watcher");
+      return false;
+    }
+
     const temp = cardClicked.watcher;
     let idx = 0;
     temp.map((watcherId) => {
@@ -23,41 +41,49 @@ export default function WatcherList({ cardClicked }) {
       idx += 1;
     });
     console.log(" idx : ", idx);
-    const a = removeArrayByIndex(temp, idx);
+    removeArrayByIndex(temp, idx);
     cardClicked.watcher = temp;
     updateCard(cardClicked)
       .then(() => {
         toastSuccess("Succesfully deleted watcher!");
+        refreshPage();
       })
       .catch((e) => {
         toastError("Failed to delete watcher: " + e.message);
       });
   }
 
+  function addWatcher(n) {
+    const len = watcher.length;
+    for (let i = 0; i < len; i++) {
+      if (watcher[i] == n.userId) {
+        console.log("return!");
+        return;
+      }
+    }
+    setWatcher((prev) => [...prev, n]);
+    console.log("watcher : ", watcher);
+  }
+
   useEffect(() => {
     let unsub;
+    setWatcher([]);
     cardClicked.watcher.map((watcher) => {
-      const q = query(userCollectionRef, where("userId", "==", watcher));
-      setWatcher([]);
-      unsub = onSnapshot(q, (doc) => {
-        doc.docs.map((doc) => {
-          const temp = { ...doc.data(), id: doc.id };
-          setWatcher((prev) => [...prev, temp]);
-        });
+      getUser(watcher).then((doc) => {
+        const temp = { ...doc.docs[0].data(), id: doc.docs[0].id };
+        addWatcher(temp);
       });
     });
     return () => {
-      if (unsub !== undefined) {
-        unsub();
-      }
+      setWatcher([]);
     };
-  }, [cardClicked]);
+  }, [cardClicked, refresh]);
 
   return (
     <div className="flex flex-col">
-      {watcher.map((watcher) => (
+      {watcher.map((watcher, idx) => (
         <div
-          key={watcher.id}
+          key={idx}
           className="mt-1.5 relative rounded-lg border border-gray-300 bg-white px-2 py-1 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
         >
           <div className="flex-shrink-0">
@@ -72,7 +98,7 @@ export default function WatcherList({ cardClicked }) {
               onClick={() => {
                 handleRemove(watcher);
               }}
-              className="focus:outline-none"
+              className="cursor-pointer focus:outline-none"
             >
               <span className="absolute inset-0" aria-hidden="true" />
               <div className="flex">

@@ -15,7 +15,9 @@ import SearchingUI from "./SearchingUI";
 
 const PAGE_DEFAULT_VALUE = 3;
 
-export default function Realtimelist() {
+export default function Realtimelist({ role, refreshRole }) {
+  const location = useLocation();
+
   // Option Data
   const [option, setOption] = useState([]);
   const [selectedOption, setSelectedOption] = useState();
@@ -130,7 +132,7 @@ export default function Realtimelist() {
     return () => {
       unsubscribe();
     };
-  }, [name, page, searching, selectedOption]);
+  }, [name, page, searching, selectedOption, location]);
 
   function searchChange(e) {
     setPageNumber(PAGE_DEFAULT_VALUE);
@@ -161,11 +163,9 @@ export default function Realtimelist() {
         setOption([]);
       };
     });
-  }, []);
+  }, [location]);
 
   //
-
-  const location = useLocation();
 
   const [card, setCard] = useState([]);
   const [refresh, setRefresh] = useState(true);
@@ -216,6 +216,7 @@ export default function Realtimelist() {
   return (
     <>
       <SearchingUI
+        role={role}
         options={option}
         searchChange={searchChange}
         setSelectedOption={setSelectedOption}
@@ -263,10 +264,19 @@ export default function Realtimelist() {
                             }}
                           >
                             <RealtimeCard
+                              refreshRole={refreshRole}
+                              role={role}
                               list={card}
                               listId={card.id}
                             ></RealtimeCard>
-                            <CreateCard listId={card.id}></CreateCard>
+                            {role ? (
+                              <CreateCard
+                                refreshRole={refreshRole}
+                                listId={card.id}
+                              ></CreateCard>
+                            ) : (
+                              ""
+                            )}
                           </div>
                         );
                       }}

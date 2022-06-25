@@ -10,14 +10,16 @@ import { toastError, toastSuccess } from "../Model/Toast";
 import { getUserByEmail, updateUserDb } from "../Model/User";
 import { getWebId } from "../Model/Util";
 import { addWorkspaceIL, getWorkspaceById } from "../Model/Workspace";
-import { createInviteDetail, generateInviteLink } from "../Script/Factory";
 
-export default function InviteWorkspaceMember() {
+export default function CreateWorkspaceInviteMember({
+  id,
+  setTrigger,
+  setShowAfter,
+}) {
   const [link, setLink] = useState("");
   const [workspace, setWorkspace] = useState();
   const { user } = useUserAuth();
   const emailRef = createRef();
-  const { id } = useParams();
 
   const [userList, setUserList] = useState("");
   const selectedList = createRef();
@@ -43,10 +45,18 @@ export default function InviteWorkspaceMember() {
     };
   }, []);
 
+  function handleSkip() {
+    setShowAfter(false);
+    setTrigger(false);
+  }
+
   function handleButton() {
-    const data = { id: id };
-    createInviteDetail("workspace", data).then((docRef) => {
-      setLink("/invite-link/" + docRef.id);
+    addWorkspaceIL(id).then((docRef) => {
+      const link = "/invite-link/" + docRef.id;
+      toastSuccess("Coppied to clipboard!");
+      navigator.clipboard.writeText(link);
+      setShowAfter(false);
+      setTrigger(false);
     });
   }
 
@@ -112,7 +122,7 @@ export default function InviteWorkspaceMember() {
         }
 
         if (!checkAlreadyInWorkspace(recipient)) {
-          createInviteDetail("workspace", { id: id }).then((docRef) => {
+          addWorkspaceIL(id).then((docRef) => {
             const link = "/invite-link/" + docRef.id;
             const notification = {
               senderId: user.uid,
@@ -135,6 +145,8 @@ export default function InviteWorkspaceMember() {
               console.log("recipient : ", recipient);
               updateUserDb(recipient).then(() => {
                 toastSuccess("Succesfully invited user!");
+                setTrigger(false);
+                setShowAfter(false);
               });
             }
           });
@@ -150,47 +162,58 @@ export default function InviteWorkspaceMember() {
 
   return (
     <>
-      <div className="w-full mt-5 sm:flex sm:items-center">
-        <div className="w-full sm:max-w-xs">
-          <label htmlFor="email" className="sr-only">
-            Email
-          </label>
-          <Select
-            className="basic-single"
-            classNamePrefix="select"
-            ref={emailRef}
-            name="color"
-            options={userList}
-          />
+      <div className="px-10 py-20">
+        <h1 className="font-bold text-gray-700 text-3xl">
+          Invite to Workspace
+        </h1>
+        <div className="w-full mt-5 sm:flex sm:items-center">
+          <div className="w-full sm:max-w-xs">
+            <label htmlFor="email" className="sr-only">
+              Email
+            </label>
+            <Select
+              className="basic-single"
+              classNamePrefix="select"
+              ref={emailRef}
+              name="color"
+              options={userList}
+            />
 
-          {/* <input
+            {/* <input
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="username"
             type="text"
             placeholder="Email Member"
             ref={emailRef}
           /> */}
+          </div>
+          <button
+            onClick={handleByEmail}
+            className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+          >
+            Submit
+          </button>
         </div>
-        <button
-          onClick={handleByEmail}
-          className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-        >
-          Submit
-        </button>
-      </div>
-      <p className="text-gray-500 mt-5 text-sm text-">
-        Or you can generate link below
-      </p>
-      <label className="mt-1 block text-gray-700 text-sm font-bold mb-2">
-        {link}
-      </label>
+        <p className="text-gray-500 mt-1 text-sm text-">
+          You can generate link below
+        </p>
+        <label className="mt-1 block text-gray-700 text-sm font-bold mb-2">
+          {link}
+        </label>
 
-      <button
-        onClick={handleButton}
-        className="mt-1 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
-      >
-        Generate Invite Link
-      </button>
+        <button
+          onClick={handleButton}
+          className="mt-1 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Generate Invite Link
+        </button>
+        <p
+          handle={handleSkip}
+          className="cursor-pointer text-gray-500 text-sm mt-1"
+        >
+          Or you can skip this process
+        </p>
+      </div>
     </>
   );
 }

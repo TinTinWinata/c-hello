@@ -30,12 +30,16 @@ const auth = getAuth();
 const ref = collection(db, "board");
 export async function deleteBoard(workspaceId) {
   const q = query(boardCollectionRef, where("workspaceId", "==", workspaceId));
-  const boardList = await getDocs(q);
-  boardList.docs.map((board) => {
-    board.closed = true;
-    // deleteListWithBoardId(board.id);
-    // deleteCardWithBoardId(board.id);
-    // return deleteDoc(doc(db, ""))
+  getDocs(q).then((doc) => {
+    console.log("docs : ", doc);
+    const boardList = doc.docs;
+    boardList.map((doc) => {
+      const board = { ...doc.data(), id: doc.id };
+      board.closed = true;
+      updateBoard(board).then(() => {
+        console.log("succesfully delete");
+      });
+    });
   });
 }
 export async function permanentDelete(workspaceId, boardId) {

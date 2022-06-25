@@ -6,9 +6,8 @@ import Home from "./home";
 function Login() {
   const { user } = useUserAuth();
 
-  console.log("user : ", user);
   if (user) {
-    return <Home></Home>;
+    return <Home></Home>;a
   }
 
   return (

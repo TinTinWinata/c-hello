@@ -7,6 +7,8 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  query,
+  where,
 } from "firebase/firestore";
 import { db } from "../Config/firebase-config";
 import { listCollectionRef } from "../Library/firebase.collections";
@@ -52,7 +54,6 @@ export function getListWithListId(listId) {
   const ref = doc(db, "list", listId);
   return getDoc(ref);
 }
-
 
 export function updateList(list) {
   const ref = doc(db, "list", list.id);

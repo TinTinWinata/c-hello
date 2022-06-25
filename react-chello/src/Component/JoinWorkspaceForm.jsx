@@ -9,10 +9,13 @@ import { useUserAuth } from "../Library/UserAuthContext";
 import { toastError, toastSuccess } from "../Model/Toast";
 import { getWebId } from "../Model/Util";
 import { addMember, updateWorkspace } from "../Model/Workspace";
+import { notifyJoinMember } from "../Script/Observer";
 
 export default function JoinWorkspaceForm() {
   const { id } = useParams();
+  const [expired, setExpired] = useState();
   const [workspace, setWorkspace] = useState({ name: "Workspace" });
+
   const location = useLocation();
   const { user, userDb } = useUserAuth();
   const navigate = useNavigate();
@@ -20,9 +23,15 @@ export default function JoinWorkspaceForm() {
   useEffect(() => {
     const q = query(workspaceILRef, where(documentId(), "==", id));
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      validateDate(snapshot.docs[0].data().dueDate);
       var snap = snapshot.docs[0].data().workspaceId;
       const q2 = query(workspaceCollectionRef, where(documentId(), "==", snap));
       onSnapshot(q2, (snapshot2) => {
+        if (snapshot2.docs.length == 0) {
+          toastError("Cannot join workspace, workspace has been deleted");
+          navigate("/home");
+          return;
+        }
         setWorkspace({
           ...snapshot2.docs[0].data(),
           id: snapshot2.docs[0].id,
@@ -34,14 +43,40 @@ export default function JoinWorkspaceForm() {
     };
   }, [location]);
 
+  function validateDate(date) {
+    const currDate = new Date();
+    const diffTime = Math.abs(date.toDate() - currDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays <= 0) {
+      setExpired(true);
+    } else {
+      setExpired(false);
+    }
+  }
+
   function onClickBack() {
     navigate(-1);
   }
 
   function handleJoin() {
+    if (expired) {
+      toastError("Link has been expired!");
+      return;
+    }
+
     if (workspace) {
       addMember(workspace, user.uid, userDb)
         .then(() => {
+          const notification = {
+            link: "",
+            type: "joined-member",
+            value:
+              user.displayName +
+              " has been join " +
+              workspace.name +
+              " workspace!",
+          };
+          notifyJoinMember(workspace, notification);
           toastSuccess("Success join a workspace!");
           navigate("/home");
         })

@@ -3,7 +3,7 @@ import ManageWorkspaceForm from "./ManageWorkspaceForm";
 
 export default function ManageWorkspace({ role }) {
   const [isTrigger, setTrigger] = useState(false);
-  console.log("role : ", role);
+
   function clickHandle() {
     setTrigger(true);
   }

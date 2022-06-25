@@ -1,6 +1,7 @@
 import React from "react";
+import ReactLoading from "react-loading";
 
-export default function LoadingScreen() {
+export function LoadingScreen() {
   return (
     <React.Fragment>
       <div className="fixed w-screen h-screen bg-black opacity-50"></div>
