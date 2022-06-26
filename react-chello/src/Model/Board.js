@@ -91,7 +91,14 @@ export function addBoardIL(boardId) {
   });
 }
 
-export async function insertBoard(newName, newTag, newVisibility, userDb) {
+export async function insertBoard(
+  newName,
+  newTag,
+  newVisibility,
+  userDb,
+  workspaceId
+) {
+  const id = workspaceId ? workspaceId : getWebId();
   try {
     let docsData = {
       name: newName,
@@ -99,8 +106,9 @@ export async function insertBoard(newName, newTag, newVisibility, userDb) {
       visibility: newVisibility,
       memberId: [],
       adminId: [auth.currentUser.uid],
-      workspaceId: getWebId(),
+      workspaceId: id,
       closed: false,
+      label: [],
     };
     const doc = await addDoc(ref, docsData);
     const board = {
@@ -111,7 +119,7 @@ export async function insertBoard(newName, newTag, newVisibility, userDb) {
     userDb.board = [...userDb.board, board];
     updateUserDb(userDb)
       .then(() => {
-        toastSuccess("Succed create a ", newName, " board");
+        toastSuccess("Succed create a board");
       })
       .catch((e) => {
         toastError("Error adding! : ", e.message);

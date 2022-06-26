@@ -10,8 +10,15 @@ import CreateCard from "./CreateCard";
 import RealtimeCard from "./RealtimeCard";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { updateCard, updateCardWithId } from "../Model/Card";
-import { updateList, updateListById, updateListNameById } from "../Model/List";
+import {
+  deleteList,
+  updateList,
+  updateListById,
+  updateListNameById,
+} from "../Model/List";
 import SearchingUI from "./SearchingUI";
+import { XIcon } from "@heroicons/react/solid";
+import { toastError, toastSuccess } from "../Model/Toast";
 
 const PAGE_DEFAULT_VALUE = 3;
 
@@ -23,26 +30,25 @@ export default function Realtimelist({ role, refreshRole }) {
   const [selectedOption, setSelectedOption] = useState();
 
   function addOption(n) {
-    option.map((optionList) => {
-      if (optionList.text == n.text) {
-        return;
+    isOptionExists(n).then(
+      (value) => {
+        setOption(value);
+      },
+      (error) => {
+        console.log("redundanat : ", error);
       }
-    });
-    setOption((prev) => [...prev, n]);
+    );
   }
 
-  function isOptionExists(arr1, text) {
-    if (arr1.length == 0) return false;
-    console.log("arr : ", arr1);
-    arr1.map((opt) => {
-      console.log("opt : ", opt.text);
-      console.log("text : ", text);
-      if (opt.text == text) {
-        console.log("returning true!");
-        return true;
-      }
+  function isOptionExists(n) {
+    return new Promise((resolve, reject) => {
+      option.forEach((opt) => {
+        if (opt.text == n.text) {
+          reject(opt);
+        }
+      });
+      resolve([...option, n]);
     });
-    return false;
   }
 
   // Get Unique Option Name
@@ -97,7 +103,6 @@ export default function Realtimelist({ role, refreshRole }) {
   // Searching queried list
   useEffect(() => {
     if (selectedOption || name != "") setPageNumber(999);
-    // console.log(name, page, searching, selectedOption, "affected");
     const q = query(listCollectionRef, where("boardId", "==", id), limit(page));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const list = snapshot.docs.map((docs) => ({
@@ -118,6 +123,10 @@ export default function Realtimelist({ role, refreshRole }) {
               isPush = true;
             }
           });
+
+          if (selectedOption && currList.status == selectedOption.text) {
+            isPush = true;
+          }
 
           // Kondisi gak ada selected option
           if (!selectedOption) isPush = true;
@@ -221,13 +230,23 @@ export default function Realtimelist({ role, refreshRole }) {
         searchChange={searchChange}
         setSelectedOption={setSelectedOption}
       ></SearchingUI>
-      <div className="w-full flex flex-wrap">
+      <div className="ml-10 w-full flex flex-wrap">
         <DragDropContext
           onDragEnd={(result) => {
             onDragEnd(result, queriedList, setQueriedList);
           }}
         >
           {queriedList.map((card, idx) => {
+            function handleOnDelete() {
+              deleteList(card)
+                .then(() => {
+                  toastSuccess("Succesfully delete list!");
+                })
+                .catch((e) => {
+                  toastError("Failed to delete list!");
+                });
+            }
+
             const link = "/list/" + card.id;
             const tag = "#" + card.tag;
             if (queriedList.length == idx + 1) {
@@ -237,15 +256,20 @@ export default function Realtimelist({ role, refreshRole }) {
                   className="w-fit rounded-3xl ml-4 "
                   key={card.id}
                 >
-                  <input
-                    key={card.id}
-                    onKeyDown={(e) => {
-                      handleKeyDown(e, card.id);
-                    }}
-                    className="ml-3 rounded bg-transparent font-bold text-gray-800"
-                    defaultValue={card.name}
-                  ></input>
-
+                  <div className="flex">
+                    <XIcon
+                      onClick={handleOnDelete}
+                      className="w-5 h-5 text-gray-500 opacity-50 cursor-pointer ml-1 mt-1"
+                    ></XIcon>
+                    <input
+                      key={card.id}
+                      onKeyDown={(e) => {
+                        handleKeyDown(e, card.id);
+                      }}
+                      className="ml-3 rounded bg-transparent font-bold text-gray-800"
+                      defaultValue={card.name}
+                    ></input>
+                  </div>
                   <div className="">
                     <Droppable droppableId={card.id}>
                       {(provided, snapshot) => {

@@ -67,8 +67,7 @@ export async function insertWorkspace(
     updateUserOnDatabase(userDb.userId, changes);
     return doc.id;
   } catch (error) {
-    alert("error adding : ", error);
-    console.log("error adding : ", error);
+    console.log("error adding : ", error.message);
   }
 }
 export async function insertWorkspaceWithBoard(

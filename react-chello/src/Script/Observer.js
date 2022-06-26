@@ -40,3 +40,15 @@ export function notifyCommentWatcher(watcherId, notification) {
     });
   });
 }
+
+export function remindingAllWatcher(watcherId, reminder) {
+  watcherId.map((id) => {
+    getUser(id).then((doc) => {
+      const user = doc.docs[0].data();b 
+      user.reminder = [...user.reminder, reminder];
+      updateUserDb(user).then(() => {
+        console.log("Succeed");
+      });
+    });
+  });
+}

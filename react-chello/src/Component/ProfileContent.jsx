@@ -1,8 +1,24 @@
 import React, { createRef, useEffect, useState } from "react";
+import Select from "react-select";
 import SwitchToggle from "../Layout/Switch";
 import { useUserAuth } from "../Library/UserAuthContext";
 import { toastError, toastSuccess } from "../Model/Toast";
-import { updateUser, updateUserOnDatabase } from "../Model/User";
+import { updateUser, updateUserDb, updateUserOnDatabase } from "../Model/User";
+
+const option = [
+  {
+    value: "Instanly",
+    label: "Instanly",
+  },
+  {
+    value: "Periodically",
+    label: "Periodicaly",
+  },
+  {
+    value: "Never",
+    label: "Never",
+  },
+];
 
 export default function ProfileContent(props) {
   var user = props.user;
@@ -14,6 +30,10 @@ export default function ProfileContent(props) {
   const aboutInput = createRef();
   const educationInput = createRef();
 
+  const [selectValue, setSelectedValue] = useState(
+    userDb ? userDb.notificationFrequency : ""
+  );
+
   function handleUpdate() {
     const age = mottoInput.current.value;
     updateUserOnDatabase(user.uid, { age: age })
@@ -22,6 +42,20 @@ export default function ProfileContent(props) {
       })
       .catch((e) => {
         toastError("Error Updating User ", e.message);
+      });
+  }
+
+  function handleOnChange(e) {
+    const value = e.value;
+    setSelectedValue(value);
+
+    userDb.notificationFrequency = value;
+    updateUserDb(userDb)
+      .then(() => {
+        toastSuccess("Succesfully updating notification frequency to " + value);
+      })
+      .catch((e) => {
+        toastError("Error updating notification frequency " + e.message);
       });
   }
 
@@ -40,7 +74,6 @@ export default function ProfileContent(props) {
           });
       })
       .catch((e) => {
-        console.log("error updating user ", e.message);
       });
   }
 
@@ -171,9 +204,24 @@ export default function ProfileContent(props) {
               </span>
             </dd>
           </div>
-          {/* <div className="py-4 sm:grid sm:py-5 sm:grid-cols-3 sm:gap-4">
-            <dt className="text-sm font-medium text-gray-500">Attachments</dt>
-          </div> */}
+          <div className="py-4 sm:grid sm:py-5 sm:grid-cols-3 sm:gap-4">
+            <dt className="text-sm font-medium text-gray-500">
+              Notification Privacy
+            </dt>
+            <dd className="mt-1 flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              <div className="flex-grow">
+                {userDb ? userDb.notificationFrequency : ""}
+              </div>
+              <span className="ml-4 flex-shrink-0">
+                <Select
+                  onChange={(e) => {
+                    handleOnChange(e);
+                  }}
+                  options={option}
+                ></Select>
+              </span>
+            </dd>
+          </div>
         </dl>
       </div>
     </>

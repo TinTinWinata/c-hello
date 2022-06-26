@@ -28,11 +28,9 @@ export default function Board() {
   }
 
   useEffect(() => {
-    console.log("setting role...");
     if (userDb) {
       userDb.board.map((userBoard) => {
         if (userBoard.id == board.id) {
-          console.log("user board role :", userBoard.role);
           setRole(userBoard.role);
         }
       });

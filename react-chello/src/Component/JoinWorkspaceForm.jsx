@@ -64,6 +64,13 @@ export default function JoinWorkspaceForm() {
       return;
     }
 
+    if (!user) {
+      toastError(
+        "You must register an account before you can join this workspace"
+      );
+      return;
+    }
+
     if (workspace) {
       addMember(workspace, user.uid, userDb)
         .then(() => {

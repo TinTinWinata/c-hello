@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useUserAuth } from "../Library/UserAuthContext";
+import { toastSuccess } from "../Model/Toast";
 import { insertWorkspace } from "../Model/Workspace";
 import CreateWorkspaceInviteMember from "./CreateWorkspaceInviteMember";
 import InviteWorkspaceMember from "./InviteWorkspaceMember";
@@ -24,6 +25,7 @@ function WorkspacePopUp(props) {
       setErrorMessage("name length can't more than 20");
     } else {
       insertWorkspace(name, detail, languange, country, userDb).then((doc) => {
+        toastSuccess("Succesfully insert workspace : ", doc);
         setDocId(doc);
         setShowAfter(true);
       });

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import BoardList from "../Component/BoardList";
 import ClosedBoardButton from "../Component/ClosedBoardButton";
 import FavoriteBoard from "../Component/FavoriteBoard";
+import HomeMakeWorkspaceBoardButton from "../Component/HomeMakeWorkspaceBoardButton";
 import HomeSearching from "../Component/HomeSearching";
 import JoinBoard from "../Component/JoinBoard";
 import JoinWorkspace from "../Component/JoinWorkspace";
@@ -19,6 +20,7 @@ import {
   deletedBoardCollectionRef,
 } from "../Library/firebase.collections";
 import { useUserAuth } from "../Library/UserAuthContext";
+import { checkReminder } from "../Model/User";
 
 function Home() {
   const [showCloseBoard, setShowCloseBoard] = useState(false);
@@ -29,6 +31,7 @@ function Home() {
   useEffect(() => {
     let unsub;
     if (userDb && userDb.favoriteBoard !== undefined) {
+  
       setFavLength(userDb.favoriteBoard.length);
       const q = query(
         boardCollectionRef,
@@ -43,6 +46,7 @@ function Home() {
         setClosedBoard(temp);
       });
     }
+
     return () => {
       if (typeof unsub == "function") unsub();
     };
@@ -66,11 +70,13 @@ function Home() {
               <JoinBoard></JoinBoard>
               <WorkspaceList></WorkspaceList>
               <BoardList></BoardList>
+              <HomeMakeWorkspaceBoardButton />
             </React.Fragment>
           )}
         </div>
       </div>
       <ClosedBoardButton
+        showCloseBoard={showCloseBoard}
         setShowCloseBoard={setShowCloseBoard}
       ></ClosedBoardButton>
     </>

@@ -1,5 +1,6 @@
 /* This example requires Tailwind CSS v2.0+ */
 import {
+  ArrowCircleDownIcon,
   ArrowCircleUpIcon,
   BanIcon,
   DotsVerticalIcon,
@@ -16,7 +17,41 @@ function classNames(...classes) {
 
 export default function BoardGrantRevoke({ board, memberList, adminList }) {
   const { user } = useUserAuth();
-  
+
+  function handleRevoke(member) {
+    if (member.role == "Member") {
+      toastError("Cannot revoke an member!");
+      return;
+      e;
+    } else {
+      member.board.map((curr) => {
+        if (curr.id == board.id) {
+          curr.role = "Member";
+          return;
+        }
+      });
+      console.log("member : ", member);
+      updateUserDb(member).then(() => {
+        // 1. Remove member id di board
+        let idx = 0;
+        board.adminId.map((id) => {
+          if (id == member.userId) {
+            return;
+          }
+          idx += 1;
+        });
+        const temp2 = board.adminId;
+        removeArrayByIndex(board.adminId);
+
+        // 2. Add admin id
+        board.memberId = [...board.memberId, member.userId];
+        updateBoard(board).then(() => {
+          toastSuccess("Succesfully granted user!");
+        });
+      });
+    }
+  }
+
   function handleGrant(member) {
     if (member.role == "Admin") {
       toastError("Cannot grant an admin!");
@@ -159,6 +194,19 @@ export default function BoardGrantRevoke({ board, memberList, adminList }) {
                         <span className="sr-only">Remov</span>
 
                         <ArrowCircleUpIcon
+                          className="w-5 h-5"
+                          aria-hidden="true"
+                        />
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleRevoke(members);
+                        }}
+                        className="w-8 h-8 bg-white inline-flex items-center justify-center text-gray-400 rounded-full bg-transparent hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                      >
+                        <span className="sr-only">Remov</span>
+
+                        <ArrowCircleDownIcon
                           className="w-5 h-5"
                           aria-hidden="true"
                         />

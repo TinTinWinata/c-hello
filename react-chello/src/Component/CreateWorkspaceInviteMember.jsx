@@ -208,7 +208,7 @@ export default function CreateWorkspaceInviteMember({
           Generate Invite Link
         </button>
         <p
-          handle={handleSkip}
+          onClick={handleSkip}
           className="cursor-pointer text-gray-500 text-sm mt-1"
         >
           Or you can skip this process

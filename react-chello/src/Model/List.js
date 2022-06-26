@@ -59,3 +59,8 @@ export function updateList(list) {
   const ref = doc(db, "list", list.id);
   return updateDoc(ref, list);
 }
+
+export async function deleteList(list) {
+  const ref = doc(db, "list", list.id);
+  await deleteDoc(ref, list);
+}

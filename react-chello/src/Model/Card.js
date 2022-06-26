@@ -9,6 +9,7 @@ import {
   where,
   arrayUnion,
   query,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../Config/firebase-config";
 import {
@@ -16,10 +17,33 @@ import {
   cardInviteLinkCollectionRef,
   listCollectionRef,
 } from "../Library/firebase.collections";
+import { getListWithListId, updateList } from "./List";
 import { toastError } from "./Toast";
 import { getWebId } from "./Util";
 
 const auth = getAuth();
+
+export function getCardWithListId(listId) {
+  const q = query(cardCollectionRef, where("listId", "==", listId));
+  return getDocs(q);
+}
+
+export function checkCardDueDate(card) {
+  card.map((currCard) => {
+    const diff = currCard.date.toDate() - new Date();
+    if (currCard.status == "Complete") {
+      return;
+    }
+    if (diff < 0) {
+      currCard.status = "Due Date";
+      getListWithListId(currCard.listId).then((doc) => {
+        const list = { ...doc.data(), id: doc.id };
+        list.status = "Due Date";
+        updateList(list);
+      });
+    }
+  });
+}
 
 export function addCardIL(cardId, boardId) {
   return addDoc(cardInviteLinkCollectionRef, {
@@ -27,11 +51,13 @@ export function addCardIL(cardId, boardId) {
     boardId: boardId,
   });
 }
+
 export async function insertCard(newName, boardId, listId, date, userDb) {
   console.log("user db : ", userDb);
   try {
     if (!date) {
       date = new Date();
+      date.setDate(date.getDate() + 10);
     }
     if (!newName) {
       newName = "New Name";
@@ -44,6 +70,7 @@ export async function insertCard(newName, boardId, listId, date, userDb) {
       date: date,
       watcher: [userDb.userId],
       attachment: [],
+      status: "",
     };
     return await addDoc(cardCollectionRef, docsData);
   } catch (error) {
@@ -69,6 +96,10 @@ export function updateCard(card) {
 export function updateCardWithId(cardId, changes) {
   const ref = doc(db, "card", cardId);
   return updateDoc(ref, changes);
+}
+export async function getCardById(id) {
+  const ref = doc(db, "card", id);
+  return getDoc(ref);
 }
 
 export async function deleteCard(card) {

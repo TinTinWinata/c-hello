@@ -17,7 +17,7 @@ import LeaveBoard from "./LeaveBoard";
 import CloseBoard from "./CloseBoard";
 
 export default function OptionBoard({ role, open, setOpen }) {
-  const [tabIndex, setTabIndex] = useState(1);
+  const [tabIndex, setTabIndex] = useState(4);
 
   const [board, setBoard] = useState();
   const [memberList, setMemberList] = useState();
@@ -50,7 +50,7 @@ export default function OptionBoard({ role, open, setOpen }) {
         getDocs(q).then((snapshot) => {
           const currentUser = {
             ...snapshot.docs[0].data(),
-            userId: snapshot.id,
+            id: snapshot.docs[0].id,
             role: "Admin",
           };
           setAdminList((prev) => [...prev, currentUser]);
@@ -131,22 +131,32 @@ export default function OptionBoard({ role, open, setOpen }) {
               <div className="w-max border-b border-gray-200">
                 <div className="w-max sm:flex sm:items-baseline">
                   <nav className="mt-4 ml-4 -mb-px flex space-x-8">
-                    <button
-                      className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm"
-                      onClick={() => {
-                        setTabIndex(1);
-                      }}
-                    >
-                      Update Boards
-                    </button>
-                    <button
-                      className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm"
-                      onClick={() => {
-                        setTabIndex(2);
-                      }}
-                    >
-                      Manage User
-                    </button>
+                    {role == "Admin" ? (
+                      <button
+                        className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm"
+                        onClick={() => {
+                          setTabIndex(1);
+                        }}
+                      >
+                        Update Boards
+                      </button>
+                    ) : (
+                      ""
+                    )}
+
+                    {role == "Admin" ? (
+                      <button
+                        className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm"
+                        onClick={() => {
+                          setTabIndex(2);
+                        }}
+                      >
+                        Manage User
+                      </button>
+                    ) : (
+                      ""
+                    )}
+
                     {role == "Admin" ? (
                       <button
                         className="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm"

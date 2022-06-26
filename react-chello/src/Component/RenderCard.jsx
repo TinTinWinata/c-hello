@@ -13,7 +13,12 @@ import {
   cardCollectionRef,
   checklistCollectionRef,
 } from "../Library/firebase.collections";
-import { addCardIL, deleteCard, updateCard } from "../Model/Card";
+import {
+  addCardIL,
+  deleteCard,
+  getCardWithListId,
+  updateCard,
+} from "../Model/Card";
 import { insertChecklist } from "../Model/Checklist";
 import CheckListCard from "./CheckListCard";
 import moment from "moment";
@@ -38,11 +43,11 @@ import RenderLabelList from "./RenderCardLabelList";
 import uuid from "react-uuid";
 import { useQuill } from "react-quilljs";
 import { getListWithListId, updateList, updateListWithId } from "../Model/List";
-import { PlusIcon } from "@heroicons/react/outline";
+import { CheckIcon, PlusIcon } from "@heroicons/react/outline";
 import RenderCardWatcherForm from "./RenderCardWatcherForm";
 import WatcherList from "./WatcherList";
 import { useDropzone } from "react-dropzone";
-import { notifyCommentWatcher } from "../Script/Observer";
+import { notifyCommentWatcher, remindingAllWatcher } from "../Script/Observer";
 import { getUser, updateUserDb } from "../Model/User";
 
 export function RenderCard(props) {
@@ -81,7 +86,6 @@ export function RenderCard(props) {
     noClick: true,
     noKeyboard: true,
     onDrop: (acceptedFiles) => {
-      // console.log("accepted file ", acceptedFiles);
       uploadImage(acceptedFiles[0]);
     },
   });
@@ -115,6 +119,12 @@ export function RenderCard(props) {
       setRefresh(true);
     }
   }
+
+  useEffect(() => {
+    return () => {
+      checkCompleteList();
+    };
+  }, []);
 
   useEffect(() => {
     if (quill && cardClicked.innerDesc) {
@@ -221,7 +231,6 @@ export function RenderCard(props) {
         id: uuid(),
         senderId: user.uid,
       };
-      console.log("card : ", cardClicked);
       if (mentionedUser) {
         const notification = {
           link: "/board/" + cardClicked.boardId,
@@ -231,9 +240,7 @@ export function RenderCard(props) {
           senderId: user.uid,
         };
         getUser(mentionedUser).then((doc) => {
-          console.log("doc : ", doc);
           const currUser = { ...doc.docs[0].data(), id: doc.docs[0].id };
-          console.log("currUser : ", currUser);
           currUser.notificationList = [
             ...currUser.notificationList,
             notification,
@@ -244,6 +251,48 @@ export function RenderCard(props) {
         });
       }
       notifyCommentWatcher(cardClicked.watcher, notification);
+    });
+  }
+
+  function checkCompleteList() {
+    getListWithListId(cardClicked.listId).then((doc) => {
+      const list = { ...doc.data(), id: doc.id };
+      getCardWithListId(cardClicked.listId).then((docs) => {
+        let howManyCard = docs.docs.length;
+        list.status = "";
+        let idx = 0;
+        docs.docs.map((doc) => {
+          const card = { ...doc.data(), id: doc.id };
+
+          if (card.status == "Due Date") {
+            list.status = "Due Date";
+          } else if (card.status == "Complete") {
+            idx += 1;
+          }
+        });
+        console.log("idx :", idx, "howmany card : ", howManyCard);
+        if (idx == howManyCard) {
+          list.status = "Complete";
+        }
+        console.log("list : ", list.status);
+        updateList(list).then(() => {});
+      });
+    });
+  }
+
+  function handleCompleteStatus() {
+    if (cardClicked.status == "Complete") {
+      if (cardClicked.date.toDate() - new Date() < 0) {
+        cardClicked.status = "Due Date";
+      } else {
+        cardClicked.status = "Not Complete";
+      }
+    } else {
+      cardClicked.status = "Complete";
+    }
+
+    updateCard(cardClicked).then(() => {
+      checkCompleteList();
     });
   }
 
@@ -405,7 +454,20 @@ export function RenderCard(props) {
   const handleDateOnChange = (date) => {
     cardClicked.date = date;
     setDate(moment(date).format("MMM Do YYYY"));
-    updateCard(cardClicked);
+    updateCard(cardClicked).then(() => {
+      let reminderDate = date;
+      reminderDate.setDate(reminderDate.getDate() - 1);
+      // Make reminder
+      const reminder = {
+        id: uuid(),
+        value: "Your " + cardClicked.name + " has been overdue date!",
+        date: reminderDate,
+      };
+      userDb.reminder = [...userDb.reminder, reminder];
+      remindingAllWatcher(cardClicked.watcher, reminder);
+      updateUserDb(userDb).then(() => {
+      });
+    });
   };
 
   return (
@@ -437,14 +499,20 @@ export function RenderCard(props) {
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
             <div className="z-20 ml-5 mt-5 text-2xl font-bold flex flex-col">
-              <input
-                ref={titleInput}
-                className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
-                type="text"
-                onKeyDown={handleKeyDown}
-                defaultValue={cardClicked ? cardClicked.name : "New Card"}
-                aria-label="Full name"
-              />
+              <div className="flex">
+                <CheckIcon
+                  onClick={handleCompleteStatus}
+                  className="cursor-pointer w-10 h-10 text-gray-500 hover:text-gray-700"
+                ></CheckIcon>
+                <input
+                  ref={titleInput}
+                  className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+                  type="text"
+                  onKeyDown={handleKeyDown}
+                  defaultValue={cardClicked ? cardClicked.name : "New Card"}
+                  aria-label="Full name"
+                />
+              </div>
               <div className="pt-4 mt-4 w-5/6 space-y-2 border-t border-gray-200 dark:border-gray-700"></div>
               <p
                 className="text-lg appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"

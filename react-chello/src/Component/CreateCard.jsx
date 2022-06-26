@@ -9,9 +9,8 @@ export default function CreateCard({ listId, refreshRole }) {
   function handleClick() {
     console.log("refresh role :", refreshRole);
     const boardId = getWebId();
-    insertCard("New Card", boardId, listId, new Date(), userDb);
+    insertCard("New Card", boardId, listId, null, userDb);
     if (refreshRole) {
-      console.log("refreshign...");
       refreshRole();
     }
   }

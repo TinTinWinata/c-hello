@@ -8,7 +8,7 @@ import {
 } from "firebase/auth";
 import { auth, db } from "../Config/firebase-config";
 import { useLocation } from "react-router-dom";
-import { insertUser } from "../Model/User";
+import { checkReminder, insertUser, updateUserDb } from "../Model/User";
 import {
   collection,
   getDocs,
@@ -17,6 +17,8 @@ import {
   where,
 } from "firebase/firestore";
 import { notificationCollectionRef } from "./firebase.collections";
+import { removeArrayByIndex } from "../Model/Util";
+import uuid from "react-uuid";
 
 const userAuthContext = createContext();
 
@@ -73,6 +75,7 @@ export function UserAuthContextProvider({ children }) {
           setUserDb(userDb);
           setNotification(userDb.notificationList);
         });
+        checkReminder(userDb);
       }
     });
 

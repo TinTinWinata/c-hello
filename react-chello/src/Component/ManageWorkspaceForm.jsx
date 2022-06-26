@@ -9,7 +9,7 @@ import UpdateWorkspaceForm from "./UpdateWorkspaceForm";
 function deleteWorkspace() {}
 
 export default function ManageWorkspaceForm(props) {
-  const [tabIndex, setTabIndex] = useState(1);
+  const [tabIndex, setTabIndex] = useState(2);
   const role = props.role;
   const [ws, setWs] = useState();
   const { id } = useParams();
@@ -75,7 +75,7 @@ export default function ManageWorkspaceForm(props) {
             <div className="border-b border-gray-200">
               <div className="sm:flex sm:items-baseline">
                 <nav className="mt-4 ml-4 -mb-px flex space-x-8">
-                  {role ? (
+                  {role == "Admin" ? (
                     <button onClick={handleUpdateIdx} className={getClass(1)}>
                       Update Wokspace
                     </button>

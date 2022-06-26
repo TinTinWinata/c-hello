@@ -14,7 +14,7 @@ export default function ChangeViewList(props) {
 
   return (
     <>
-      <div className="fixed bottom-10 ml-3">
+      <div className="fixed bottom-10 ml-10">
         <svg
           onClick={handleOnClick}
           className="h-12 w-11 text-gray-500 cursor-pointer"

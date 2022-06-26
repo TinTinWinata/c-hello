@@ -24,7 +24,6 @@ export default function BoardJoinForm() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("valid : ", isValid);
     // Check if board private & user not workspace member
 
     if (board && workspace) {
@@ -78,6 +77,10 @@ export default function BoardJoinForm() {
   }
 
   function handleJoin() {
+    if (!user) {
+      toastError("You must be logged in to join this board!");
+    }
+
     if (board) {
       // Join Board
       addBoardMember(board, userDb.userId, userDb)

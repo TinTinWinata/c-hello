@@ -17,6 +17,7 @@ import {
   UserAddIcon,
 } from "@heroicons/react/solid";
 import OptionBoard from "./OptionBoard";
+import BoardLabel from "./BoardLabel";
 
 export default function SearchingUI({
   role,
@@ -26,6 +27,7 @@ export default function SearchingUI({
 }) {
   // Open close Option modals
   const [open, setOpen] = useState(false);
+  const [openLabel, setOpenLabel] = useState(false);
 
   function handleClick(opt) {
     setSelectedOption(opt);
@@ -35,9 +37,14 @@ export default function SearchingUI({
   }
   return (
     <>
+      <BoardLabel
+        open={openLabel}
+        setOpen={setOpenLabel}
+        role={role}
+      ></BoardLabel>
       <OptionBoard role={role} open={open} setOpen={setOpen}></OptionBoard>
       <div className="z-20 flex items-start mb-10">
-        <div className="ml-5 relative w-fit mr-10">
+        <div className="ml-10 relative w-fit mr-10">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <SearchIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
           </div>
@@ -79,21 +86,61 @@ export default function SearchingUI({
                 >
                   <Menu.Item>
                     {({ active }) => (
-                      <div
-                        onClick={handleClickEveryone}
-                        className={
-                          (active
-                            ? "bg-gray-100 text-gray-900"
-                            : " text-gray-700",
-                          "group flex items-center px-4 py-2 text-sm cursor-pointer")
-                        }
-                      >
-                        <AtSymbolIcon
-                          className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                          aria-hidden="true"
-                        ></AtSymbolIcon>
-                        Everyone
-                      </div>
+                      <>
+                        <div
+                          onClick={handleClickEveryone}
+                          className={
+                            (active
+                              ? "bg-gray-100 text-gray-900"
+                              : " text-gray-700",
+                            "group flex items-center px-4 py-2 text-sm cursor-pointer")
+                          }
+                        >
+                          <AtSymbolIcon
+                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                            aria-hidden="true"
+                          ></AtSymbolIcon>
+                          Everyone
+                        </div>
+                        <div
+                          onClick={() => {
+                            setSelectedOption({
+                              text: "Due Date",
+                            });
+                          }}
+                          className={
+                            (active
+                              ? "bg-gray-100 text-gray-900"
+                              : " text-gray-700",
+                            "group flex items-center px-4 py-2 text-sm cursor-pointer")
+                          }
+                        >
+                          <AtSymbolIcon
+                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                            aria-hidden="true"
+                          ></AtSymbolIcon>
+                          Due Date
+                        </div>
+                        <div
+                          onClick={() => {
+                            setSelectedOption({
+                              text: "Complete",
+                            });
+                          }}
+                          className={
+                            (active
+                              ? "bg-gray-100 text-gray-900"
+                              : " text-gray-700",
+                            "group flex items-center px-4 py-2 text-sm cursor-pointer")
+                          }
+                        >
+                          <AtSymbolIcon
+                            className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                            aria-hidden="true"
+                          ></AtSymbolIcon>
+                          Complete
+                        </div>
+                      </>
                     )}
                   </Menu.Item>
 
@@ -129,14 +176,24 @@ export default function SearchingUI({
           )}
         </Menu>
         {role ? (
-          <button
-            onClick={() => {
-              setOpen(true);
-            }}
-            className="inline-flex items-center ml-3 px-4 py-1.5 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Option
-          </button>
+          <>
+            <button
+              onClick={() => {
+                setOpen(true);
+              }}
+              className="inline-flex items-center ml-3 px-4 py-1.5 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Option
+            </button>
+            <button
+              onClick={() => {
+                setOpenLabel(true);
+              }}
+              className="inline-flex items-center ml-3 px-4 py-1.5 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Label
+            </button>
+          </>
         ) : (
           ""
         )}

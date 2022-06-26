@@ -11,6 +11,8 @@ import Select from "react-select";
 import { useUserAuth } from "../Library/UserAuthContext";
 import { toastError, toastSuccess } from "../Model/Toast";
 import { createInviteDetail } from "../Script/Factory";
+import { remindingAllWatcher } from "../Script/Observer";
+import { updateUserDb } from "../Model/User";
 
 export default function BoardCalenderPopUp({ open, setOpen }) {
   const name = createRef();
@@ -82,12 +84,26 @@ export default function BoardCalenderPopUp({ open, setOpen }) {
       }
       const listId = selectValue[0].value;
 
-      insertCard(nameValue, id, listId, date, userDb).then((doc) => {
-        const data = { cardId: doc.id, boardId: id };
-        createInviteDetail("card", data).then((docRef) => {
-          setLink("/card-invite-link/" + docRef.id);
+      insertCard(nameValue, id, listId, date, userDb)
+        .then((doc) => {
+          const data = { cardId: doc.id, boardId: id };
+          createInviteDetail("card", data).then((docRef) => {
+            setLink("/card-invite-link/" + docRef.id);
+          });
+        })
+        .then(() => {
+          let reminderDate = date;
+          reminderDate.setDate(reminderDate.getDate() - 1);
+          // Make reminder
+          const reminder = {
+            id: uuid(),
+            value: "Your " + cardClicked.name + " has been overdue date!",
+            date: reminderDate,
+          };
+          userDb.reminder = [...userDb.reminder, reminder];
+          remindingAllWatcher(cardClicked.watcher, reminder);
+          updateUserDb(userDb).then(() => {});
         });
-      });
 
       // handleClose();
     } else {

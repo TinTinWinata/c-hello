@@ -3,7 +3,7 @@ import {
   SortAscendingIcon,
   UsersIcon,
 } from "@heroicons/react/solid";
-import { onSnapshot, query, where } from "firebase/firestore";
+import { getDoc, onSnapshot, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Mention, MentionsInput } from "react-mentions";
 import { userCollectionRef } from "../Library/firebase.collections";
@@ -11,6 +11,7 @@ import { getBoardById } from "../Model/Board";
 import { getUser } from "../Model/User";
 import DefaultStyle from "../Library/DefaultStyle";
 import DefaultMentionStyle from "../Library/DefaultMentionStyle";
+import { getWorkspaceById } from "../Model/Workspace";
 
 export default function InputComment(props) {
   const handle = props.handle;
@@ -21,10 +22,66 @@ export default function InputComment(props) {
 
   const [data, setData] = useState([]);
   const [board, setBoard] = useState();
+  const [workspace, setWorkspace] = useState();
 
   useEffect(() => {
-    console.log("data : ", data);
-  }, [data]);
+    let unsub;
+    let unsub2;
+
+    if (workspace && board.visibility == "Workspace") {
+      // Map member
+      workspace.memberId.map((member) => {
+        const q = query(userCollectionRef, where("userId", "==", member));
+        unsub = onSnapshot(q, (doc) => {
+          doc.docs.map((docs) => {
+            const userDoc = { ...docs.data(), id: docs.id };
+            const option = {
+              id: userDoc.userId,
+              display: userDoc.displayName,
+            };
+
+            setData((prev) => [...prev, option]);
+          });
+        });
+      });
+
+      // Map admin
+      workspace.adminId.map((member) => {
+        const q = query(userCollectionRef, where("userId", "==", member));
+        unsub2 = onSnapshot(q, (doc) => {
+          doc.docs.map((docs) => {
+            const userDoc = { ...docs.data(), id: docs.id };
+            const option = {
+              id: userDoc.userId,
+              display: userDoc.displayName,
+            };
+            setData((prev) => [...prev, option]);
+          });
+        });
+      });
+    }
+
+    return () => {
+      if (unsub) {
+        unsub();
+      }
+      if (unsub2) {
+        unsub2();
+      }
+    };
+  }, [workspace]);
+
+
+  useEffect(() => {
+    if (board) {
+      const wsId = board.workspaceId;
+      getWorkspaceById(wsId).then((doc) => {
+        setWorkspace(doc);
+      });
+    }
+
+    return () => {};
+  }, [board]);
 
   useEffect(() => {
     let unsub;
@@ -33,6 +90,8 @@ export default function InputComment(props) {
       getBoardById(cardClicked.boardId).then((doc) => {
         const board = { ...doc.data(), id: doc.id };
         setBoard(board);
+
+        // Map member
         board.memberId.map((member) => {
           const q = query(userCollectionRef, where("userId", "==", member));
           unsub = onSnapshot(q, (doc) => {
@@ -47,6 +106,8 @@ export default function InputComment(props) {
             });
           });
         });
+
+        // Map admin
         board.adminId.map((member) => {
           const q = query(userCollectionRef, where("userId", "==", member));
           unsub2 = onSnapshot(q, (doc) => {
@@ -71,9 +132,6 @@ export default function InputComment(props) {
     };
   }, [cardClicked]);
 
-  useEffect(() => {
-    console.log("value :", value);
-  }, [value]);
 
   // useEffect(() => {
   //   getBoardById(cardClicked.boardId).then((doc) => {

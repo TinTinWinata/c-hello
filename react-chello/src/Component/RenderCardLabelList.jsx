@@ -1,4 +1,6 @@
+import { AdjustmentsIcon, XIcon } from "@heroicons/react/solid";
 import React, { useState } from "react";
+import { getBoardById, updateBoard } from "../Model/Board";
 import { updateCard } from "../Model/Card";
 import { getListWithListId, updateList } from "../Model/List";
 import { toastError, toastSuccess } from "../Model/Toast";
@@ -13,6 +15,27 @@ export default function RenderLabelList({ label, cardClicked, listId }) {
   }
   function setFalseRemove() {
     setRemove(false);
+  }
+
+  function handleDettachment() {
+    // 1. Remove label from card clicked
+    let idx = 0;
+    cardClicked.label.map((lbl) => {
+      if (lbl.id == label.id) {
+        return;
+      }
+      idx += 1;
+    });
+
+    removeArrayByIndex(cardClicked.label, idx);
+    updateCard(cardClicked).then(() => {
+      // 2. Add label to list
+      getBoardById(cardClicked.boardId).then((doc) => {
+        const board = { ...doc.data(), id: doc.id };
+        board.label = [...board.label, label];
+        updateBoard(board);
+      });
+    });
   }
 
   function handleClick() {
@@ -63,13 +86,24 @@ export default function RenderLabelList({ label, cardClicked, listId }) {
     <div
       onMouseLeave={setFalseRemove}
       onMouseEnter={setTrueRemove}
-      onClick={handleClick}
       className="cursor-pointer flex ml-2 mt-2"
     >
       <div className={color + " w-5 h-5"}></div>
       <p className="text-sm font-normal ml-2">{label.text}</p>
       {remove ? (
-        <p className="text-xs font-normal ml-5 mt-[2px] text-red-500">Remove</p>
+        <>
+          <div className="flex">
+            <AdjustmentsIcon
+              onClick={handleDettachment}
+              className="w-5 h-5 ml-2 hover:text-gray-500 text-gray-700"
+            ></AdjustmentsIcon>
+
+            <XIcon
+              onClick={handleClick}
+              className="w-5 h-5 hover:text-gray-500 text-gray-700"
+            ></XIcon>
+          </div>
+        </>
       ) : (
         ""
       )}
