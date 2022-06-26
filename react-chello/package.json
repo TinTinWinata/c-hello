@@ -13,6 +13,7 @@
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
     "dotenv": "^16.0.1",
+
     "electron-squirrel-startup": "^1.0.0",
     "firebase": "^9.8.3",
     "firebaseui": "^6.0.1",
@@ -37,16 +38,30 @@
     "web-vitals": "^2.1.4",
     "yarn": "^1.22.19"
   },
-  "main": "src/starter.js",
+  "main": "dist/main.js",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev": "concurrently -k \"react-scripts start\" \"npm run electron\"",
+    "dev": "concurrently -k \"react-scripts start\" \"npm run electron\"" ,
+    "electron:build": "yarn build && electron-builder -c.extraMetadata.main=dist/main.js",
     "electron": "wait-on tcp:3000 && electron .",
     "package": "electron-forge package",
     "make": "electron-forge make"
+  },
+  "build": {
+    "extends": null,
+    "appId": "com.example.electron-cra",
+    "files": [
+      "dist/**/*",
+      "build/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
   },
   "eslintConfig": {
     "extends": [
@@ -67,6 +82,7 @@
     ]
   },
   "devDependencies": {
+    "electron-builder": "^23.1.0",
     "@electron-forge/cli": "^6.0.0-beta.63",
     "@electron-forge/maker-deb": "^6.0.0-beta.63",
     "@electron-forge/maker-rpm": "^6.0.0-beta.63",
