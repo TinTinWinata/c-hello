@@ -1,8 +1,10 @@
 const electron = require("electron");
 // Module to control application life.
 const app = electron.app;
+const path = require("path");
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
+const isDev = require("electron-is-dev");
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -13,11 +15,19 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    icon: __dirname + "./trello.ico",
+    icon: path.join(__dirname, "trello.png"),
+    autoHideMenuBar: true,
+    show: false,
   });
 
+  mainWindow.on("ready-to-show", mainWindow.show);
+
   // and load the index.html of the app.
-  mainWindow.loadURL("http://localhost:3000");
+  mainWindow.loadURL(
+    isDev
+      ? "http://localhost:3000"
+      : `file://${path.join(__dirname, "../build/index.html")}`
+  );
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
@@ -30,6 +40,20 @@ function createWindow() {
     mainWindow = null;
   });
 }
+
+function asd() {
+  console.log("hello world");
+}
+
+app.setUserTasks([
+  {
+    program: asd(),
+    iconPath: process.execPath,
+    iconIndex: 0,
+    title: "Home",
+    description: "Navigate you to home",
+  },
+]);
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

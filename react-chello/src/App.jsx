@@ -15,6 +15,7 @@ import "quill/dist/quill.snow.css";
 import BoardJoinForm from "./Component/BoardJoinForm";
 import CardWithInvitedLink from "./Component/CardWithInvitedLink";
 import DeleteWorkspaceForm from "./Component/DeleteWorkspaceForm";
+import { HashRouter } from "react-router-dom";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             element={
               <ProtectedRoute>
                 <Home></Home>
+                
               </ProtectedRoute>
             }
           />

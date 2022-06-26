@@ -1,8 +1,11 @@
 const electron = require("electron");
 // Module to control application life.
 const app = electron.app;
+const path = require("path");
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
+const isDev = require("electron-is-dev");
+const { Tray, Menu } = require("electron");
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -13,11 +16,37 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    icon: __dirname + "./trello.ico",
+    icon: path.join(__dirname, "trello.png"),
+    autoHideMenuBar: true,
+    show: false,
   });
 
+  mainWindow.on("ready-to-show", mainWindow.show);
+
+  mainWindow.setThumbarButtons([
+    {
+      tooltip: "button1",
+      icon: path.join(__dirname, "trello.png"),
+      click() {
+        console.log("button1 clicked");
+      },
+    },
+    {
+      tooltip: "button2",
+      icon: path.join(__dirname, "trello.png"),
+      flags: ["enabled", "dismissonclick"],
+      click() {
+        console.log("button2 clicked.");
+      },
+    },
+  ]);
+
   // and load the index.html of the app.
-  mainWindow.loadURL("http://localhost:3000");
+  mainWindow.loadURL(
+    isDev
+      ? "http://localhost:3000"
+      : `file://${path.join(__dirname, "../build/index.html")}`
+  );
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
@@ -30,6 +59,45 @@ function createWindow() {
     mainWindow = null;
   });
 }
+
+function asd() {
+  console.log("hello world");
+}
+console.log("diir name : ", __dirname);
+
+let tray = null;
+app.whenReady().then(() => {
+  tray = new Tray(path.join(__dirname, "trello.png"));
+  const contextMenu = Menu.buildFromTemplate([
+    { label: "Item1", type: "radio" },
+    { label: "Item2", type: "radio" },
+    { label: "Item3", type: "radio", checked: true },
+    { label: "Item4", type: "radio" },
+  ]);
+  tray.setToolTip("CHello");
+  tray.setContextMenu(contextMenu);
+});
+
+app.setUserTasks(
+  [
+    {
+      program: "https://localhost:3000/home",
+      iconPath: process.execPath,
+      iconIndex: 0,
+      title: "Home",
+      description: "Navigate you to home",
+    },
+  ],
+  [
+    {
+      program: path.join(__dirname, "/test.js"),
+      iconPath: process.execPath,
+      iconIndex: 0,
+      title: "Test",
+      description: "Navigate you to home",
+    },
+  ]
+);
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

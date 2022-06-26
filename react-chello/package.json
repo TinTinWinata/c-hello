@@ -13,7 +13,7 @@
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
     "dotenv": "^16.0.1",
-
+    "electron-is-dev": "^2.0.0",
     "electron-squirrel-startup": "^1.0.0",
     "firebase": "^9.8.3",
     "firebaseui": "^6.0.1",
@@ -38,13 +38,13 @@
     "web-vitals": "^2.1.4",
     "yarn": "^1.22.19"
   },
-  "main": "dist/main.js",
+  "main": "src/starter.js",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev": "concurrently -k \"react-scripts start\" \"npm run electron\"" ,
+    "dev": "concurrently -k \"react-scripts start\" \"npm run electron\"",
     "electron:build": "yarn build && electron-builder -c.extraMetadata.main=dist/main.js",
     "electron": "wait-on tcp:3000 && electron .",
     "package": "electron-forge package",
@@ -52,13 +52,16 @@
   },
   "build": {
     "extends": null,
-    "appId": "com.example.electron-cra",
+    "appId": "react.electron",
     "files": [
       "dist/**/*",
       "build/**/*",
       "node_modules/**/*",
       "package.json"
     ],
+    "win":{
+      "icon": "build/trello.png"
+    },
     "directories": {
       "buildResources": "assets"
     }
@@ -73,7 +76,7 @@
     "production": [
       ">0.2%",
       "not dead",
-      "not op_sini all"
+      "not op_mini all"
     ],
     "development": [
       "last 1 chrome version",
@@ -82,7 +85,6 @@
     ]
   },
   "devDependencies": {
-    "electron-builder": "^23.1.0",
     "@electron-forge/cli": "^6.0.0-beta.63",
     "@electron-forge/maker-deb": "^6.0.0-beta.63",
     "@electron-forge/maker-rpm": "^6.0.0-beta.63",
@@ -91,6 +93,7 @@
     "autoprefixer": "^10.4.7",
     "concurrently": "^7.2.1",
     "electron": "^19.0.4",
+    "electron-builder": "^23.1.0",
     "postcss": "^8.4.14",
     "tailwindcss": "^3.1.2",
     "wait-on": "^6.0.1"
