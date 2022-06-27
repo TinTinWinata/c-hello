@@ -62,6 +62,10 @@ export async function insertCard(newName, boardId, listId, date, userDb, desc) {
     if (!newName) {
       newName = "New Name";
     }
+    if (!desc) {
+      desc = "new card";
+    }
+
     let docsData = {
       name: newName,
       boardId: boardId,
