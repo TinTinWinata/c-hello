@@ -1,17 +1,27 @@
+import { getDoc, getDocs, query, where } from "firebase/firestore";
 import React, { createRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import { listCollectionRef } from "../Library/firebase.collections";
 import { insertList } from "../Model/List";
+import { toastError, toastSuccess } from "../Model/Toast";
 import { getWebId } from "../Model/Util";
 
-export default function CreateNewListCard() {
+export default function CreateNewListCard({ refreshPage }) {
   const name = createRef();
+  const { id } = useParams();
 
   function handleClick(e) {
-    if (name.current.value == "") return;
-    else {
-      const id = getWebId();
-      insertList(name.current.value, id)
-      name.current.value = "";
+    if (name.current.value == "" || !name.current.value) {
+      toastError("Cannot create list without name!");
     }
+    const q = query(listCollectionRef, where("boardId", "==", id));
+    getDocs(q).then((docs) => {
+      const listLength = docs.docs.length;
+      insertList(name.current.value, id, listLength).then(() => {
+        refreshPage();
+        name.current.value = "";
+      });
+    });
   }
 
   return (

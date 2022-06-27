@@ -4,15 +4,38 @@ import ChangeViewList from "./ChangeViewList";
 import CreateNewListCard from "./CreateNewListCard";
 import Realtimelist from "./RealtimeListCard";
 
-export default function ListCardGroup({role, refreshRole}) {
+export default function ListCardGroup({ role, refreshRole }) {
   const [tabIndex, setTabIndex] = useState(1);
+
+  const [refresh, setRefresh] = useState();
+
+  function refreshPage() {
+    setRefresh((prev) => !prev);
+  }
 
   return (
     <>
       <div className="ml-5 w-full  mt-5">
-        {role ? ( <CreateNewListCard role={role}></CreateNewListCard>): ""}
-       
-        {tabIndex == 1 ? <Realtimelist refreshRole={refreshRole} role={role}></Realtimelist> : ""}
+        {role ? (
+          <CreateNewListCard
+            refreshPage={refreshPage}
+            refresh={refresh}
+            role={role}
+          ></CreateNewListCard>
+        ) : (
+          ""
+        )}
+
+        {tabIndex == 1 ? (
+          <Realtimelist
+            refreshPage={refreshPage}
+            refresh={refresh}
+            refreshRole={refreshRole}
+            role={role}
+          ></Realtimelist>
+        ) : (
+          ""
+        )}
         {tabIndex == 2 ? (
           <BoardCalendarView role={role}></BoardCalendarView>
         ) : (

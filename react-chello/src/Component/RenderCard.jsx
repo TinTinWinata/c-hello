@@ -240,14 +240,21 @@ export function RenderCard(props) {
           senderId: user.uid,
         };
         getUser(mentionedUser).then((doc) => {
+          console.log("getted mentioned user  :", mentionedUser);
+          console.log("doc  :", doc);
           const currUser = { ...doc.docs[0].data(), id: doc.docs[0].id };
           currUser.notificationList = [
             ...currUser.notificationList,
             notification,
           ];
-          updateUserDb(currUser).then(() => {
-            setValue();
-          });
+          updateUserDb(currUser)
+            .then(() => {
+              // console.log("succesfully update user : ", currUser);
+              setValue();
+            })
+            .catch((e) => {
+              // console.log("error updating user : ", e.message);
+            });
         });
       }
       notifyCommentWatcher(cardClicked.watcher, notification);
@@ -465,8 +472,7 @@ export function RenderCard(props) {
       };
       userDb.reminder = [...userDb.reminder, reminder];
       remindingAllWatcher(cardClicked.watcher, reminder);
-      updateUserDb(userDb).then(() => {
-      });
+      updateUserDb(userDb).then(() => {});
     });
   };
 
@@ -638,7 +644,7 @@ export function RenderCard(props) {
               </p>
               <div className="flex w-full flex-row flex-wrap mb-5 mt-5">
                 {imageList.map((src, idx) => {
-                  console.log("src : ", src);
+                  // console.log("src : ", src);
                   function handleDelete() {
                     const link = cardClicked.attachment[idx].link;
                     const refImage = ref(storage, link);
