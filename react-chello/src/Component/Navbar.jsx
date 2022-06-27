@@ -59,7 +59,10 @@ function Navbar() {
   return (
     <>
       <div className="h-[64px]">
-        <Disclosure as="nav" className="fixed w-screen z-10 bg-gray-800">
+        <Disclosure
+          as="nav"
+          className="fixed w-screen z-10 bg-gray-800 border-b"
+        >
           {({ open }) => (
             <>
               <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">

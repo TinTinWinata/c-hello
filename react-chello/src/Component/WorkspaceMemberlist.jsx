@@ -70,7 +70,11 @@ export default function WorkspaceMemberlist({ role }) {
         {member.map((member, index) => {
           return (
             <li className="mb-5" key={index}>
-              <Avatar link={member.photoUrl} name={member.displayName}></Avatar>
+              <Avatar
+                url={"/profile/" + member.userId}
+                link={member.photoUrl}
+                name={member.displayName}
+              ></Avatar>
             </li>
           );
         })}
@@ -84,7 +88,11 @@ export default function WorkspaceMemberlist({ role }) {
         {admin.map((member, index) => {
           return (
             <li className="mb-5" key={index}>
-              <Avatar link={member.photoUrl} name={member.displayName}></Avatar>
+              <Avatar
+                url={"/profile/" + member.userId}
+                link={member.photoUrl}
+                name={member.displayName}
+              ></Avatar>
             </li>
           );
         })}

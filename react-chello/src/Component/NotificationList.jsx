@@ -69,12 +69,14 @@ export default function NotificationList({ notification }) {
           >
             <div className="flex">
               <h1 className="font-bold mb-2">{user ? user.displayName : ""}</h1>
+              
               <CheckCircleIcon
                 onClick={() => {
                   handleOnClick(notification);
                 }}
                 className="ml-2 w-5 h-5 cursor-pointer"
               ></CheckCircleIcon>
+
               <MinusCircleIcon
                 onClick={() => {
                   removeNotification(notification);

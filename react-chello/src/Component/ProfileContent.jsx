@@ -73,8 +73,7 @@ export default function ProfileContent(props) {
             toastError("Error Updating Username ", e.message);
           });
       })
-      .catch((e) => {
-      });
+      .catch((e) => {});
   }
 
   function handleUpdateEducation() {

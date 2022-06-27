@@ -78,26 +78,29 @@ app.whenReady().then(() => {
   tray.setContextMenu(contextMenu);
 });
 
-app.setUserTasks(
-  [
-    {
-      program: "https://localhost:3000/home",
-      iconPath: process.execPath,
-      iconIndex: 0,
-      title: "Home",
-      description: "Navigate you to home",
-    },
-  ],
-  [
-    {
-      program: path.join(__dirname, "/test.js"),
-      iconPath: process.execPath,
-      iconIndex: 0,
-      title: "Test",
-      description: "Navigate you to home",
-    },
-  ]
-);
+app.setUserTasks([
+  {
+    program: "http://localhost:3000/home",
+    iconPath: process.execPath,
+    iconIndex: 0,
+    title: "Favorite Board",
+    description: "Navigate you to home",
+  },
+  {
+    program: __dirname + "/src/Script/home.exe",
+    iconPath: process.execPath,
+    iconIndex: 0,
+    title: "Home",
+    description: "Navigate you to home",
+  },
+  {
+    program: process.execPath,
+    iconPath: process.execPath,
+    iconIndex: 0,
+    title: "Electron",
+    description: "Navigate you to electron page",
+  },
+]);
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

@@ -64,13 +64,7 @@ export async function insertList(newName, boardId, idx) {
     listIndex: idx,
   };
 
-  getBoardById(boardId).then((doc) => {
-    const board = { ...doc.data(), id: doc.id };
-    board.list = [...board.list, docsData];
-    updateBoard(board).then(() => {
-      return addDoc(listCollectionRef, docsData);
-    });
-  });
+  return addDoc(listCollectionRef, docsData);
 }
 
 export function updateListById(listId, changes) {

@@ -31,7 +31,6 @@ function Home() {
   useEffect(() => {
     let unsub;
     if (userDb && userDb.favoriteBoard !== undefined) {
-  
       setFavLength(userDb.favoriteBoard.length);
       const q = query(
         boardCollectionRef,
