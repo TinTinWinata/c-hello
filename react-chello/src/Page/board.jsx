@@ -55,7 +55,11 @@ export default function Board() {
       <Navbar></Navbar>
       <div className="flex overflow-y-auto h-screen bg-slate-200">
         <Sidebar></Sidebar>
-        <ListCardGroup refreshRole={refreshRole} role={role}></ListCardGroup>
+        <ListCardGroup
+          board={board}
+          refreshRole={refreshRole}
+          role={role}
+        ></ListCardGroup>
       </div>
     </>
   );

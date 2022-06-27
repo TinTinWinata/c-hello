@@ -19,6 +19,7 @@ import { db } from "../Config/firebase-config";
 import { CheckIcon, XIcon } from "@heroicons/react/outline";
 
 export default function RealtimeCard(props) {
+  const refresh = props.refresh;
   const refreshRole = props.refreshRole;
   const location = useLocation();
   const [card, setCard] = useState([]);
@@ -64,6 +65,7 @@ export default function RealtimeCard(props) {
   // ----------------------------------------------------------------
 
   useEffect(() => {
+    console.log("refershed card");
     const q = query(
       cardCollectionRef,
       where("boardId", "==", id),
@@ -76,7 +78,7 @@ export default function RealtimeCard(props) {
     return () => {
       unsubscribe();
     };
-  }, [location]);
+  }, [location, refresh]);
 
   useEffect(() => {
     if (cardClicked) {

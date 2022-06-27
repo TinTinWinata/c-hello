@@ -4,7 +4,7 @@ import ChangeViewList from "./ChangeViewList";
 import CreateNewListCard from "./CreateNewListCard";
 import Realtimelist from "./RealtimeListCard";
 
-export default function ListCardGroup({ role, refreshRole }) {
+export default function ListCardGroup({ role, refreshRole, board }) {
   const [tabIndex, setTabIndex] = useState(1);
 
   const [refresh, setRefresh] = useState();
@@ -28,6 +28,7 @@ export default function ListCardGroup({ role, refreshRole }) {
 
         {tabIndex == 1 ? (
           <Realtimelist
+            board={board}
             refreshPage={refreshPage}
             refresh={refresh}
             refreshRole={refreshRole}

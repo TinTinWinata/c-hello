@@ -73,6 +73,11 @@ export default function Realtimelist({
   const [searching, setSearching] = useState(false);
   const [docsLength, setDocsLength] = useState(0);
 
+  // Check queried list
+  useEffect(() => {
+    console.log("queried : : ", queriedList);
+  }, [queriedList]);
+
   // Check if the last node is seen (Observer)
 
   const observer = useRef();
@@ -139,6 +144,7 @@ export default function Realtimelist({
           // Push filtered list
         }
       });
+      console.log("filtered : ", filteredList);
       setQueriedList(filteredList);
       setSearching(false);
     });
@@ -178,8 +184,6 @@ export default function Realtimelist({
     });
   }, [location]);
 
-  //
-
   const [card, setCard] = useState([]);
 
   const handleKeyDown = (e, listId) => {
@@ -218,10 +222,22 @@ export default function Realtimelist({
         });
     } else if (result.type == "list") {
       console.log("result : ", result);
-      // const fromIndex = result.source.index;
-      // const toIndex = result.destination.index;
-      // const listId = result.draggableId;
-      // changeIndex(listId, toIndex, fromIndex, refreshPage);
+      const fromIndex = result.source.index;
+      const toIndex = result.destination.index;
+      const listId = result.draggableId;
+
+      // List destination index ganti toIndex
+      let list = queriedList;
+
+      let temp = list[fromIndex];
+      list[fromIndex] = list[toIndex];
+      list[toIndex] = temp;
+
+      setQueriedList(list);
+      // List source index ganti fromIndex
+
+      changeIndex(listId, toIndex, fromIndex, refreshPage);
+      refreshPage();
     }
   }
 
@@ -246,6 +262,7 @@ export default function Realtimelist({
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
+                {/* {provided.placeholder} */}
                 {queriedList.map((card, idx) => {
                   function handleOnDelete() {
                     deleteList(card)
@@ -270,6 +287,7 @@ export default function Realtimelist({
                                 {...provided.dragHandleProps}
                                 ref={provided.innerRef}
                               >
+                                {/* {provided.placeholder} */}
                                 <div
                                   ref={lastListRef}
                                   className=" w-fit rounded-3xl ml-4 "
@@ -311,6 +329,7 @@ export default function Realtimelist({
                                             }}
                                           >
                                             <RealtimeCard
+                                              refresh={refresh}
                                               refreshRole={refreshRole}
                                               role={role}
                                               list={card}
@@ -348,6 +367,7 @@ export default function Realtimelist({
                                 ref={provided.innerRef}
                                 className=" w-fit rounded-3xl ml-4 "
                               >
+                                {/* {provided.placeholder} */}
                                 <div className="flex">
                                   <XIcon
                                     onClick={handleOnDelete}
@@ -364,7 +384,7 @@ export default function Realtimelist({
                                 </div>
 
                                 <div className="">
-                                  <Droppable droppableId={card.id}>
+                                  <Droppable type="card" droppableId={card.id}>
                                     {(provided, snapshot) => {
                                       return (
                                         <div
@@ -380,6 +400,7 @@ export default function Realtimelist({
                                             margin: 4,
                                           }}
                                         >
+                                          {/* {provided.placeholder} */}
                                           <RealtimeCard
                                             listId={card.id}
                                           ></RealtimeCard>

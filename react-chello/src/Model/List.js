@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../Config/firebase-config";
 import { listCollectionRef } from "../Library/firebase.collections";
+import { getBoardById, updateBoard } from "./Board";
 import { toastError, toastSuccess } from "./Toast";
 import { getWebId } from "./Util";
 
@@ -62,8 +63,14 @@ export async function insertList(newName, boardId, idx) {
     label: [],
     listIndex: idx,
   };
-  console.log("idx : ", idx);
-  return addDoc(listCollectionRef, docsData);
+
+  getBoardById(boardId).then((doc) => {
+    const board = { ...doc.data(), id: doc.id };
+    board.list = [...board.list, docsData];
+    updateBoard(board).then(() => {
+      return addDoc(listCollectionRef, docsData);
+    });
+  });
 }
 
 export function updateListById(listId, changes) {

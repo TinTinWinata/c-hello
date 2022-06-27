@@ -43,6 +43,10 @@ export async function getUser(id) {
 
 export function checkReminder(userDb) {
   if (userDb) {
+    if (userDb.notificationFrequency == "Periodically") {
+      return;
+    }
+
     let idx = 0;
     let reminderLength = userDb.reminder.length;
     userDb.reminder.map((reminder) => {
