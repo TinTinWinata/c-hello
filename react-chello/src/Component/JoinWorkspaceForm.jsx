@@ -28,7 +28,7 @@ export default function JoinWorkspaceForm() {
       const q2 = query(workspaceCollectionRef, where(documentId(), "==", snap));
       onSnapshot(q2, (snapshot2) => {
         if (snapshot2.docs.length == 0) {
-          toastError("Cannot join workspace, workspace has been deleted");
+          // toastError("Cannot join workspace, workspace has been deleted");
           navigate("/home");
           return;
         }

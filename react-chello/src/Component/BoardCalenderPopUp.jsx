@@ -17,6 +17,7 @@ import { updateUserDb } from "../Model/User";
 export default function BoardCalenderPopUp({ open, setOpen }) {
   const name = createRef();
   const selectedList = createRef();
+  const desc = createRef();
 
   const { id } = useParams();
 
@@ -73,18 +74,29 @@ export default function BoardCalenderPopUp({ open, setOpen }) {
 
   function handleCreate() {
     if (userDb) {
+      if (option.length == 0) {
+        toastError("You must create at least 1 list!");
+        return;
+      }
+
       const selectValue = selectedList.current.getValue();
       const nameValue = name.current.value;
+      const descValue = desc.current.value;
       if (selectValue.length == 0) {
         setError("Please select 1 list!");
         return;
-      } else if (nameValue == "" || !nameValue) {
-        setError("Please select name!");
+      } else if (
+        nameValue == "" ||
+        !nameValue ||
+        !descValue ||
+        descValue == ""
+      ) {
+        setError("Please input all fields!!");
         return;
       }
       const listId = selectValue[0].value;
 
-      insertCard(nameValue, id, listId, date, userDb)
+      insertCard(nameValue, id, listId, date, userDb, descValue)
         .then((doc) => {
           const data = { cardId: doc.id, boardId: id };
           createInviteDetail("card", data).then((docRef) => {
@@ -104,8 +116,6 @@ export default function BoardCalenderPopUp({ open, setOpen }) {
           remindingAllWatcher(cardClicked.watcher, reminder);
           updateUserDb(userDb).then(() => {});
         });
-
-      // handleClose();
     } else {
       toastError("Too fast darling!");
     }
@@ -175,6 +185,24 @@ export default function BoardCalenderPopUp({ open, setOpen }) {
                           id="email"
                           className="p-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                           placeholder="Input your card name"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="mt-3 block text-sm font-medium text-gray-700"
+                      >
+                        Description
+                      </label>
+                      <div className="mt-1">
+                        <textarea
+                          ref={desc}
+                          type="text"
+                          name="email"
+                          id="email"
+                          className="p-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                          placeholder="Input your card description"
                         />
                       </div>
                     </div>

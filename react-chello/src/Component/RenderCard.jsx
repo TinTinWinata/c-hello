@@ -81,7 +81,7 @@ export function RenderCard(props) {
   const [watcherForm, setWatcherForm] = useState(false);
 
   // DROP ZONE
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     accept: "*",
     noClick: true,
     noKeyboard: true,

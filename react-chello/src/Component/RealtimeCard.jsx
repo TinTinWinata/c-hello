@@ -115,7 +115,7 @@ export default function RealtimeCard(props) {
       {card.map((card, index) => {
         return (
           <div
-            key={card.id}
+            key={index}
             className="cursor-pointer"
             onClick={(event) => handleOnClick(event, card)}
           >

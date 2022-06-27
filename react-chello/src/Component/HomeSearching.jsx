@@ -92,7 +92,7 @@ export default function HomeSearching() {
 
   return (
     <>
-      <div className="ml-11 mt-16">
+      <div className="w-full ml-11 mt-16">
         <h1 className="text-xl font-bold text-gray-700 mb-3">
           Search Public Workspace!
         </h1>

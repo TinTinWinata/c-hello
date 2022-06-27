@@ -42,6 +42,11 @@ export async function deleteBoard(workspaceId) {
     });
   });
 }
+
+export function deleteBoardDoc(board) {
+  return deleteDoc(doc(db, "board", board.id));
+}
+
 export async function permanentDelete(workspaceId, boardId) {
   const q = query(
     boardCollectionRef,

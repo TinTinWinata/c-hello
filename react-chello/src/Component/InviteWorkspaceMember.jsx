@@ -69,6 +69,7 @@ export default function InviteWorkspaceMember() {
       toastError("Too fast darling!");
       returnValue = true;
     }
+    console.log("return value : ", returnValue);
     return returnValue;
   }
 

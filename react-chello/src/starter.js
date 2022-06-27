@@ -60,11 +60,6 @@ function createWindow() {
   });
 }
 
-function asd() {
-  console.log("hello world");
-}
-console.log("diir name : ", __dirname);
-
 let tray = null;
 app.whenReady().then(() => {
   tray = new Tray(path.join(__dirname, "trello.png"));

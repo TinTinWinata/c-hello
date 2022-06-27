@@ -52,7 +52,7 @@ export function addCardIL(cardId, boardId) {
   });
 }
 
-export async function insertCard(newName, boardId, listId, date, userDb) {
+export async function insertCard(newName, boardId, listId, date, userDb, desc) {
   console.log("user db : ", userDb);
   try {
     if (!date) {
@@ -68,6 +68,7 @@ export async function insertCard(newName, boardId, listId, date, userDb) {
       listId: listId,
       label: [],
       date: date,
+      description: desc,
       watcher: [userDb.userId],
       attachment: [],
       status: "",

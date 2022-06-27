@@ -11,7 +11,7 @@ import {
   cardCollectionRef,
   listCollectionRef,
 } from "../Library/firebase.collections";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { getWebId } from "../Model/Util";
 import CreateCard from "./CreateCard";
 import RealtimeCard from "./RealtimeCard";
@@ -37,20 +37,23 @@ export default function Realtimelist({
   refreshPage,
 }) {
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Option Data
   const [option, setOption] = useState([]);
   const [selectedOption, setSelectedOption] = useState();
 
   function addOption(n) {
-    isOptionExists(n).then(
-      (value) => {
-        setOption(value);
-      },
-      (error) => {
-        console.log("redundanat : ", error);
-      }
-    );
+    // isOptionExists(n).then(
+    //   (value) => {
+    //     console.log('set value : ', value)
+    //     setOption(value);
+    //   },
+    //   (error) => {
+    //     console.log("value already exists : ", error);
+    //   }
+    // );
+    setOption((prev) => [...prev, n]);
   }
 
   function isOptionExists(n) {
@@ -74,9 +77,9 @@ export default function Realtimelist({
   const [docsLength, setDocsLength] = useState(0);
 
   // Check queried list
-  useEffect(() => {
-    console.log("queried : : ", queriedList);
-  }, [queriedList]);
+  // useEffect(() => {
+  //   console.log("queried : : ", queriedList);
+  // }, [queriedList]);
 
   // Check if the last node is seen (Observer)
 
@@ -105,7 +108,6 @@ export default function Realtimelist({
 
   // Searching queried list
   useEffect(() => {
-    console.log("refreshed : ");
     if (selectedOption || name != "") setPageNumber(999);
     const q = query(
       listCollectionRef,
@@ -144,7 +146,6 @@ export default function Realtimelist({
           // Push filtered list
         }
       });
-      console.log("filtered : ", filteredList);
       setQueriedList(filteredList);
       setSearching(false);
     });
@@ -221,23 +222,16 @@ export default function Realtimelist({
           console.log("error moving card :", error);
         });
     } else if (result.type == "list") {
-      console.log("result : ", result);
       const fromIndex = result.source.index;
       const toIndex = result.destination.index;
       const listId = result.draggableId;
 
-      // List destination index ganti toIndex
       let list = queriedList;
 
-      let temp = list[fromIndex];
-      list[fromIndex] = list[toIndex];
-      list[toIndex] = temp;
-
+      list.splice(toIndex, 0, list.splice(fromIndex, 1)[0]);
       setQueriedList(list);
-      // List source index ganti fromIndex
 
-      changeIndex(listId, toIndex, fromIndex, refreshPage);
-      refreshPage();
+      changeIndex(listId, toIndex, fromIndex, refreshPage, id, navigate);
     }
   }
 
@@ -278,101 +272,34 @@ export default function Realtimelist({
                   const tag = "#" + card.tag;
                   if (queriedList.length == idx + 1) {
                     return (
-                      <>
-                        <Draggable draggableId={card.id} index={idx} key={idx}>
-                          {(provided) => (
-                            <>
+                      <Draggable
+                        draggableId={card.id}
+                        index={idx}
+                        key={card.id}
+                      >
+                        {(provided) => (
+                          <>
+                            <div
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              ref={provided.innerRef}
+                              key={card.id}
+                            >
                               <div
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                ref={provided.innerRef}
+                                ref={lastListRef}
+                                className=" w-fit rounded-3xl ml-4 "
+                                key={idx}
                               >
-                                {/* {provided.placeholder} */}
-                                <div
-                                  ref={lastListRef}
-                                  className=" w-fit rounded-3xl ml-4 "
-                                  key={idx}
-                                >
-                                  <div className="flex">
+                                <div className="flex">
+                                  {role ? (
                                     <XIcon
                                       onClick={handleOnDelete}
                                       className="w-5 h-5 text-gray-500 opacity-50 cursor-pointer ml-1 mt-1"
                                     ></XIcon>
-                                    <input
-                                      key={card.id}
-                                      onKeyDown={(e) => {
-                                        handleKeyDown(e, card.id);
-                                      }}
-                                      className="ml-3 rounded bg-transparent font-bold text-gray-800"
-                                      defaultValue={card.name}
-                                    ></input>
-                                  </div>
-                                  <div className="">
-                                    <Droppable
-                                      type="card"
-                                      droppableId={card.id}
-                                    >
-                                      {(provided, snapshot) => {
-                                        return (
-                                          <div
-                                            {...provided.droppableProps}
-                                            ref={provided.innerRef}
-                                            style={{
-                                              background:
-                                                snapshot.isDraggingOver
-                                                  ? "lightblue"
-                                                  : "",
-                                              padding: 4,
-                                              width: 250,
-                                              minHeight: 500,
-                                              margin: 4,
-                                            }}
-                                          >
-                                            <RealtimeCard
-                                              refresh={refresh}
-                                              refreshRole={refreshRole}
-                                              role={role}
-                                              list={card}
-                                              listId={card.id}
-                                            ></RealtimeCard>
-                                            {role ? (
-                                              <CreateCard
-                                                refreshRole={refreshRole}
-                                                listId={card.id}
-                                              ></CreateCard>
-                                            ) : (
-                                              ""
-                                            )}
-                                          </div>
-                                        );
-                                      }}
-                                    </Droppable>
-                                  </div>
-                                </div>
-                              </div>
-                            </>
-                          )}
-                        </Draggable>
-                      </>
-                    );
-                  } else {
-                    return (
-                      <>
-                        <Draggable draggableId={card.id} index={idx} key={idx}>
-                          {(provided) => (
-                            <>
-                              <div
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                ref={provided.innerRef}
-                                className=" w-fit rounded-3xl ml-4 "
-                              >
-                                {/* {provided.placeholder} */}
-                                <div className="flex">
-                                  <XIcon
-                                    onClick={handleOnDelete}
-                                    className=" w-5 h-5 text-gray-500 opacity-50 cursor-pointer ml-1 mt-1"
-                                  ></XIcon>
+                                  ) : (
+                                    ""
+                                  )}
+
                                   <input
                                     key={card.id}
                                     onKeyDown={(e) => {
@@ -382,13 +309,17 @@ export default function Realtimelist({
                                     defaultValue={card.name}
                                   ></input>
                                 </div>
-
                                 <div className="">
-                                  <Droppable type="card" droppableId={card.id}>
+                                  <Droppable
+                                    type="card"
+                                    key={card.id}
+                                    droppableId={card.id}
+                                  >
                                     {(provided, snapshot) => {
                                       return (
                                         <div
                                           {...provided.droppableProps}
+                                          key={card.id}
                                           ref={provided.innerRef}
                                           style={{
                                             background: snapshot.isDraggingOver
@@ -400,23 +331,99 @@ export default function Realtimelist({
                                             margin: 4,
                                           }}
                                         >
-                                          {/* {provided.placeholder} */}
                                           <RealtimeCard
+                                            refresh={refresh}
+                                            refreshRole={refreshRole}
+                                            role={role}
+                                            list={card}
                                             listId={card.id}
                                           ></RealtimeCard>
-                                          <CreateCard
-                                            listId={card.id}
-                                          ></CreateCard>
+                                          {role ? (
+                                            <CreateCard
+                                              refreshRole={refreshRole}
+                                              listId={card.id}
+                                            ></CreateCard>
+                                          ) : (
+                                            ""
+                                          )}
                                         </div>
                                       );
                                     }}
                                   </Droppable>
                                 </div>
                               </div>
-                            </>
-                          )}
-                        </Draggable>
-                      </>
+                            </div>
+                          </>
+                        )}
+                      </Draggable>
+                    );
+                  } else {
+                    return (
+                      <Draggable draggableId={card.id} index={idx} key={idx}>
+                        {(provided) => (
+                          <>
+                            <div
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              ref={provided.innerRef}
+                              className=" w-fit rounded-3xl ml-4 "
+                            >
+                              {/* {provided.placeholder} */}
+                              <div className="flex">
+                                {role ? (
+                                  <XIcon
+                                    onClick={handleOnDelete}
+                                    className="w-5 h-5 text-gray-500 opacity-50 cursor-pointer ml-1 mt-1"
+                                  ></XIcon>
+                                ) : (
+                                  ""
+                                )}
+                                <input
+                                  key={card.id}
+                                  onKeyDown={(e) => {
+                                    handleKeyDown(e, card.id);
+                                  }}
+                                  className="ml-3 rounded bg-transparent font-bold text-gray-800"
+                                  defaultValue={card.name}
+                                ></input>
+                              </div>
+                              <div className="">
+                                <Droppable type="card" droppableId={card.id}>
+                                  {(provided, snapshot) => {
+                                    return (
+                                      <div
+                                        {...provided.droppableProps}
+                                        ref={provided.innerRef}
+                                        style={{
+                                          background: snapshot.isDraggingOver
+                                            ? "lightblue"
+                                            : "",
+                                          padding: 4,
+                                          width: 250,
+                                          minHeight: 500,
+                                          margin: 4,
+                                        }}
+                                      >
+                                        <RealtimeCard
+                                          listId={card.id}
+                                        ></RealtimeCard>
+                                        {role ? (
+                                          <CreateCard
+                                            refreshRole={refreshRole}
+                                            listId={card.id}
+                                          ></CreateCard>
+                                        ) : (
+                                          ""
+                                        )}
+                                      </div>
+                                    );
+                                  }}
+                                </Droppable>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </Draggable>
                     );
                   }
                 })}

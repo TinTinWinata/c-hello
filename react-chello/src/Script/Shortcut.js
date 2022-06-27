@@ -7,14 +7,15 @@ export function Shortcut({ children }) {
   const [open, setOpen] = useState(false);
 
   const handleKey = useCallback((event) => {
-    if (event.shiftKey === true) {
-      if (event.key == "H") {
+    console.log(event.altKey);
+    if (event.altKey === true) {
+      if (event.key == "h") {
         navigate("/home");
       }
-      if (event.key == "A") {
+      if (event.key == "a") {
         setOpen((prev) => !prev);
       }
-      if (event.key == "S") {
+      if (event.key == "s") {
         navigate("/profile");
       }
     }

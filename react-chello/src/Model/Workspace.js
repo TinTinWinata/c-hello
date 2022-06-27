@@ -17,7 +17,12 @@ import {
   workspaceILRef,
 } from "../Library/firebase.collections";
 import { useUserAuth } from "../Library/UserAuthContext";
-import { deleteBoard, insertBoard, insertBoardWithBoard } from "./Board";
+import {
+  deleteBoard,
+  insertBoard,
+  insertBoardWithBoard,
+  updateBoard,
+} from "./Board";
 import { updateUserOnDatabase } from "./User";
 
 const auth = getAuth();
@@ -89,7 +94,10 @@ export async function insertWorkspaceWithBoard(
       visibility: "Private",
     });
 
-    insertBoardWithBoard(board, doc.id, userDb);
+    board.workspaceId = doc.id;
+    board.status = true;
+    updateBoard(board);
+    // insertBoardWithBoard(board, doc.id, userDb);
 
     const changes = {
       workspace: [

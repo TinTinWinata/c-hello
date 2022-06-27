@@ -53,10 +53,10 @@ export default function ShortcutList({ open, setOpen }) {
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
-                      Shift + A = Shortcut Setting
+                      Alt + A = Shortcut Setting
                     </p>
-                    <p className="text-sm text-gray-500">Shift + H = Home</p>
-                    <p className="text-sm text-gray-500">Shift + S = Profile</p>
+                    <p className="text-sm text-gray-500">Alt + H = Home</p>
+                    <p className="text-sm text-gray-500">Alt + S = Profile</p>
                   </div>
                 </div>
               </div>

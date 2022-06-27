@@ -10,6 +10,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 import { db } from "../Config/firebase-config";
 import { listCollectionRef } from "../Library/firebase.collections";
 import { getBoardById, updateBoard } from "./Board";
@@ -31,7 +32,7 @@ export function updateListWithId(listId, changes) {
   return updateDoc(ref, changes);
 }
 
-export function changeIndex(listId, idx, prevIdx, refresh) {
+export function changeIndex(listId, idx, prevIdx, refresh, boardId, navigate) {
   const q = query(listCollectionRef, where("listIndex", "==", idx));
   console.log("idx : ", idx);
   getDocs(q).then((docs) => {
@@ -43,7 +44,7 @@ export function changeIndex(listId, idx, prevIdx, refresh) {
         updateDoc(ref, { listIndex: idx })
           .then(() => {
             if (refresh) refresh();
-            toastSuccess("Succesfully change list");
+            navigate("/board/" + boardId);
           })
           .catch((e) => {
             toastError("Failed to move list index!");

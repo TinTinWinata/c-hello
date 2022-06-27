@@ -65,6 +65,8 @@ export default function DeleteWorkspaceForm() {
         map.status = true;
       }
     });
+    
+
     updateDeleteWorkspace(deleteDetail).then(() => {
       checkIfAllAgree();
     });

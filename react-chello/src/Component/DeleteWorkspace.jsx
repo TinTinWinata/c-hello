@@ -22,7 +22,6 @@ export default function DeleteWorkspace({ ws, role }) {
 
   function handleDelete() {
     if (ws) {
-
       // Validate if admin workspace more than one
       if (ws.adminId.length > 1) {
         addWorkspaceDeleteLink(ws).then((docRef) => {
@@ -40,6 +39,7 @@ export default function DeleteWorkspace({ ws, role }) {
             link: link,
           };
           notifyAdminDeletionWorkspace(ws.adminId, notification);
+          toastSuccess("Delete notification delete send to all admin!");
         });
       } else {
         //   Delete Workspace

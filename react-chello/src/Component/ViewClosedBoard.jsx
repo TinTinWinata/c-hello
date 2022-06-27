@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { deleteBoard, deleteBoardDoc } from "../Model/Board";
+import { toastSuccess } from "../Model/Toast";
 import OpenBoardConfirmation from "./OpenBoardConfirmation";
 
 export default function ViewClosedBoard({ closedBoard }) {
@@ -8,6 +10,12 @@ export default function ViewClosedBoard({ closedBoard }) {
   function handleClick(board) {
     setOpen(true);
     setSelectedBoard(board);
+  }
+
+  function handleDelete(board) {
+    deleteBoardDoc(board).then(() => {
+      toastSuccess("Succesfully delet board!");
+    });
   }
 
   return (
@@ -70,13 +78,23 @@ export default function ViewClosedBoard({ closedBoard }) {
                             {board.memberId.length + board.adminId.length}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div
-                              onClick={() => {
-                                handleClick(board);
-                              }}
-                              className="cursor-pointer text-indigo-600 hover:text-indigo-900"
-                            >
-                              Open
+                            <div className="flex">
+                              <div
+                                onClick={() => {
+                                  handleClick(board);
+                                }}
+                                className="cursor-pointer text-indigo-600 hover:text-indigo-900"
+                              >
+                                Open
+                              </div>
+                              <div
+                                onClick={() => {
+                                  handleDelete(board);
+                                }}
+                                className="ml-3 cursor-pointer text-indigo-600 hover:text-indigo-900"
+                              >
+                                Close
+                              </div>
                             </div>
                           </td>
                         </tr>
