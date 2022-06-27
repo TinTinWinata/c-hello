@@ -43,7 +43,6 @@ export default function RealtimeCard(props) {
     if (userDb && board) {
       userDb.board.map((userBoard) => {
         if (userBoard.id == board.id) {
-          console.log("user board role :", userBoard.role);
           setRole(userBoard.role);
         }
       });
@@ -90,7 +89,6 @@ export default function RealtimeCard(props) {
     if (role) {
       setClickedCard(card);
     } else {
-      console.log("role : ", role);
       toastError("You dont have access to see this card!");
     }
   }
