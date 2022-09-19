@@ -23,6 +23,7 @@ export default function DeleteWorkspace({ ws, role }) {
   function handleDelete() {
     if (ws) {
       // Validate if admin workspace more than one
+      console.log("length : ", ws.adminId.length);
       if (ws.adminId.length > 1) {
         addWorkspaceDeleteLink(ws).then((docRef) => {
           const link = "/delete-workspace/" + docRef.id;

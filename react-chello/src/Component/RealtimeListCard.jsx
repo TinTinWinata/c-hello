@@ -42,6 +42,7 @@ export default function Realtimelist({
   // Option Data
   const [option, setOption] = useState([]);
   const [selectedOption, setSelectedOption] = useState();
+  const [disabled, setDisabled] = useState(false);
 
   function addOption(n) {
     // isOptionExists(n).then(
@@ -94,7 +95,7 @@ export default function Realtimelist({
         entry[0].isIntersecting &&
         queriedList.length != docsLength
       ) {
-        // console.log("infinity scrooling");
+        console.log("infinity scrooling");
         setPageNumber((prev) => {
           return prev + 3;
         });
@@ -273,6 +274,7 @@ export default function Realtimelist({
                   if (queriedList.length == idx + 1) {
                     return (
                       <Draggable
+                        isDragDisabled={disabled}
                         draggableId={card.id}
                         index={idx}
                         key={card.id}
@@ -332,6 +334,7 @@ export default function Realtimelist({
                                           }}
                                         >
                                           <RealtimeCard
+                                            setDisabled={setDisabled}
                                             refresh={refresh}
                                             refreshRole={refreshRole}
                                             role={role}
@@ -359,7 +362,12 @@ export default function Realtimelist({
                     );
                   } else {
                     return (
-                      <Draggable draggableId={card.id} index={idx} key={idx}>
+                      <Draggable
+                        isDragDisabled={disabled}
+                        draggableId={card.id}
+                        index={idx}
+                        key={idx}
+                      >
                         {(provided) => (
                           <>
                             <div
@@ -405,6 +413,11 @@ export default function Realtimelist({
                                         }}
                                       >
                                         <RealtimeCard
+                                          setDisabled={setDisabled}
+                                          refresh={refresh}
+                                          refreshRole={refreshRole}
+                                          role={role}
+                                          list={card}
                                           listId={card.id}
                                         ></RealtimeCard>
                                         {role ? (

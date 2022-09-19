@@ -39,7 +39,7 @@ export default function RealtimeCard(props) {
 
   // FIND ROLE
   useEffect(() => {
-    console.log("setting role...");
+    // console.log("setting role...");
     if (userDb && board) {
       userDb.board.map((userBoard) => {
         if (userBoard.id == board.id) {
@@ -64,7 +64,7 @@ export default function RealtimeCard(props) {
   // ----------------------------------------------------------------
 
   useEffect(() => {
-    console.log("refershed card");
+    // console.log("refershed card");
     const q = query(
       cardCollectionRef,
       where("boardId", "==", id),
@@ -87,6 +87,7 @@ export default function RealtimeCard(props) {
 
   function handleOnClick(e, card) {
     if (role) {
+      props.setDisabled(true);
       setClickedCard(card);
     } else {
       toastError("You dont have access to see this card!");
@@ -101,6 +102,7 @@ export default function RealtimeCard(props) {
     <>
       {trigger ? (
         <RenderCard
+          setDisabled={props.setDisabled}
           role={role}
           listId={props.listId}
           setClickedCard={setClickedCard}

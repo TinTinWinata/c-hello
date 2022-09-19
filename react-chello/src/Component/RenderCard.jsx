@@ -407,6 +407,7 @@ export function RenderCard(props) {
   };
 
   function handleOffClick() {
+    props.setDisabled(false);
     props.setTrigger(false);
   }
 

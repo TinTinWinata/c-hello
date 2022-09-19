@@ -45,11 +45,15 @@ export default function JoinWorkspaceForm() {
 
   function validateDate(date) {
     const currDate = new Date();
-    const diffTime = Math.abs(date.toDate() - currDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    if (diffDays <= 0) {
+    console.log("date : ", currDate);
+    console.log("date : ", date.toDate());
+    const diffTime = date.toDate() - currDate;
+    console.log("difftime", diffTime);
+    if (diffTime <= 0) {
+      console.log("its expired");
       setExpired(true);
     } else {
+      console.log("its not expired");
       setExpired(false);
     }
   }
